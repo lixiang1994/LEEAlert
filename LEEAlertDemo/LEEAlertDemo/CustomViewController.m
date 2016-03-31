@@ -27,7 +27,7 @@
     //初始化子视图
     
     [self initSubviews];
-    
+
 }
 
 - (void)initSubviews{
@@ -94,6 +94,13 @@
     
     [self.view addSubview:button5];
     
+    
+    UIView *redView=[[UIView alloc]initWithFrame:CGRectMake(0, 400, 320, 200)];
+    
+    redView.backgroundColor = [UIColor redColor];
+    
+    [self.view addSubview:redView];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -105,40 +112,223 @@
 
 - (void)button1Action{
     
-    //一个按钮 Alert
+    //自定义 Alert 默认无取消按钮
     
-    //[LEEAlert shareAlert].system.config.title(@"标题").content(@"内容").cancelButtonTitle(@"取消").show();
-
+    [LEEAlert alert].custom.config
+    .title(@"1234")
+    .content(@"abcdefg")
+    .show();
     
 }
 
 - (void)button2Action{
     
-    //一个按钮 取消事件 Alert
+    //自定义 Alert 带取消按钮 取消事件
     
-    //    [LEEAlert shareAlert].system.config.title(@"标题").content(@"内容").cancelButtonTitle(@"取消").cancelButtonAction(^(){  NSLog(@"点击了取消按钮");  }).show();
+    [LEEAlert alert].custom.config
+    .title(@"标题")
+    .content(@"带取消按钮 取消事件")
+    .cancelButtonTitle(@"确认")
+    .cancelButtonAction(^(){
+    
+        NSLog(@"点击了取消按钮");
+        
+    })
+    .customAlertViewBackGroundStypeBlur()
+    .show();
 
+    
+    
+//    [LEEAlert alert]
+//    .system.config
+//    .title(@"标题")
+//    .content(@"内容")
+//    .cancelButtonTitle(@"取消")
+//    .cancelButtonAction(^(){
+//        
+//        NSLog(@"点击了取消按钮");
+//        
+//    })
+//    .showFromViewController(self);
     
 }
 
 
 - (void)button3Action{
     
-    //两个按钮 Alert
-
+    //自定义 Alert 自定义标题 两个自定义按钮
+    
+    [LEEAlert alert].custom.config
+    .customTitle(^(UILabel *label){
+    
+        //自定义标题Label
+        
+        label.textColor = [UIColor redColor];
+        
+    })
+    .title(@"自定义标题")
+    .content(@"自定义内容")
+    .customContent(^(UILabel *label){
+        
+        //自定义内容Label
+        
+        label.textColor = [UIColor greenColor];
+        
+    })
+    .addCustomButton(^(UIButton *button){
+    
+        //添加自定义按钮 设置按钮字体颜色为红色
+        
+        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        
+    })
+    .addCustomButton(^(UIButton *button){
+        
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        
+        [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        
+        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
+        
+    })
+    .show();
     
 }
 
 
 - (void)button4Action{
     
-    //多按钮 Alert
+    //自定义 Alert
+    
+    [LEEAlert alert].custom.config
+    .customTitle(^(UILabel *label){
+        
+        //自定义标题Label
+        
+        label.textColor = [UIColor redColor];
+        
+    })
+    .title(@"自定义标题")
+    .content(@"自定义内容")
+    .customContent(^(UILabel *label){
+        
+        //自定义内容Label
+        
+        label.textColor = [UIColor greenColor];
+        
+    })
+    .addTextField(^(UITextField *textField){
+        
+        textField.placeholder = @"输入框";
+        
+    })
+    .addCustomButton(^(UIButton *button){
+        
+        //添加自定义按钮 设置按钮字体颜色为红色
+        
+        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        
+    })
+    .addCustomButton(^(UIButton *button){
+        
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        
+        [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        
+        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
+        
+    })
+    .show();
 
 }
 
 - (void)button5Action{
     
-    //多按钮 多输入框 Alert (系统类型的输入框个数建议在2个以下)
+    //
+    
+    UIView *customView = [[UIView alloc]initWithFrame:CGRectMake(20, 0, 240, 100)];
+    
+    customView.backgroundColor = [UIColor yellowColor];
+    
+    UIButton *customViewCloseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    
+    [customViewCloseButton setTitle:@"关闭Alert" forState:UIControlStateNormal];
+    
+    [customViewCloseButton addTarget:self action:@selector(customViewCloseButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [customView addSubview:customViewCloseButton];
+    
+    
+    [LEEAlert alert].custom.config
+    .customTitle(^(UILabel *label){
+        
+        //自定义标题Label
+        
+        label.textColor = [UIColor redColor];
+        
+    })
+    .title(@"自定义标题")
+    .content(@"自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容")
+    .customContent(^(UILabel *label){
+        
+        //自定义内容Label
+        
+        label.textColor = [UIColor greenColor];
+        
+    })
+    .addTextField(^(UITextField *textField){
+        
+        textField.placeholder = @"输入框";
+        
+    })
+    .addTextField(^(UITextField *textField){
+        
+        textField.placeholder = @"输入框";
+        
+    })
+    .customView(customView)
+    .addButton(@"添加的按钮" , ^(){
+        
+        NSLog(@"点击了添加的按钮");
+        
+    })
+    .cancelButtonTitle(@"取消")
+    .cancelButtonAction(^(){
+        
+        NSLog(@"点击了取消按钮");
+        
+    })
+    .customCancelButton(^(UIButton *button){
+    
+        [button setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+        
+    })
+    .addCustomButton(^(UIButton *button){
+        
+        //添加自定义按钮 设置按钮字体颜色为红色
+        
+        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        
+    })
+    .addCustomButton(^(UIButton *button){
+        
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        
+        [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        
+        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
+        
+    })
+    .show();
+
+    
+}
+
+
+#pragma mark - 自定义视图关闭按钮点击事件
+
+- (void)customViewCloseButtonAction:(UIButton *)sender{
+    
     
     
 }
