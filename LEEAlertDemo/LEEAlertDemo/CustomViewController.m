@@ -117,6 +117,7 @@
     [LEEAlert alert].custom.config
     .title(@"1234")
     .content(@"abcdefg")
+    .customAlertTouchClose()
     .show();
     
 }
@@ -220,11 +221,9 @@
     })
     .addCustomButton(^(UIButton *button){
         
-        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱 如果需要特殊样式的button 建议在customView中自行玩耍
         
         [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-        
-        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
         
     })
     .show();
@@ -237,7 +236,7 @@
     
     UIView *customView = [[UIView alloc]initWithFrame:CGRectMake(20, 0, 240, 100)];
     
-    customView.backgroundColor = [UIColor yellowColor];
+    customView.backgroundColor = [UIColor lightGrayColor];
     
     UIButton *customViewCloseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     
@@ -272,6 +271,10 @@
     .addTextField(^(UITextField *textField){
         
         textField.placeholder = @"输入框";
+        
+        textField.returnKeyType = UIReturnKeyDone;
+        
+        textField.delegate = self;
         
     })
     .addTextField(^(UITextField *textField){
@@ -309,7 +312,7 @@
     })
     .addCustomButton(^(UIButton *button){
         
-        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改button的frame 可能会造成位置错乱 如果需要特殊样式的button 建议在customView中自行玩耍
         
         [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         

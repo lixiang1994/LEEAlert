@@ -117,8 +117,9 @@
     .system.config
     .title(@"标题")
     .content(@"内容")
-    .cancelButtonTitle(@"取消")
     .show();
+    
+    //可以不设置取消按钮的标题 默认为"取消",标题和内容这两个最基本的参数建议不要不设置. 最后结尾调用.show()来显示Alert
     
 }
 
@@ -140,6 +141,8 @@
     })
     .showFromViewController(self);
     
+    //如果需要获取取消按钮的点击事件 可以添加.cancelButtonAction(^(){})方法 在block块内可以添加点击后你要做的事. 当然取消按钮的标题也开始随你更改.
+    
 }
 
 
@@ -151,7 +154,7 @@
     .system.config
     .title(@"标题")
     .content(@"内容")
-    .cancelButtonTitle(@"取消")
+    //.cancelButtonTitle(@"取消") //暂时不需要可以直接注释掉,是不是很方便
     .cancelButtonAction(^(){
         
         NSLog(@"点击了取消按钮");
@@ -163,6 +166,8 @@
     
     })
     .show();
+    
+    //一个按钮不够? 再加几个都可以,这里系统风格样式是2个按钮会左右水平排列,1个或3个以上按钮是上下垂直排列 ╮(╯▽╰)╭这个好像不用我来说
     
 }
 
@@ -198,6 +203,8 @@
     })
     .show();
     
+    //同上, 各种加.
+    
 }
 
 - (void)button5Action{
@@ -216,7 +223,7 @@
     })
     .addButton(@"确认" , ^(){
         
-        NSLog(@"点击了确认按钮 : %@ , %@" , self.firstText , self.secondText);
+        NSLog(@"点击了确认按钮 : \n输入了:%@ , %@" , self.firstText , self.secondText);
         
     })
     .addButton(@"关注" , ^(){
@@ -249,6 +256,9 @@
     })
     .show();
     
+    //添加文本输入框,这里值得强调一点,iOS8以下系统用到的是UIAlertView,所以建议遵循系统Alert规则 添加2个以下的输入框. 如果你需要更多,建议使用自定义Alert
+    //添加文本输入框的block中可以获取textField对象,当然拿到对象后你可以进行一大坨的设置,不过不要忘记这是基于系统Alert封装的,所以有一些属性是改了也没用的,比如Frame..
+    //还是那句话 如果系统类型的Alert满足不了你的需求,请移步自定义Alert区,那里异常奔放.
 }
 
 - (void)firstTextField:(UITextField *)textField{

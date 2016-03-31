@@ -30,9 +30,24 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToCustomButton)(void(^addButton)(UI
 typedef LEEAlertConfigModel *(^LEEConfigAlertToCustomLabel)(void(^addLabel)(UILabel *label));
 typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController *viewController);
 
-// 如果需要用“断言”调试程序请打开此宏
-//#define LEEDebugWithAssert
+/*
+ 
+ *********************************************************************************
+ *
+ * 在您使用此自动布局库的过程中如果出现bug请及时以以下任意一种方式联系我，我会及时修复bug
+ *
+ * QQ    : 可以添加SDAutoLayout群 497140713 在这里找我到(LEE)
+ * Email : applelixiang@126.com
+ * GitHub: https://github.com/lixiang1994/LEEAlert
+ * 简书:    http://www.jianshu.com/users/a6da0db100c8
+ *
+ *********************************************************************************
+ 
+ */
 
+// 如果需要用“断言”调试程序请打开此宏
+
+//#define LEEDebugWithAssert
 
 @interface LEEAlert : NSObject
 
@@ -44,8 +59,6 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  *  自定义类型
  */
 @property (nonatomic , strong ) LEEAlertCustom *custom;
-
-
 
 /**
  *  初始化Alert
@@ -63,7 +76,23 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 @interface LEEAlertConfigModel : NSObject
 
-/* Alert 基本信息 */
+/*
+ *************************说明************************
+ 
+ LEEAlert 目前提供两种方案 1.使用系统Alert  2.使用自定义Alert
+ 
+ 1.系统Alert [LEEAlert alert].system.cofing.XXXXX.show();
+ 
+ 2.自定义Alert [LEEAlert alert].custom.cofing.XXXXX.show();
+
+ 两种Alert的设置方法如下,其中系统Alert类型支持基本设置,自定义Alert支持全部设置/
+ 
+ 设置方法结束后在最后请不要忘记使用.show()方法显示Alert.
+ 
+ *****************************************************
+ */
+
+/* Alert 基本设置 */
 
 /** 设置 Alert 标题 */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToString title;
@@ -78,7 +107,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 /** 设置 Alert 添加输入框 (返回输入框对象的block) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToCustomTextField addTextField;
 
-/* Alert 自定义信息 */
+/* Alert 自定义设置 */
 
 /** 设置 Alert 自定义标题 */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToCustomLabel customTitle;
@@ -118,11 +147,13 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 /** 设置 Alert 自定义警示框模糊背景样式 */
 @property (nonatomic , copy , readonly ) LEEConfigAlert customAlertViewBackGroundStypeBlur;
 
+/** 设置 Alert 自定义警示框背景触摸关闭 */
+@property (nonatomic , copy , readonly ) LEEConfigAlert customAlertTouchClose;
+
 /** 显示 Alert 默认通过KeyWindow弹出 (二选一) */
 @property (nonatomic , copy , readonly ) LEEConfigAlert show;
 /** 显示 Alert 通过指定视图控制器弹出 (二选一) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToViewController showFromViewController;
-
 
 @end
 

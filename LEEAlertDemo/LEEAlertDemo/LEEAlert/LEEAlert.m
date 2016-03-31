@@ -139,6 +139,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @property (nonatomic , strong , readonly ) UIColor *modelAlertViewColor;
 @property (nonatomic , strong , readonly ) UIColor *modelAlertWindowBackGroundColor;
 
+@property (nonatomic , assign , readonly ) BOOL modelIsAlertWindowTouchClose;
+
 @property (nonatomic , copy ) void(^modelCancelButtonAction)();
 @property (nonatomic , copy ) void(^modelCancelButtonBlock)();
 @property (nonatomic , copy ) void(^modelFinishConfig)(UIViewController *vc);
@@ -577,6 +579,18 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
+-(LEEConfigAlert)customAlertTouchClose{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(){
+        
+        _modelIsAlertWindowTouchClose = YES;
+        
+        return weakSelf;
+    };
+    
+}
 
 
 -(LEEConfigAlert)show{
@@ -1357,6 +1371,24 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     return rect;
 }
 
+- (void)alertWindowTapAction:(UITapGestureRecognizer *)tap{
+    
+    if (self.config.modelIsAlertWindowTouchClose) {
+        
+        [self closeAnimationsWithCompletionBlock:^{
+            
+            _config = nil;
+        }];
+    
+    }
+    
+}
+
+- (void)alertViewTapAction:(UITapGestureRecognizer *)tap{
+    
+    
+}
+
 #pragma mark start animations
 
 - (void)showAlertAnimations{
@@ -1508,6 +1540,10 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         _alertWindow.windowLevel = UIWindowLevelAlert + 1994;
         
         _alertWindow.hidden = YES;
+        
+        UITapGestureRecognizer *alertWindowTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertWindowTapAction:)];
+        
+        [_alertWindow addGestureRecognizer:alertWindowTap];
     }
     
     return _alertWindow;
@@ -1544,6 +1580,10 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         _alertView.backgroundColor = self.config.modelAlertViewColor;
         
         _alertView.directionalLockEnabled = YES;
+        
+        UITapGestureRecognizer *alertViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertViewTapAction:)];
+        
+        [_alertView addGestureRecognizer:alertViewTap];
     }
     
     return _alertView;
