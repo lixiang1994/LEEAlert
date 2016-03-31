@@ -136,20 +136,6 @@
     })
     .customAlertViewBackGroundStypeBlur()
     .show();
-
-    
-    
-//    [LEEAlert alert]
-//    .system.config
-//    .title(@"标题")
-//    .content(@"内容")
-//    .cancelButtonTitle(@"取消")
-//    .cancelButtonAction(^(){
-//        
-//        NSLog(@"点击了取消按钮");
-//        
-//    })
-//    .showFromViewController(self);
     
 }
 
@@ -175,20 +161,23 @@
         label.textColor = [UIColor greenColor];
         
     })
-    .addCustomButton(^(UIButton *button){
-    
-        //添加自定义按钮 设置按钮字体颜色为红色
+    .cancelButtonAction(^(){
         
-        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        NSLog(@"点击了取消按钮");
         
     })
+//    .addCustomButton(^(UIButton *button){
+//    
+//        //添加自定义按钮 设置按钮字体颜色为红色
+//        
+//        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+//        
+//    })
     .addCustomButton(^(UIButton *button){
         
-        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改button的frame属性 可能会造成位置错乱
         
         [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-        
-        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
         
     })
     .show();

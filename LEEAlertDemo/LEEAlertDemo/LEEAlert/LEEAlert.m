@@ -51,14 +51,11 @@
     });
     
     return alertManager;
-    
 }
 
 + (LEEAlert *)alert{
     
     LEEAlert *alert = [[LEEAlert alloc]init];
-    
-    
     
     return alert;
 }
@@ -69,7 +66,7 @@
      
         [[LEEAlert shareAlertManager].currentCustomAlertDelegate customAlertCloseDelegate];
     }
-    //[[LEEAlert shareAlertManager] performSelector:NSSelectorFromString(@"closeAnimations")];
+    
 }
 
 #pragma mark LazyLoading
@@ -155,19 +152,14 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 -(void)dealloc{
     
     _modelTitleStr = nil;
-    
     _modelContentStr = nil;
-    
-    _modelButtonArray = nil;
-    
-    _modelTextFieldArray = nil;
-    
     _modelCancelButtonTitleStr = nil;
-    
-    _modelCustomContentView = nil;
-    
+    _modelButtonArray = nil;
+    _modelTextFieldArray = nil;
     _modelCustomSubViewsQueue = nil;
-    
+    _modelCustomContentView = nil;
+    _modelAlertViewColor = nil;
+    _modelAlertWindowBackGroundColor = nil;
 }
 
 - (instancetype)init
@@ -917,7 +909,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
     return _alertViewButtonIndexDic;
-    
 }
 
 
@@ -1207,9 +1198,9 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             
             CGFloat minHeight = buttonHeight < cancelButtonHeight ? buttonHeight : cancelButtonHeight;
             
-            button.frame = CGRectMake(0, button.frame.origin.y, alertViewWidth / 2, maxHeight);
+            cancelButton.frame = CGRectMake(0, button.frame.origin.y, alertViewWidth / 2, maxHeight);
             
-            cancelButton.frame = CGRectMake(alertViewWidth / 2, button.frame.origin.y, alertViewWidth / 2, maxHeight);
+            button.frame = CGRectMake(alertViewWidth / 2, button.frame.origin.y, alertViewWidth / 2, maxHeight);
             
             alertViewHeight -= minHeight;
         }
@@ -1302,7 +1293,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     return rect;
 }
 
-#pragma mark - start animations
+#pragma mark start animations
 
 - (void)showAlertAnimations{
     
@@ -1351,7 +1342,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
 }
 
-#pragma mark - close animations
+#pragma mark close animations
 
 - (void)closeAnimations{
     
@@ -1364,7 +1355,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
-    [self.alertWindow endEditing:YES];
+    [self.alertWindow endEditing:YES]; //结束输入 收起键盘
     
     __weak typeof(self) weakSelf = self;
     
