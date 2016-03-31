@@ -28,9 +28,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToButtonBlock)(void(^buttonAction)(
 typedef LEEAlertConfigModel *(^LEEConfigAlertToCustomTextField)(void(^addTextField)(UITextField *textField));
 typedef LEEAlertConfigModel *(^LEEConfigAlertToCustomButton)(void(^addButton)(UIButton *button));
 typedef LEEAlertConfigModel *(^LEEConfigAlertToCustomLabel)(void(^addLabel)(UILabel *label));
-
 typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController *viewController);
-//typedef LEEAlertConfigModel *(^LEEConfigAlertToCloseBlock)(void(^closeBlock)(LEEAlertCustom *customAlert));
 
 // 如果需要用“断言”调试程序请打开此宏
 //#define LEEDebugWithAssert
@@ -47,12 +45,19 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  */
 @property (nonatomic , strong ) LEEAlertCustom *custom;
 
+
+
 /**
  *  初始化Alert
  *
  *  @return 返回一个Alert对象
  */
 + (LEEAlert *)alert;
+
+/**
+ *  关闭自定义Alert
+ */
++ (void)closeCustomAlert;
 
 @end
 
@@ -113,10 +118,6 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 /** 设置 Alert 自定义警示框模糊背景样式 */
 @property (nonatomic , copy , readonly ) LEEConfigAlert customAlertViewBackGroundStypeBlur;
 
-/* 设置 Alert 关闭方法回调Block */
-//@property (nonatomic , copy , readonly ) LEEConfigAlertToCloseBlock closeAlert;
-
-
 /** 显示 Alert 默认通过KeyWindow弹出 (二选一) */
 @property (nonatomic , copy , readonly ) LEEConfigAlert show;
 /** 显示 Alert 通过指定视图控制器弹出 (二选一) */
@@ -136,6 +137,29 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 @property (nonatomic , strong ) LEEAlertConfigModel *config;
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

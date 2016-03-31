@@ -18,9 +18,21 @@
 
 #define iOS8 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
+@interface LEEAlert ()
+
+@property (nonatomic , weak ) id currentCustomAlertDelegate;
+
+@end
+
+@protocol LEEAlertManagerDelegate <NSObject>
+
+- (void)customAlertCloseDelegate;
+
+@end
+
 @implementation LEEAlert
 
--(void)dealloc{
+- (void)dealloc{
     
     _system = nil;
     
@@ -28,16 +40,41 @@
     
 }
 
-+(LEEAlert *)alert{
++ (LEEAlert *)shareAlertManager{
+    
+    static LEEAlert *alertManager;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        alertManager = [LEEAlert alert];
+        
+    });
+    
+    return alertManager;
+    
+}
+
++ (LEEAlert *)alert{
     
     LEEAlert *alert = [[LEEAlert alloc]init];
-
+    
+    
+    
     return alert;
+}
+
++ (void)closeCustomAlert{
+    
+    if ([LEEAlert shareAlertManager].currentCustomAlertDelegate && [[LEEAlert shareAlertManager].currentCustomAlertDelegate respondsToSelector:@selector(customAlertCloseDelegate)]) {
+     
+        [[LEEAlert shareAlertManager].currentCustomAlertDelegate customAlertCloseDelegate];
+    }
+    //[[LEEAlert shareAlertManager] performSelector:NSSelectorFromString(@"closeAnimations")];
 }
 
 #pragma mark LazyLoading
 
--(LEEAlertSystem *)system{
+- (LEEAlertSystem *)system{
     
     if (!_system) {
         
@@ -47,7 +84,7 @@
     return _system;
 }
 
--(LEEAlertCustom *)custom{
+- (LEEAlertCustom *)custom{
     
     if (!_custom) {
         
@@ -888,7 +925,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 #pragma mark - ====================自定义====================
 
-@interface LEEAlertCustom ()
+@interface LEEAlertCustom ()<LEEAlertManagerDelegate>
 
 @property (nonatomic , strong ) UIWindow *currentKeyWindow;
 
@@ -961,8 +998,6 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     CGFloat alertViewWidth = self.config.modelAlertMaxWidth;
     
     [self.alertWindow addSubview:self.alertView];
-    
-    NSLog(@"%@ \n" , self.config.modelCustomSubViewsQueue);
     
     if (self.config.modelCustomSubViewsQueue.count > 0) {
         
@@ -1107,7 +1142,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         
-        button.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 50.0f);
+        button.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 45.0f);
         
         [button.layer setBorderWidth:0.5f];
         
@@ -1137,7 +1172,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
         
-        cancelButton.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 50.0f);
+        cancelButton.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 45.0f);
         
         [cancelButton.layer setBorderWidth:0.5f];
         
@@ -1158,7 +1193,50 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             self.config.modelCancelButtonBlock(cancelButton);
         }
         
-        alertViewHeight += 50.0f;
+        alertViewHeight += CGRectGetHeight(cancelButton.frame);
+        
+        if (self.alertButtonArray.count == 1) {
+            
+            UIButton *button = [self.alertButtonArray firstObject];
+            
+            CGFloat buttonHeight = CGRectGetHeight(button.frame);
+            
+            CGFloat cancelButtonHeight = CGRectGetHeight(cancelButton.frame);
+            
+            CGFloat maxHeight = buttonHeight > cancelButtonHeight ? buttonHeight : cancelButtonHeight;
+            
+            CGFloat minHeight = buttonHeight < cancelButtonHeight ? buttonHeight : cancelButtonHeight;
+            
+            button.frame = CGRectMake(0, button.frame.origin.y, alertViewWidth / 2, maxHeight);
+            
+            cancelButton.frame = CGRectMake(alertViewWidth / 2, button.frame.origin.y, alertViewWidth / 2, maxHeight);
+            
+            alertViewHeight -= minHeight;
+        }
+        
+    } else {
+        
+        if (self.alertButtonArray.count == 2) {
+            
+            UIButton *buttonA = [self.alertButtonArray firstObject];
+            
+            UIButton *buttonB = [self.alertButtonArray lastObject];
+            
+            CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame);
+            
+            CGFloat buttonBHeight = CGRectGetHeight(buttonB.frame);
+            
+            CGFloat maxHeight = buttonAHeight > buttonBHeight ? buttonAHeight : buttonBHeight;
+            
+            CGFloat minHeight = buttonAHeight < buttonBHeight ? buttonAHeight : buttonBHeight;
+            
+            buttonA.frame = CGRectMake(0, buttonA.frame.origin.y, alertViewWidth / 2, maxHeight);
+            
+            buttonB.frame = CGRectMake(alertViewWidth / 2, buttonA.frame.origin.y, alertViewWidth / 2, maxHeight);
+            
+            alertViewHeight -= minHeight;
+        }
+        
     }
     
     self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
@@ -1178,6 +1256,8 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     NSDictionary * notifyInfo = @{@"customAlert" : self , @"alertWindow" : self.alertWindow};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:LEEAlertShowNotification object:self userInfo:notifyInfo];
+    
+    [LEEAlert shareAlertManager].currentCustomAlertDelegate = self;
     
     //开启显示警示框动画
     
@@ -1273,6 +1353,15 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 #pragma mark - close animations
 
+- (void)closeAnimations{
+    
+    [self closeAnimationsWithCompletionBlock:^{
+       
+        _config = nil;
+    }];
+    
+}
+
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
     [self.alertWindow endEditing:YES];
@@ -1310,6 +1399,14 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         }
         
     }];
+
+}
+
+#pragma mark LEEAlertManagerDelegate
+
+-(void)customAlertCloseDelegate{
+    
+    [self closeAnimations];
 }
 
 #pragma mark LazyLoading
@@ -1410,6 +1507,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 @end
 
 #pragma mark - ====================工具类====================
+
 
 @implementation UIImage (LEEImageEffects)
 

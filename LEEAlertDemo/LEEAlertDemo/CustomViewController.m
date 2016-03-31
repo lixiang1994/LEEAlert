@@ -252,7 +252,11 @@
     
     UIButton *customViewCloseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     
+    customViewCloseButton.frame = CGRectMake(0, 0, 100, 30);
+    
     [customViewCloseButton setTitle:@"关闭Alert" forState:UIControlStateNormal];
+    
+    [customViewCloseButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     
     [customViewCloseButton addTarget:self action:@selector(customViewCloseButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -329,7 +333,9 @@
 
 - (void)customViewCloseButtonAction:(UIButton *)sender{
     
+    //关闭自定义Alert
     
+    [LEEAlert closeCustomAlert];
     
 }
 
