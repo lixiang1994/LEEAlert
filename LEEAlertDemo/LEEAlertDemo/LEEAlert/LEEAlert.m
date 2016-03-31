@@ -933,8 +933,14 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 @implementation LEEAlertCustom
+{
+    CGFloat alertViewHeight;
+    CGFloat alertViewWidth;
+}
 
 - (void)dealloc{
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     _config = nil;
     
@@ -965,6 +971,9 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AlertShowNotification:) name:LEEAlertShowNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShown:) name:UIKeyboardWillShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(keyboardWillHidden:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)AlertShowNotification:(NSNotification *)notify{
@@ -982,11 +991,66 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
 }
 
+- (void)keyboardWillShown:(NSNotification *) notify{
+    
+    NSDictionary *info = [notify userInfo];
+    
+    NSValue *value = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    
+    CGRect keyboardFrame = [value CGRectValue];
+    
+    //取得键盘的动画时间，这样可以在视图上移的时候更连贯
+
+    double duration = [[notify.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    __weak typeof(self) weakSelf = self;
+    
+    [UIView animateWithDuration:duration animations:^{
+        
+        CGRect alertViewFrame = weakSelf.alertView.frame;
+        
+        if (alertViewFrame.size.height - keyboardFrame.origin.y > -20) {
+            
+            alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+        }
+        
+        CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
+        
+        if (resultY > - 10) {
+            
+            alertViewFrame.origin.y -= resultY + 10;
+        }
+        
+        weakSelf.alertView.frame = alertViewFrame;
+        
+    } completion:^(BOOL finished) {}];
+    
+}
+
+- (void) keyboardWillHidden:(NSNotification *) notify{
+    double duration = [[notify.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    __weak typeof(self) weakSelf = self;
+    
+    [UIView animateWithDuration:duration animations:^{
+       
+        CGRect alertViewFrame = weakSelf.alertView.frame;
+        
+        alertViewFrame.size.height = alertViewHeight > weakSelf.config.modelAlertMaxHeight ? weakSelf.config.modelAlertMaxHeight : alertViewHeight;;
+        
+        weakSelf.alertView.frame = alertViewFrame;
+        
+        weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.alertWindow.frame) /2 , CGRectGetHeight(weakSelf.alertWindow.frame) / 2);
+        
+    } completion:^(BOOL finished) {}];
+    
+}
+
 - (void)configAlert{
     
-    CGFloat alertViewHeight = 0;
+    alertViewHeight = 0;
     
-    CGFloat alertViewWidth = self.config.modelAlertMaxWidth;
+    alertViewWidth = self.config.modelAlertMaxWidth;
     
     [self.alertWindow addSubview:self.alertView];
     

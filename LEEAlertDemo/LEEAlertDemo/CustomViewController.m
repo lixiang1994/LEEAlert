@@ -14,7 +14,7 @@
 
 #import "LEEAlert.h"
 
-@interface CustomViewController ()
+@interface CustomViewController ()<UITextFieldDelegate>
 
 @end
 
@@ -278,6 +278,10 @@
         
         textField.placeholder = @"输入框";
         
+        textField.returnKeyType = UIReturnKeyDone;
+        
+        textField.delegate = self;
+        
     })
     .customView(customView)
     .addButton(@"添加的按钮" , ^(){
@@ -326,6 +330,15 @@
     
     [LEEAlert closeCustomAlert];
     
+}
+
+#pragma mark - UITextFieldDelegate
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    
+    [textField resignFirstResponder];
+    
+    return NO;
 }
 
 
