@@ -34,7 +34,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  
  *********************************************************************************
  *
- * 在您使用此自动布局库的过程中如果出现bug请及时以以下任意一种方式联系我，我会及时修复bug
+ * 在使用LEEAlert的过程中如果出现bug请及时以以下任意一种方式联系我，我会及时修复bug
  *
  * QQ    : 可以添加SDAutoLayout群 497140713 在这里找我到(LEE)
  * Email : applelixiang@126.com
