@@ -115,10 +115,14 @@
     //自定义 Alert 默认无取消按钮
     
     [LEEAlert alert].custom.config
-    .title(@"1234")
-    .content(@"abcdefg")
+    .title(@"标题")
+    .content(@"自定义 Alert 内容")
     .customAlertTouchClose()
     .show();
+    
+    //自定义的Alert 以 [LEEAlert alert].custom.config 开头 含义为 [初始化一个LEEAlert].类型.设置
+    //自定义Alert 如果不设置取消按钮(包括标题,点击事件,自定义取消按钮) 默认是不会有取消按钮的, 不过这样就可能无法关闭
+    //上面我添加了点击Alert背景关闭的设置.customAlertTouchClose() 为了方便演示.
     
 }
 
@@ -148,9 +152,7 @@
     [LEEAlert alert].custom.config
     .customTitle(^(UILabel *label){
     
-        //自定义标题Label
-        
-        label.textColor = [UIColor redColor];
+        //这里可以随意标题Label (不过不建议乱改frame属性)
         
     })
     .title(@"自定义标题")
@@ -159,7 +161,7 @@
         
         //自定义内容Label
         
-        label.textColor = [UIColor greenColor];
+        label.textColor = [UIColor lightGrayColor];
         
     })
     .cancelButtonAction(^(){
@@ -168,7 +170,7 @@
         
     })
 //    .addCustomButton(^(UIButton *button){
-//    
+//
 //        //添加自定义按钮 设置按钮字体颜色为红色
 //        
 //        [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
@@ -182,6 +184,12 @@
         
     })
     .show();
+    
+    /*
+        不需要可以直接注释掉 整体看下来就是整个Alert的代码是由一个一个的小模块组成 就像是一辆火车,只要有车头和车尾,中间随便你扔多少车厢都能跑起来.
+        这里自定义Alert上采用的布局方式与系统风格相同, 如果同时存在两个按钮,那么会水平排列, 如果存在一个或三个以上那么会垂直排列.
+        如果你觉得默认的布局无法满足你的需求, 建议使用customView(自定义的视图)方式来实现.
+     */
     
 }
 
@@ -204,12 +212,18 @@
         
         //自定义内容Label
         
-        label.textColor = [UIColor greenColor];
+        label.textColor = [UIColor lightGrayColor];
         
     })
     .addTextField(^(UITextField *textField){
         
+        //添加输入框 并进行自定义设置
+        
         textField.placeholder = @"输入框";
+        
+        textField.returnKeyType = UIReturnKeyDone;
+        
+        textField.delegate = self;
         
     })
     .addCustomButton(^(UIButton *button){
@@ -221,7 +235,8 @@
     })
     .addCustomButton(^(UIButton *button){
         
-        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱 如果需要特殊样式的button 建议在customView中自行玩耍
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改buttonframe的y轴 可能会造成位置错乱
+        //如果需要特殊样式的button 建议在customView中自行玩耍
         
         [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         
@@ -232,15 +247,17 @@
 
 - (void)button5Action{
     
-    //
+    //初始化一个自定义视图
     
     UIView *customView = [[UIView alloc]initWithFrame:CGRectMake(20, 0, 240, 100)];
     
-    customView.backgroundColor = [UIColor lightGrayColor];
+    customView.backgroundColor = [UIColor grayColor];
     
     UIButton *customViewCloseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     
     customViewCloseButton.frame = CGRectMake(0, 0, 100, 30);
+    
+    [customViewCloseButton setBackgroundColor:[UIColor lightGrayColor]];
     
     [customViewCloseButton setTitle:@"关闭Alert" forState:UIControlStateNormal];
     
@@ -250,25 +267,24 @@
     
     [customView addSubview:customViewCloseButton];
     
+    //使用自定义Alert
     
     [LEEAlert alert].custom.config
     .customTitle(^(UILabel *label){
         
         //自定义标题Label
         
-        label.textColor = [UIColor redColor];
-        
     })
-    .title(@"自定义标题")
-    .content(@"自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容")
+    .title(@"自定义标题")    //添加标题
+    .content(@"自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容自定义内容")   //添加内容
     .customContent(^(UILabel *label){
         
         //自定义内容Label
         
-        label.textColor = [UIColor greenColor];
-        
     })
     .addTextField(^(UITextField *textField){
+        
+        //添加一个输入框 自定义textField
         
         textField.placeholder = @"输入框";
         
@@ -279,6 +295,8 @@
     })
     .addTextField(^(UITextField *textField){
         
+        //添加一个输入框 自定义textField
+        
         textField.placeholder = @"输入框";
         
         textField.returnKeyType = UIReturnKeyDone;
@@ -286,40 +304,57 @@
         textField.delegate = self;
         
     })
-    .customView(customView)
+    .customView(customView) //添加自定义视图
     .addButton(@"添加的按钮" , ^(){
+        
+        //添加按钮 传入按钮标题 和点击事件的Block
         
         NSLog(@"点击了添加的按钮");
         
     })
-    .cancelButtonTitle(@"取消")
+    .cancelButtonTitle(@"取消")   //设置取消按钮标题
     .cancelButtonAction(^(){
+        
+        //获取取消按钮点击事件
         
         NSLog(@"点击了取消按钮");
         
     })
     .customCancelButton(^(UIButton *button){
-    
+        
+        //自定义取消按钮
+        
         [button setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
         
     })
     .addCustomButton(^(UIButton *button){
         
-        //添加自定义按钮 设置按钮字体颜色为红色
+        //添加自定义按钮 设置按钮字体颜色为红色(演示用)
         
         [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
         
     })
     .addCustomButton(^(UIButton *button){
         
-        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改button的frame 可能会造成位置错乱 如果需要特殊样式的button 建议在customView中自行玩耍
+        //button为你添加的自定义按钮对象 , 这里可以随意自定义button对象的属性 , 但注意一点: 尽量不要修改button的frame 可能会造成位置错乱
+        //如果需要特殊样式的button 建议在customView中自行玩耍
         
         [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         
-        button.frame = CGRectMake(button.frame.origin.x, button.frame.origin.y, CGRectGetWidth(button.frame) , 100);
-        
     })
-    .show();
+    .customCornerRadius(20.0f)  //设置自定义Alert的圆角半径 默认为 10
+    .customAlertMaxWidth(280.0f)   //设置自定义Alert的最大宽度 默认为 280 (也就是最小设备屏幕宽度 320 去除两边20的间距)
+    .customAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f)   //设置自定义Alert的最大高度 默认为屏幕高度的80%
+    .customSubViewMargin(10.0f)  //设置自定义Alert的子控件上下边距 默认为 10
+    .customTopSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert上边缘的边距 默认 20
+    .customBottomSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert下边缘的边距 (如果有按钮存在 则是距离按钮部分的边距) 默认 20
+    .customAlertOpenAnimationDuration(0.3f)   //设置自定义Alert的打开动画效果时长 默认0.3秒
+    .customAlertCloseAnimationDuration(0.2f)   //设置自定义Alert的关闭动画效果时长 默认0.2秒
+    .customAlertViewColor([UIColor whiteColor])   //设置自定义Alert的颜色 默认为白色
+    .customAlertViewBackGroundColor([UIColor blackColor])   //设置自定义Alert的半透明或者模糊的背景渲染颜色
+    .customAlertTouchClose()   //设置自定义Alert的背景点击关闭功能
+    .customAlertViewBackGroundStypeBlur()   //设置自定义Alert的背景样式为高斯模糊样式 如果不设置这项 默认为半透明样式
+    .show();    //显示Alert
 
     
 }

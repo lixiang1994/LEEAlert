@@ -174,7 +174,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _modelCornerRadius = 10.0f; //默认警示框圆角半径
         _modelSubViewMargin = 10.0f; //默认警示框内部控件之间间距
         _modelTopSubViewMargin = 20.0f; //默认警示框顶部控件的间距
-        _modelBottomSubViewMargin = 10.0f; //默认警示框底部控件的间距
+        _modelBottomSubViewMargin = 20.0f; //默认警示框底部控件的间距
         _modelAlertMaxWidth = 280; //默认最大宽度 设备最小屏幕宽度 320 去除20左右边距
         _modelAlertMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //默认最大高度屏幕80%
         _modelAlertOpenAnimationDuration = 0.3f; //默认警示框打开动画时长
@@ -1200,6 +1200,8 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     if (self.config.modelCustomSubViewsQueue.count > 0) {
         
+        alertViewHeight -= self.config.modelSubViewMargin;
+        
         alertViewHeight += self.config.modelBottomSubViewMargin;
     }
     
@@ -1325,6 +1327,8 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     NSDictionary * notifyInfo = @{@"customAlert" : self , @"alertWindow" : self.alertWindow};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:LEEAlertShowNotification object:self userInfo:notifyInfo];
+    
+    //设置当前自定义Alert代理对象
     
     [LEEAlert shareAlertManager].currentCustomAlertDelegate = self;
     
