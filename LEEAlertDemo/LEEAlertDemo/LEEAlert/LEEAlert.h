@@ -89,6 +89,8 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  
  设置方法结束后在最后请不要忘记使用.show()方法显示Alert.
  
+ 最低支持iOS7及以上
+ 
  *****************************************************
  */
 

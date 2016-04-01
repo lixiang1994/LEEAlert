@@ -988,6 +988,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShown:) name:UIKeyboardWillShowNotification object:nil];
     
     [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(keyboardWillHidden:) name:UIKeyboardWillHideNotification object:nil];
+    
 }
 
 - (void)AlertShowNotification:(NSNotification *)notify{
