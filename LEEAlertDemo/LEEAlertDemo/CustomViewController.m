@@ -19,6 +19,13 @@
 @end
 
 @implementation CustomViewController
+{
+    
+    UILabel *contentLabel;
+    
+    UITextField *contentTextField;
+    
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -133,6 +140,13 @@
     [LEEAlert alert].custom.config
     .title(@"标题")
     .content(@"带取消按钮 取消事件")
+    .customContent(^(UILabel *label){
+        
+        //自定义内容Label
+        
+        label.textColor = [UIColor lightGrayColor];
+        
+    })
     .cancelButtonTitle(@"确认")
     .cancelButtonAction(^(){
     
@@ -195,7 +209,7 @@
 
 
 - (void)button4Action{
-    
+    /*
     //自定义 Alert
     
     [LEEAlert alert].custom.config
@@ -242,7 +256,66 @@
         
     })
     .show();
+*/
+    
+    //演示提示框输入内容为空 提交按钮点击内容部分会提示并不关闭提示框 , 输入内容不为空时点击提交按钮则关闭提示框并打印输入的内容.
+    
+    [LEEAlert alert].custom.config
+    .title(@"自定义标题")
+    .content(@"自定义内容")
+    .customContent(^(UILabel *label){
+        
+        contentLabel = label;
+        
+    })
+    .addTextField(^(UITextField *textField){
+        
+        //添加输入框 并进行自定义设置
+        
+        textField.placeholder = @"输入框";
+        
+        textField.returnKeyType = UIReturnKeyDone;
+        
+        textField.delegate = self;
+        
+        contentTextField = textField;
+        
+    })
+    .cancelButtonTitle(@"取消")
+    .addCustomButton(^(UIButton *button){
+        
+        [button setTitle:@"提交" forState:UIControlStateNormal];
+        
+        [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        
+        [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+    })
+    .customButtonClickNotClose()
+    .show();
+    
+}
 
+-(void)buttonAction:(UIButton *)sender{
+    
+    NSString *contentTextFieldString = contentTextField.text;
+    
+    if (contentTextFieldString.length > 0) {
+        
+        NSLog(@"输入的内容: %@" , contentTextFieldString);
+        
+        //关闭自定义Alert
+        
+        [LEEAlert closeCustomAlert];
+        
+    } else {
+        
+        //设置内容提示文字
+        
+        contentLabel.text = @"不能为空";
+        
+    }
+    
 }
 
 - (void)button5Action{

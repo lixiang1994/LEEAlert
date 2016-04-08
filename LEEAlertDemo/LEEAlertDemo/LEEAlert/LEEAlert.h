@@ -151,6 +151,8 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 /** 设置 Alert 自定义警示框背景触摸关闭 */
 @property (nonatomic , copy , readonly ) LEEConfigAlert customAlertTouchClose;
+/** 设置 Alert 自定义按钮点击不关闭警示框 */
+@property (nonatomic , copy , readonly ) LEEConfigAlert customButtonClickNotClose;
 
 /** 显示 Alert 默认通过KeyWindow弹出 (系统类型 二选一) */
 @property (nonatomic , copy , readonly ) LEEConfigAlert show;

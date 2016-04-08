@@ -140,6 +140,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @property (nonatomic , strong , readonly ) UIColor *modelAlertWindowBackGroundColor;
 
 @property (nonatomic , assign , readonly ) BOOL modelIsAlertWindowTouchClose;
+@property (nonatomic , assign , readonly ) BOOL modelIsCustomButtonClickClose;
 
 @property (nonatomic , copy ) void(^modelCancelButtonAction)();
 @property (nonatomic , copy ) void(^modelCancelButtonBlock)();
@@ -183,7 +184,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _modelAlertViewColor = [UIColor whiteColor]; //默认警示框颜色
         _modelAlertWindowBackGroundColor = [UIColor blackColor]; //默认警示框背景半透明或者模糊颜色
         
+        _modelIsAlertWindowTouchClose = NO; //默认点击window不关闭
+        _modelIsCustomButtonClickClose = YES; //默认点击自定义按钮关闭
+        
         _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent; //默认为半透明背景样式
+        
         
     }
     return self;
@@ -592,6 +597,18 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
+-(LEEConfigAlert)customButtonClickNotClose{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(){
+        
+        _modelIsCustomButtonClickClose = NO;
+        
+        return weakSelf;
+    };
+    
+}
 
 -(LEEConfigAlert)show{
     
@@ -1362,10 +1379,14 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         buttonAction();
     }
     
-    [self closeAnimationsWithCompletionBlock:^{
+    if (self.config.modelIsCustomButtonClickClose) {
+     
+        [self closeAnimationsWithCompletionBlock:^{
+            
+            _config = nil;
+        }];
         
-        _config = nil;
-    }];
+    }
     
 }
 
