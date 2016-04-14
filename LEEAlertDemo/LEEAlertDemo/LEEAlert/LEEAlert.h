@@ -216,14 +216,14 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 @interface UIImage (LEEImageEffects)
 
-->(UIImage*)applyLightEffect;
+- (UIImage*)applyLightEffect;
 
-->(UIImage*)applyExtraLightEffect;
+- (UIImage*)applyExtraLightEffect;
 
-->(UIImage*)applyDarkEffect;
+- (UIImage*)applyDarkEffect;
 
-->(UIImage*)applyTintEffectWithColor:(UIColor*)tintColor;
+- (UIImage*)applyTintEffectWithColor:(UIColor*)tintColor;
 
-->(UIImage*)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage;
+- (UIImage*)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage;
 
 @end

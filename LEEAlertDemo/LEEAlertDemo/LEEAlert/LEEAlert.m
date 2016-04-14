@@ -1239,7 +1239,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [button setTitle:buttonTitle forState:UIControlStateNormal];
         
-        [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255.0f alpha:1.0f] forState:UIControlStateNormal];
         
         [button setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
         
@@ -1269,7 +1269,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [cancelButton setTitle:self.config.modelCancelButtonTitleStr ? self.config.modelCancelButtonTitleStr : @"取消" forState:UIControlStateNormal];
         
-        [cancelButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        [cancelButton setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255.0f alpha:1.0f] forState:UIControlStateNormal];
         
         [cancelButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
         
