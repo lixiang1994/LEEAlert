@@ -63,7 +63,7 @@
 + (void)closeCustomAlert{
     
     if ([LEEAlert shareAlertManager].currentCustomAlertDelegate && [[LEEAlert shareAlertManager].currentCustomAlertDelegate respondsToSelector:@selector(customAlertCloseDelegate)]) {
-     
+        
         [[LEEAlert shareAlertManager].currentCustomAlertDelegate customAlertCloseDelegate];
     }
     
@@ -194,7 +194,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return self;
 }
 
--(LEEConfigAlertToString)title{
+-(LEEConfigAlertToString)LeeTitle{
     
     __weak typeof(self) weakSelf = self;
     
@@ -222,7 +222,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToString)content{
+-(LEEConfigAlertToString)LeeContent{
     
     __weak typeof(self) weakSelf = self;
     
@@ -250,7 +250,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToString)cancelButtonTitle{
+-(LEEConfigAlertToString)LeeCancelButtonTitle{
     
     __weak typeof(self) weakSelf = self;
     
@@ -263,7 +263,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToButtonBlock)cancelButtonAction{
+-(LEEConfigAlertToButtonBlock)LeeCancelButtonAction{
     
     __weak typeof(self) weakSelf = self;
     
@@ -279,7 +279,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToButtonAndBlock)addButton{
+-(LEEConfigAlertToButtonAndBlock)LeeAddButton{
     
     __weak typeof(self) weakSelf = self;
     
@@ -292,7 +292,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomTextField)addTextField{
+-(LEEConfigAlertToCustomTextField)LeeAddTextField{
     
     __weak typeof(self) weakSelf = self;
     
@@ -308,7 +308,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 }
 
 
--(LEEConfigAlertToCustomLabel)customTitle{
+-(LEEConfigAlertToCustomLabel)LeeCustomTitle{
     
     __weak typeof(self) weakSelf = self;
     
@@ -339,7 +339,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomLabel)customContent{
+-(LEEConfigAlertToCustomLabel)LeeCustomContent{
     
     __weak typeof(self) weakSelf = self;
     
@@ -370,7 +370,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomButton)customCancelButton{
+-(LEEConfigAlertToCustomButton)LeeCustomCancelButton{
     
     __weak typeof(self) weakSelf = self;
     
@@ -381,13 +381,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             weakSelf.modelCancelButtonBlock = addButton;
             
         }
-    
+        
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToView)customView{
+-(LEEConfigAlertToView)LeeCustomView{
     
     __weak typeof(self) weakSelf = self;
     
@@ -415,7 +415,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomButton)addCustomButton{
+-(LEEConfigAlertToCustomButton)LeeAddCustomButton{
     
     __weak typeof(self) weakSelf = self;
     
@@ -428,7 +428,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customCornerRadius{
+-(LEEConfigAlertToFloat)LeeCustomCornerRadius{
     
     __weak typeof(self) weakSelf = self;
     
@@ -441,7 +441,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customSubViewMargin{
+-(LEEConfigAlertToFloat)LeeCustomSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
@@ -454,7 +454,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customTopSubViewMargin{
+-(LEEConfigAlertToFloat)LeeCustomTopSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
@@ -467,7 +467,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customBottomSubViewMargin{
+-(LEEConfigAlertToFloat)LeeCustomBottomSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
@@ -480,7 +480,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customAlertMaxWidth{
+-(LEEConfigAlertToFloat)LeeCustomAlertMaxWidth{
     
     __weak typeof(self) weakSelf = self;
     
@@ -493,7 +493,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customAlertMaxHeight{
+-(LEEConfigAlertToFloat)LeeCustomAlertMaxHeight{
     
     __weak typeof(self) weakSelf = self;
     
@@ -506,7 +506,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customAlertOpenAnimationDuration{
+-(LEEConfigAlertToFloat)LeeCustomAlertOpenAnimationDuration{
     
     __weak typeof(self) weakSelf = self;
     
@@ -519,7 +519,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToFloat)customAlertCloseAnimationDuration{
+-(LEEConfigAlertToFloat)LeeCustomAlertCloseAnimationDuration{
     
     __weak typeof(self) weakSelf = self;
     
@@ -532,7 +532,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToColor)customAlertViewColor{
+-(LEEConfigAlertToColor)LeeCustomAlertViewColor{
     
     __weak typeof(self) weakSelf = self;
     
@@ -545,7 +545,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToColor)customAlertViewBackGroundColor{
+-(LEEConfigAlertToColor)LeeCustomAlertViewBackGroundColor{
     
     __weak typeof(self) weakSelf = self;
     
@@ -558,7 +558,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)customAlertViewBackGroundStypeTranslucent{
+-(LEEConfigAlert)LeeCustomAlertViewBackGroundStypeTranslucent{
     
     __weak typeof(self) weakSelf = self;
     
@@ -571,7 +571,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)customAlertViewBackGroundStypeBlur{
+-(LEEConfigAlert)LeeCustomAlertViewBackGroundStypeBlur{
     
     __weak typeof(self) weakSelf = self;
     
@@ -584,7 +584,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)customAlertTouchClose{
+-(LEEConfigAlert)LeeCustomAlertTouchClose{
     
     __weak typeof(self) weakSelf = self;
     
@@ -597,7 +597,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)customButtonClickNotClose{
+-(LEEConfigAlert)LeeCustomButtonClickNotClose{
     
     __weak typeof(self) weakSelf = self;
     
@@ -610,7 +610,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)show{
+-(LEEConfigAlert)LeeShow{
     
     __weak typeof(self) weakSelf = self;
     
@@ -626,7 +626,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToViewController)showFromViewController{
+-(LEEConfigAlertToViewController)LeeShowFromViewController{
     
     __weak typeof(self) weakSelf = self;
     
@@ -793,7 +793,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _config = nil;
         
     } else {
-    
+        
         //使用UIAlertView
         
         UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles: nil];
@@ -831,7 +831,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
             
             [alertView textFieldAtIndex:1].secureTextEntry = NO;
-
+            
             textFieldCount = 2;
         }
         
@@ -875,7 +875,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
     if (buttonIndex != [alertView cancelButtonIndex]) {
-     
+        
         void (^buttonAction)() = self.alertViewButtonIndexDic[[NSString stringWithFormat:@"%ld" , buttonIndex]];
         
         if (buttonAction) {
@@ -904,7 +904,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-       _config = nil;
+        _config = nil;
     });
     
 }
@@ -1016,7 +1016,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [self closeAnimationsWithCompletionBlock:^{
             
-             _config = nil;
+            _config = nil;
         }];
         
     }
@@ -1032,7 +1032,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     CGRect keyboardFrame = [value CGRectValue];
     
     //取得键盘的动画时间，这样可以在视图上移的时候更连贯
-
+    
     double duration = [[notify.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
     __weak typeof(self) weakSelf = self;
@@ -1065,7 +1065,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     __weak typeof(self) weakSelf = self;
     
     [UIView animateWithDuration:duration animations:^{
-       
+        
         CGRect alertViewFrame = weakSelf.alertView.frame;
         
         alertViewFrame.size.height = alertViewHeight > weakSelf.config.modelAlertMaxHeight ? weakSelf.config.modelAlertMaxHeight : alertViewHeight;;
@@ -1094,14 +1094,14 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     for (NSDictionary *item in self.config.modelCustomSubViewsQueue) {
         
         switch ([item[@"type"] integerValue]) {
-           
+                
             case LEEAlertCustomSubViewTypeTitle:
             {
                 
                 NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : @" ";
                 
                 UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, alertViewHeight, alertViewWidth - 40, 0)];
-             
+                
                 [self.alertView addSubview:titleLabel];
                 
                 titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -1244,7 +1244,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         [button setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
         
         [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
-
+        
         [self.alertView addSubview:button];
         
         [self.alertButtonArray addObject:button];
@@ -1380,7 +1380,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     }
     
     if (self.config.modelIsCustomButtonClickClose) {
-     
+        
         [self closeAnimationsWithCompletionBlock:^{
             
             _config = nil;
@@ -1405,7 +1405,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             
             _config = nil;
         }];
-    
+        
     }
     
 }
@@ -1425,11 +1425,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [self.alertWindow sendSubviewToBack:self.alertWindowImageView];
     }
-
+    
     self.alertView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
     
     self.alertView.alpha = 0.0f;
-
+    
     self.alertWindow.hidden = NO;
     
     [self.alertWindow makeKeyAndVisible];
@@ -1437,7 +1437,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     __weak typeof(self) weakSelf = self;
     
     if (weakSelf.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeTranslucent) {
-    
+        
         [UIView animateWithDuration:self.config.modelAlertOpenAnimationDuration animations:^{
             
             weakSelf.alertWindow.backgroundColor = [weakSelf.alertWindow.backgroundColor colorWithAlphaComponent:0.6f];
@@ -1469,7 +1469,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 - (void)closeAnimations{
     
     [self closeAnimationsWithCompletionBlock:^{
-       
+        
         _config = nil;
     }];
     
@@ -1512,7 +1512,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         }
         
     }];
-
+    
 }
 
 #pragma mark LEEAlertManagerDelegate
@@ -1739,7 +1739,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 0.7152-0.7152* s,0.7152+0.2848* s,0.7152-0.7152* s,0,
                 0.2126-0.2126* s,0.2126-0.2126* s,0.2126+0.7873* s,0,
                 0,0,0,1,
-                };
+            };
             const int32_t divisor = 256;
             NSUInteger matrixSize = sizeof(floatingPointSaturationMatrix)/sizeof(floatingPointSaturationMatrix[0]);
             int16_t saturationMatrix[matrixSize];

@@ -81,13 +81,13 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  
  LEEAlert 目前提供两种方案 1.使用系统Alert  2.使用自定义Alert
  
- 1.系统Alert [LEEAlert alert].system.cofing.XXXXX.show();
+ 1.系统Alert [LEEAlert alert].system.cofing.XXXXX.LeeShow();
  
- 2.自定义Alert [LEEAlert alert].custom.cofing.XXXXX.show();
-
+ 2.自定义Alert [LEEAlert alert].custom.cofing.XXXXX.LeeShow();
+ 
  两种Alert的设置方法如下,其中系统Alert类型支持基本设置,自定义Alert支持全部设置/
  
- 设置方法结束后在最后请不要忘记使用.show()方法显示Alert.
+ 设置方法结束后在最后请不要忘记使用.LeeShow()方法显示Alert.
  
  最低支持iOS7及以上
  
@@ -96,68 +96,68 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 /* Alert 基本设置 */
 
-/** 设置 Alert 标题 -> 格式: .title(@@"") */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToString title;
-/** 设置 Alert 内容 -> 格式: .content(@@"") */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToString content;
-/** 设置 Alert 取消按钮标题 -> 格式: .cancelButtonTitle(@@"") */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToString cancelButtonTitle;
-/** 设置 Alert 取消按钮响应事件Block -> 格式: .cancelButtonAction(^(){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToButtonBlock cancelButtonAction;
-/** 设置 Alert 添加按钮 -> 格式: .addButton(@@"" , ^(){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToButtonAndBlock addButton;
-/** 设置 Alert 添加输入框 -> 格式: .addTextField(^(UITextField *textField){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomTextField addTextField;
+/** 设置 Alert 标题 -> 格式: .LeeTitle(@@"") */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToString LeeTitle;
+/** 设置 Alert 内容 -> 格式: .LeeContent(@@"") */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToString LeeContent;
+/** 设置 Alert 取消按钮标题 -> 格式: .LeeCancelButtonTitle(@@"") */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToString LeeCancelButtonTitle;
+/** 设置 Alert 取消按钮响应事件Block -> 格式: .LeeCancelButtonAction(^(){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToButtonBlock LeeCancelButtonAction;
+/** 设置 Alert 添加按钮 -> 格式: .LeeAddButton(@@"" , ^(){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToButtonAndBlock LeeAddButton;
+/** 设置 Alert 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *textField){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomTextField LeeAddTextField;
 
 /* Alert 自定义设置 */
 
-/** 设置 Alert 自定义标题 -> 格式: .customTitle(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomLabel customTitle;
-/** 设置 Alert 自定义内容 -> 格式: .customContent(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomLabel customContent;
-/** 设置 Alert 自定义取消按钮 -> 格式: .customCancelButton(^(UIButton *button){ //code.. } */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomButton customCancelButton;
-/** 设置 Alert 自定义视图 -> 格式: .customView(UIView) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToView customView;
-/** 设置 Alert 添加自定义按钮 -> 格式: .addCustomButton(^(UIButton *button){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomButton addCustomButton;
+/** 设置 Alert 自定义标题 -> 格式: .LeeCustomTitle(^(UILabel *label){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomLabel LeeCustomTitle;
+/** 设置 Alert 自定义内容 -> 格式: .LeeCustomContent(^(UILabel *label){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomLabel LeeCustomContent;
+/** 设置 Alert 自定义取消按钮 -> 格式: .LeeCustomCancelButton(^(UIButton *button){ //code.. } */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomButton LeeCustomCancelButton;
+/** 设置 Alert 自定义视图 -> 格式: .LeeCustomView(UIView) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToView LeeCustomView;
+/** 设置 Alert 添加自定义按钮 -> 格式: .LeeAddCustomButton(^(UIButton *button){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToCustomButton LeeAddCustomButton;
 
-/** 设置 Alert 自定义圆角半径 -> 格式: .customCornerRadius(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customCornerRadius;
-/** 设置 Alert 自定义控件间距 -> 格式: .customSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customSubViewMargin;
-/** 设置 Alert 自定义顶部控件间距 -> 格式: .customTopSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customTopSubViewMargin;
-/** 设置 Alert 自定义底部控件间距 -> 格式: .customBottomSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customBottomSubViewMargin;
-/** 设置 Alert 自定义警示框最大宽度 -> 格式: .customAlertMaxWidth(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customAlertMaxWidth;
-/** 设置 Alert 自定义警示框最大高度 -> 格式: .customAlertMaxHeight(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customAlertMaxHeight;
-/** 设置 Alert 自定义警示框开启动画时长 -> 格式: .customAlertOpenAnimationDuration(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customAlertOpenAnimationDuration;
-/** 设置 Alert 自定义警示框关闭动画时长 -> 格式: .customAlertCloseAnimationDuration(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat customAlertCloseAnimationDuration;
+/** 设置 Alert 自定义圆角半径 -> 格式: .LeeCustomCornerRadius(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomCornerRadius;
+/** 设置 Alert 自定义控件间距 -> 格式: .LeeCustomSubViewMargin(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomSubViewMargin;
+/** 设置 Alert 自定义顶部控件间距 -> 格式: .LeeCustomTopSubViewMargin(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomTopSubViewMargin;
+/** 设置 Alert 自定义底部控件间距 -> 格式: .LeeCustomBottomSubViewMargin(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomBottomSubViewMargin;
+/** 设置 Alert 自定义警示框最大宽度 -> 格式: .LeeCustomAlertMaxWidth(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertMaxWidth;
+/** 设置 Alert 自定义警示框最大高度 -> 格式: .LeeCustomAlertMaxHeight(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertMaxHeight;
+/** 设置 Alert 自定义警示框开启动画时长 -> 格式: .LeeCustomAlertOpenAnimationDuration(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertOpenAnimationDuration;
+/** 设置 Alert 自定义警示框关闭动画时长 -> 格式: .LeeCustomAlertCloseAnimationDuration(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertCloseAnimationDuration;
 
-/** 设置 Alert 自定义警示框颜色 -> 格式: .customAlertViewColor(UIColor) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToColor customAlertViewColor;
-/** 设置 Alert 自定义警示框半透明或模糊背景颜色 -> 格式: .customAlertViewBackGroundColor(UIColor) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToColor customAlertViewBackGroundColor;
+/** 设置 Alert 自定义警示框颜色 -> 格式: .LeeCustomAlertViewColor(UIColor) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToColor LeeCustomAlertViewColor;
+/** 设置 Alert 自定义警示框半透明或模糊背景颜色 -> 格式: .LeeCustomAlertViewBackGroundColor(UIColor) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToColor LeeCustomAlertViewBackGroundColor;
 
-/** 设置 Alert 自定义警示框半透明背景样式 [默认] -> 格式: .customAlertViewBackGroundStypeTranslucent() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert customAlertViewBackGroundStypeTranslucent;
-/** 设置 Alert 自定义警示框模糊背景样式 -> 格式: .customAlertViewBackGroundStypeBlur() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert customAlertViewBackGroundStypeBlur;
+/** 设置 Alert 自定义警示框半透明背景样式 [默认] -> 格式: .LeeCustomAlertViewBackGroundStypeTranslucent() */
+@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertViewBackGroundStypeTranslucent;
+/** 设置 Alert 自定义警示框模糊背景样式 -> 格式: .LeeCustomAlertViewBackGroundStypeBlur() */
+@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertViewBackGroundStypeBlur;
 
-/** 设置 Alert 自定义警示框背景触摸关闭 -> 格式: .customAlertTouchClose() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert customAlertTouchClose;
-/** 设置 Alert 自定义按钮点击不关闭警示框 -> 格式: .customButtonClickNotClose() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert customButtonClickNotClose;
+/** 设置 Alert 自定义警示框背景触摸关闭 -> 格式: .LeeCustomAlertTouchClose() */
+@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertTouchClose;
+/** 设置 Alert 自定义按钮点击不关闭警示框 -> 格式: .LeeCustomButtonClickNotClose() */
+@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomButtonClickNotClose;
 
-/** 显示 Alert 默认通过KeyWindow弹出 -> 格式: .show() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert show;
-/** 显示 Alert 通过指定视图控制器弹出 (仅适用系统类型)  -> 格式: .showFromViewController(UIViewController) */
-@property (nonatomic , copy , readonly ) LEEConfigAlertToViewController showFromViewController;
+/** 显示 Alert 默认通过KeyWindow弹出 -> 格式: .LeeShow() */
+@property (nonatomic , copy , readonly ) LEEConfigAlert LeeShow;
+/** 显示 Alert 通过指定视图控制器弹出 (仅适用系统类型)  -> 格式: .LeeShowFromViewController(UIViewController) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToViewController LeeShowFromViewController;
 
 @end
 
