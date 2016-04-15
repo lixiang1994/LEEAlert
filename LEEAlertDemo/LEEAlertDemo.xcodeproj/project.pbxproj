@@ -520,6 +520,7 @@
 				9B3FAFAD1CAA310100A66F95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B3FAFAE1CAA310100A66F95 /* Build configuration list for PBXNativeTarget "LEEAlertDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -528,6 +529,7 @@
 				9B3FAFB01CAA310100A66F95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B3FAFB11CAA310100A66F95 /* Build configuration list for PBXNativeTarget "LEEAlertDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -536,6 +538,7 @@
 				9B3FAFB31CAA310100A66F95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

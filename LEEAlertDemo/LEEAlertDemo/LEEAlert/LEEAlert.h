@@ -173,7 +173,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 @end
 
-
+@interface AlertViewController : UIViewController @end
 
 
 
