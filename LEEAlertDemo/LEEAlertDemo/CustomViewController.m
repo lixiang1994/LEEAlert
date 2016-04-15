@@ -102,11 +102,13 @@
     [self.view addSubview:button5];
     
     
-    UIView *redView=[[UIView alloc]initWithFrame:CGRectMake(0, 400, 320, 200)];
+    UIView *redView=[[UIView alloc]initWithFrame:CGRectMake(0, 400, CGRectGetWidth(self.view.frame), 200)];
     
     redView.backgroundColor = [UIColor redColor];
     
     [self.view addSubview:redView];
+    
+    
     
 }
 
@@ -233,7 +235,7 @@
         
         [button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
         
-        [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [button addTarget:self action:@selector(submitbButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         
     })
     .LeeCustomButtonClickNotClose()
@@ -241,7 +243,7 @@
     
 }
 
--(void)buttonAction:(UIButton *)sender{
+-(void)submitbButtonAction:(UIButton *)sender{
     
     NSString *contentTextFieldString = contentTextField.text;
     
@@ -375,6 +377,7 @@
     .LeeCustomAlertViewColor([UIColor whiteColor])   //设置自定义Alert的颜色 默认为白色
     .LeeCustomAlertViewBackGroundColor([UIColor blackColor])   //设置自定义Alert的半透明或者模糊的背景渲染颜色
     .LeeCustomAlertTouchClose()   //设置自定义Alert的背景点击关闭功能
+    .LeeCustomButtonClickNotClose()   //设置自定义Alert的自定义按钮点击不关闭Alert
     .LeeCustomAlertViewBackGroundStypeBlur()   //设置自定义Alert的背景样式为高斯模糊样式 如果不设置这项 默认为半透明样式
     .LeeShow();    //显示Alert
     

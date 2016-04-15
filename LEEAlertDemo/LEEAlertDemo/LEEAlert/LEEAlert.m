@@ -6,7 +6,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    16/3/29.
+ *  @version    1.0
  */
 
 
@@ -73,20 +73,14 @@
 
 - (LEEAlertSystem *)system{
     
-    if (!_system) {
-        
-        _system = [[LEEAlertSystem alloc]init];
-    }
+    if (!_system) _system = [[LEEAlertSystem alloc]init];
     
     return _system;
 }
 
 - (LEEAlertCustom *)custom{
     
-    if (!_custom) {
-        
-        _custom = [[LEEAlertCustom alloc]init];
-    }
+    if (!_custom) _custom = [[LEEAlertCustom alloc]init];
     
     return _custom;
 }
@@ -269,10 +263,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     return ^(void(^buttonAction)()){
         
-        if (buttonAction) {
-            
-            weakSelf.modelCancelButtonAction = buttonAction;
-        }
+        if (buttonAction) weakSelf.modelCancelButtonAction = buttonAction;
         
         return weakSelf;
     };
@@ -376,11 +367,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     return ^(void(^addButton)(UIButton *button)){
         
-        if (addButton) {
-            
-            weakSelf.modelCancelButtonBlock = addButton;
-            
-        }
+        if (addButton) weakSelf.modelCancelButtonBlock = addButton;
         
         return weakSelf;
     };
@@ -616,10 +603,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     return ^(){
         
-        if (weakSelf.modelFinishConfig) {
-            
-            weakSelf.modelFinishConfig(nil);
-        }
+        if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(nil);
         
         return weakSelf;
     };
@@ -632,10 +616,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     return ^(UIViewController *viewController){
         
-        if (weakSelf.modelFinishConfig) {
-            
-            weakSelf.modelFinishConfig(viewController);
-        }
+        if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(viewController);
         
         return weakSelf;
     };
@@ -646,30 +627,21 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (NSMutableArray *)modelButtonArray{
     
-    if (!_modelButtonArray) {
-        
-        _modelButtonArray = [NSMutableArray array];
-    }
+    if (!_modelButtonArray) _modelButtonArray = [NSMutableArray array];
     
     return _modelButtonArray;
 }
 
 -(NSMutableArray *)modelTextFieldArray{
     
-    if (!_modelTextFieldArray) {
-        
-        _modelTextFieldArray = [NSMutableArray array];
-    }
+    if (!_modelTextFieldArray) _modelTextFieldArray = [NSMutableArray array];
     
     return _modelTextFieldArray;
 }
 
 -(NSMutableArray *)modelCustomSubViewsQueue{
     
-    if (!_modelCustomSubViewsQueue) {
-        
-        _modelCustomSubViewsQueue = [NSMutableArray array];
-    }
+    if (!_modelCustomSubViewsQueue) _modelCustomSubViewsQueue = [NSMutableArray array];
     
     return _modelCustomSubViewsQueue;
 }
@@ -704,9 +676,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)configAlertWithShow:(UIViewController *)vc{
     
-    NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : @"";
+    NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : nil;
     
-    NSString *message = self.config.modelContentStr ? self.config.modelContentStr : @"";
+    NSString *message = self.config.modelContentStr ? self.config.modelContentStr : nil;
     
     NSString *cancelButtonTitle = self.config.modelCancelButtonTitleStr ? self.config.modelCancelButtonTitleStr : @"取消";
     
@@ -722,10 +694,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         UIAlertAction *alertAction = [UIAlertAction actionWithTitle:cancelButtonTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             
-            if (cancelButtonAction) {
-                
-                cancelButtonAction();
-            }
+            if (cancelButtonAction) cancelButtonAction();
             
         }];
         
@@ -739,10 +708,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             UIAlertAction *alertAction = [UIAlertAction actionWithTitle:buttonTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 
-                if (buttonAction) {
-                    
-                    buttonAction();
-                }
+                if (buttonAction) buttonAction();
                 
             }];
             
@@ -760,20 +726,15 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         if (vc) {
             
-            [vc presentViewController:alertController animated:YES completion:^{
-                
-            }];
+            [vc presentViewController:alertController animated:YES completion:^{}];
             
         } else {
             
             if ([UIApplication sharedApplication].keyWindow.rootViewController) {
                 
-                [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController animated:YES completion:^{
-                    
-                }];
+                [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController animated:YES completion:^{}];
                 
             } else {
-                
                 
 #ifdef LEEDebugWithAssert
                 /*
@@ -839,10 +800,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             void(^addTextField)(UITextField *textField) = [self.config.modelTextFieldArray objectAtIndex:i];
             
-            if (addTextField) {
-                
-                addTextField([alertView textFieldAtIndex:i]);
-            }
+            if (addTextField) addTextField([alertView textFieldAtIndex:i]);
             
         }
         
@@ -878,17 +836,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         void (^buttonAction)() = self.alertViewButtonIndexDic[[NSString stringWithFormat:@"%ld" , buttonIndex]];
         
-        if (buttonAction) {
-            
-            buttonAction();
-        }
+        if (buttonAction) buttonAction();
         
     } else {
         
-        if (self.config.modelCancelButtonAction) {
-            
-            self.config.modelCancelButtonAction();
-        }
+        if (self.config.modelCancelButtonAction) self.config.modelCancelButtonAction();
         
     }
     
@@ -934,14 +886,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 -(NSMutableDictionary *)alertViewButtonIndexDic{
     
-    if (!_alertViewButtonIndexDic) {
-        
-        _alertViewButtonIndexDic = [NSMutableDictionary dictionary];
-    }
+    if (!_alertViewButtonIndexDic) _alertViewButtonIndexDic = [NSMutableDictionary dictionary];
     
     return _alertViewButtonIndexDic;
 }
-
 
 @end
 
@@ -1041,17 +989,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         CGRect alertViewFrame = weakSelf.alertView.frame;
         
-        if (alertViewFrame.size.height - keyboardFrame.origin.y > -20) {
-            
-            alertViewFrame.size.height = keyboardFrame.origin.y - 20;
-        }
+        if (alertViewFrame.size.height - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
         
         CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
         
-        if (resultY > - 10) {
-            
-            alertViewFrame.origin.y -= resultY + 10;
-        }
+        if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
         
         weakSelf.alertView.frame = alertViewFrame;
         
@@ -1116,10 +1058,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 
                 void(^addLabel)(UILabel *label) = item[@"block"];
                 
-                if (addLabel) {
-                    
-                    addLabel(titleLabel);
-                }
+                if (addLabel) addLabel(titleLabel);
                 
                 CGRect titleLabelRect = [self getLabelTextHeight:titleLabel];
                 
@@ -1154,10 +1093,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 
                 void(^addLabel)(UILabel *label) = item[@"block"];
                 
-                if (addLabel) {
-                    
-                    addLabel(contentLabel);
-                }
+                if (addLabel) addLabel(contentLabel);
                 
                 CGRect contentLabelRect = [self getLabelTextHeight:contentLabel];
                 
@@ -1200,10 +1136,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 
                 void(^addTextField)(UITextField *textField) = item[@"block"];
                 
-                if (addTextField) {
-                    
-                    addTextField(textField);
-                }
+                if (addTextField) addTextField(textField);
                 
                 alertViewHeight += CGRectGetHeight(textField.frame) + self.config.modelSubViewMargin;
                 
@@ -1249,10 +1182,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [self.alertButtonArray addObject:button];
         
-        if (addButton) {
-            
-            addButton(button);
-        }
+        if (addButton) addButton(button);
         
         alertViewHeight += CGRectGetHeight(button.frame);
     }
@@ -1358,10 +1288,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 - (void)cancelButtonAction:(UIButton *)sender{
     
-    if (self.config.modelCancelButtonAction) {
-        
-        self.config.modelCancelButtonAction();
-    }
+    if (self.config.modelCancelButtonAction) self.config.modelCancelButtonAction();
     
     [self closeAnimationsWithCompletionBlock:^{
         
@@ -1374,10 +1301,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     void (^buttonAction)() = self.config.modelButtonArray[[self.alertButtonArray indexOfObject:sender]][@"actionblock"];
     
-    if (buttonAction) {
-        
-        buttonAction();
-    }
+    if (buttonAction) buttonAction();
     
     if (self.config.modelIsCustomButtonClickClose) {
         
@@ -1411,7 +1335,6 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 }
 
 - (void)alertViewTapAction:(UITapGestureRecognizer *)tap{
-    
     
 }
 
@@ -1506,10 +1429,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [weakSelf.alertWindow resignKeyWindow];
         
-        if (completionBlock) {
-            
-            completionBlock();
-        }
+        if (completionBlock) completionBlock();
         
     }];
     
@@ -1546,10 +1466,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 - (UIWindow *)currentKeyWindow{
     
-    if (!_currentKeyWindow) {
-        
-        _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
-    }
+    if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
     
     return _currentKeyWindow;
     
@@ -1591,7 +1508,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         UIGraphicsEndImageContext();
         
-        _alertWindowImageView.image = [image applyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
+        _alertWindowImageView.image = [image LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
     }
     
     return _alertWindowImageView;
@@ -1617,10 +1534,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 -(NSMutableArray *)alertButtonArray{
     
-    if (!_alertButtonArray) {
-        
-        _alertButtonArray = [NSMutableArray array];
-    }
+    if (!_alertButtonArray) _alertButtonArray = [NSMutableArray array];
     
     return _alertButtonArray;
 }
@@ -1630,27 +1544,27 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 #pragma mark - ====================工具类====================
 
 
-@implementation UIImage (LEEImageEffects)
+@implementation UIImage (LEEAlertImageEffects)
 
--(UIImage*)applyLightEffect {
+-(UIImage*)LeeAlert_ApplyLightEffect {
     
     UIColor*tintColor =[UIColor colorWithWhite:1.0 alpha:0.3];
     
-    return[self applyBlurWithRadius:30 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
+    return[self LeeAlert_ApplyBlurWithRadius:30 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
 }
--(UIImage*)applyExtraLightEffect {
+-(UIImage*)LeeAlert_ApplyExtraLightEffect {
     
     UIColor*tintColor =[UIColor colorWithWhite:0.97 alpha:0.82];
     
-    return[self applyBlurWithRadius:20 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
+    return[self LeeAlert_ApplyBlurWithRadius:20 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
 }
--(UIImage*)applyDarkEffect {
+-(UIImage*)LeeAlert_ApplyDarkEffect {
     
     UIColor*tintColor =[UIColor colorWithWhite:0.11 alpha:0.73];
     
-    return[self applyBlurWithRadius:20 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
+    return[self LeeAlert_ApplyBlurWithRadius:20 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
 }
--(UIImage*)applyTintEffectWithColor:(UIColor*)tintColor {
+-(UIImage*)LeeAlert_ApplyTintEffectWithColor:(UIColor*)tintColor {
     
     const CGFloat EffectColorAlpha = 0.6;
     UIColor*effectColor = tintColor;
@@ -1666,9 +1580,9 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             effectColor = [UIColor colorWithRed:r green:g blue:b alpha:EffectColorAlpha];
         }
     }
-    return[self applyBlurWithRadius:10 tintColor:effectColor saturationDeltaFactor:1.0f maskImage:nil];
+    return[self LeeAlert_ApplyBlurWithRadius:10 tintColor:effectColor saturationDeltaFactor:1.0f maskImage:nil];
 }
--(UIImage*)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage {
+-(UIImage*)LeeAlert_ApplyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage {
     /**
      *  半径,颜色,色彩饱和度
      */

@@ -7,7 +7,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    16/3/29.
+ *  @version    1.0
  */
 
 
@@ -63,7 +63,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 /**
  *  初始化Alert
  *
- *  @return 返回一个Alert对象
+ *  @return 返回一个LEEAlert对象
  */
 + (LEEAlert *)alert;
 
@@ -211,16 +211,16 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 /* 以下是内部使用的工具类 ╮(╯▽╰)╭ 无视就好 不许乱动 "( *・ω・)✄╰ひ╯ */
 
-@interface UIImage (LEEImageEffects)
+@interface UIImage (LEEAlertImageEffects)
 
-- (UIImage*)applyLightEffect;
+- (UIImage*)LeeAlert_ApplyLightEffect;
 
-- (UIImage*)applyExtraLightEffect;
+- (UIImage*)LeeAlert_ApplyExtraLightEffect;
 
-- (UIImage*)applyDarkEffect;
+- (UIImage*)LeeAlert_ApplyDarkEffect;
 
-- (UIImage*)applyTintEffectWithColor:(UIColor*)tintColor;
+- (UIImage*)LeeAlert_ApplyTintEffectWithColor:(UIColor*)tintColor;
 
-- (UIImage*)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage;
+- (UIImage*)LeeAlert_ApplyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage;
 
 @end
