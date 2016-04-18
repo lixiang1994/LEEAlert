@@ -68,6 +68,11 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 + (LEEAlert *)alert;
 
 /**
+ *  设置主窗口
+ */
++ (void)configMainWindow:(UIWindow *)window;
+
+/**
  *  关闭自定义Alert
  */
 + (void)closeCustomAlert;
@@ -126,10 +131,14 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 @property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomCornerRadius;
 /** 设置 Alert 自定义控件间距 -> 格式: .LeeCustomSubViewMargin(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomSubViewMargin;
-/** 设置 Alert 自定义顶部控件间距 -> 格式: .LeeCustomTopSubViewMargin(0.0f) */
+/** 设置 Alert 自定义顶部距离控件的间距 -> 格式: .LeeCustomTopSubViewMargin(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomTopSubViewMargin;
-/** 设置 Alert 自定义底部控件间距 -> 格式: .LeeCustomBottomSubViewMargin(0.0f) */
+/** 设置 Alert 自定义底部距离控件的间距 -> 格式: .LeeCustomBottomSubViewMargin(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomBottomSubViewMargin;
+/** 设置 Alert 自定义左侧距离控件的间距 -> 格式: .LeeCustomLeftSubViewMargin(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomLeftSubViewMargin;
+/** 设置 Alert 自定义右侧距离控件的间距 -> 格式: .LeeCustomRightSubViewMargin(0.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomRightSubViewMargin;
 /** 设置 Alert 自定义警示框最大宽度 -> 格式: .LeeCustomAlertMaxWidth(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertMaxWidth;
 /** 设置 Alert 自定义警示框最大高度 -> 格式: .LeeCustomAlertMaxHeight(0.0f) */
@@ -173,7 +182,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 @end
 
-@interface AlertViewController : UIViewController @end
+@interface LEEAlertViewController : UIViewController @end
 
 
 

@@ -22,6 +22,8 @@
 
 @property (nonatomic , weak ) id currentCustomAlertDelegate;
 
+@property (nonatomic , strong ) UIWindow *mainWindow;
+
 @end
 
 @protocol LEEAlertManagerDelegate <NSObject>
@@ -58,6 +60,11 @@
     LEEAlert *alert = [[LEEAlert alloc]init];
     
     return alert;
+}
+
++(void)configMainWindow:(UIWindow *)window{
+    
+    if (window) [LEEAlert shareAlertManager].mainWindow = window;
 }
 
 + (void)closeCustomAlert{
@@ -125,6 +132,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @property (nonatomic , assign , readonly ) CGFloat modelSubViewMargin;
 @property (nonatomic , assign , readonly ) CGFloat modelTopSubViewMargin;
 @property (nonatomic , assign , readonly ) CGFloat modelBottomSubViewMargin;
+@property (nonatomic , assign , readonly ) CGFloat modelLeftSubViewMargin;
+@property (nonatomic , assign , readonly ) CGFloat modelRightSubViewMargin;
 @property (nonatomic , assign , readonly ) CGFloat modelAlertMaxWidth;
 @property (nonatomic , assign , readonly ) CGFloat modelAlertMaxHeight;
 @property (nonatomic , assign , readonly ) CGFloat modelAlertOpenAnimationDuration;
@@ -137,7 +146,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @property (nonatomic , assign , readonly ) BOOL modelIsCustomButtonClickClose;
 
 @property (nonatomic , copy ) void(^modelCancelButtonAction)();
-@property (nonatomic , copy ) void(^modelCancelButtonBlock)();
+@property (nonatomic , copy ) void(^modelCancelButtonBlock)(UIButton *button);
 @property (nonatomic , copy ) void(^modelFinishConfig)(UIViewController *vc);
 
 @property (nonatomic , assign , readonly ) LEEAlertCustomBackGroundStype modelAlertCustomBackGroundStype;
@@ -168,8 +177,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         _modelCornerRadius = 10.0f; //默认警示框圆角半径
         _modelSubViewMargin = 10.0f; //默认警示框内部控件之间间距
-        _modelTopSubViewMargin = 20.0f; //默认警示框顶部控件的间距
-        _modelBottomSubViewMargin = 20.0f; //默认警示框底部控件的间距
+        _modelTopSubViewMargin = 20.0f; //默认警示框顶部距离控件的间距
+        _modelBottomSubViewMargin = 20.0f; //默认警示框底部距离控件的间距
+        _modelLeftSubViewMargin = 20.0f; //默认警示框左侧距离控件的间距
+        _modelRightSubViewMargin = 20.0f; //默认警示框右侧距离控件的间距
         _modelAlertMaxWidth = 280; //默认最大宽度 设备最小屏幕宽度 320 去除20左右边距
         _modelAlertMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //默认最大高度屏幕80%
         _modelAlertOpenAnimationDuration = 0.3f; //默认警示框打开动画时长
@@ -461,6 +472,32 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return ^(CGFloat number){
         
         _modelBottomSubViewMargin = number;
+        
+        return weakSelf;
+    };
+    
+}
+
+-(LEEConfigAlertToFloat)LeeCustomLeftSubViewMargin{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat number){
+        
+        _modelLeftSubViewMargin = number;
+        
+        return weakSelf;
+    };
+    
+}
+
+-(LEEConfigAlertToFloat)LeeCustomRightSubViewMargin{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat number){
+        
+        _modelRightSubViewMargin = number;
         
         return weakSelf;
     };
@@ -895,29 +932,30 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 #pragma mark - ====================自定义====================
 
-@interface LEEAlertCustom ()<LEEAlertManagerDelegate>
+@interface LEEAlertViewController ()
 
-@property (nonatomic , strong ) UIWindow *currentKeyWindow;
+@property (nonatomic , strong ) LEEAlertConfigModel *config;
 
 @property (nonatomic , strong ) UIWindow *alertWindow;
 
-@property (nonatomic , strong ) UIImageView *alertWindowImageView;
+@property (nonatomic , strong ) UIWindow *currentKeyWindow;
+
+@property (nonatomic , strong ) UIImageView *alertBackgroundImageView;
 
 @property (nonatomic , strong ) UIScrollView *alertView;
 
-@property (nonatomic , strong ) AlertViewController *alertViewController;
-
 @property (nonatomic , strong ) NSMutableArray *alertButtonArray;
+
+@property (nonatomic , copy ) void (^closeAction)();
 
 @end
 
-static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
-
-@implementation LEEAlertCustom
+@implementation LEEAlertViewController
 {
     CGFloat alertViewHeight;
     CGFloat alertViewWidth;
     CGRect keyboardFrame;
+    UIDeviceOrientation currentOrientation;
     BOOL isShowingKeyboard;
 }
 
@@ -931,14 +969,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     _alertWindow = nil;
     
-    _alertWindowImageView = nil;
+    _alertBackgroundImageView = nil;
     
     _alertView = nil;
     
-    _alertViewController = nil;
-    
     _alertButtonArray = nil;
-    
 }
 
 - (instancetype)init
@@ -946,15 +981,20 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     self = [super init];
     if (self) {
         
+        self.view.backgroundColor = [UIColor clearColor];
+        
+        self.alertBackgroundImageView.backgroundColor = [UIColor clearColor];
+        
+        [self.view addSubview:self.alertBackgroundImageView];
+        
         [self addNotification];
         
+        currentOrientation = (UIDeviceOrientation)self.interfaceOrientation; //默认当前方向
     }
     return self;
 }
 
 - (void)addNotification{
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alertShowNotification:) name:LEEAlertShowNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShown:) name:UIKeyboardWillShowNotification object:nil];
     
@@ -963,25 +1003,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientationNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    
-}
-
-- (void)alertShowNotification:(NSNotification *)notify{
-    
-    NSDictionary *notifyInfo = notify.userInfo;
-    
-    if (notifyInfo[@"customAlert"] != self) {
-        
-        [self closeAnimationsWithCompletionBlock:^{
-            
-            _config = nil;
-        }];
-        
-    }
-    
 }
 
 - (void)keyboardWillShown:(NSNotification *) notify{
+    
+    isShowingKeyboard = YES;
     
     keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
@@ -993,22 +1019,28 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     [UIView animateWithDuration:duration animations:^{
         
-        CGRect alertViewFrame = weakSelf.alertView.frame;
+        if (iOS8) {
+            
+            CGRect alertViewFrame = weakSelf.alertView.frame;
+            
+            if (alertViewHeight - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+            
+            CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
+            
+            if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
+            
+            if (alertViewFrame.origin.y < 10) alertViewFrame.origin.y = 10;
+            
+            weakSelf.alertView.frame = alertViewFrame;
+            
+            weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.view.frame) / 2 , weakSelf.alertView.center.y);
         
-        if (alertViewHeight - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+        } else {
+            
+            [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+        }
         
-        CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
-        
-        if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
-        
-        weakSelf.alertView.frame = alertViewFrame;
-        
-        weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.alertWindow.frame) / 2 , weakSelf.alertView.center.y);
-        
-    } completion:^(BOOL finished) {
-        
-        isShowingKeyboard = YES;
-    }];
+    } completion:^(BOOL finished) {}];
     
 }
 
@@ -1018,61 +1050,64 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
+    isShowingKeyboard = NO;
+    
     __weak typeof(self) weakSelf = self;
     
     [UIView animateWithDuration:duration animations:^{
         
-        CGRect alertViewFrame = weakSelf.alertView.frame;
+        if (iOS8) {
+            
+            CGRect alertViewFrame = weakSelf.alertView.frame;
+            
+            alertViewFrame.size.height = alertViewHeight > weakSelf.config.modelAlertMaxHeight ? weakSelf.config.modelAlertMaxHeight : alertViewHeight;;
+            
+            alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+            
+            weakSelf.alertView.frame = alertViewFrame;
+            
+            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , weakSelf.alertView.center.y);
+            
+        } else {
+            
+            [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+        }
         
-        alertViewFrame.size.height = alertViewHeight > weakSelf.config.modelAlertMaxHeight ? weakSelf.config.modelAlertMaxHeight : alertViewHeight;;
-        
-        weakSelf.alertView.frame = alertViewFrame;
-        
-        weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.alertWindow.frame) /2 , CGRectGetHeight(weakSelf.alertWindow.frame) / 2);
-        
-    } completion:^(BOOL finished) {
-    
-        isShowingKeyboard = NO;
-    }];
+    } completion:^(BOOL finished) {}];
     
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *) notify{
     
     if (isShowingKeyboard) keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
 }
 
 - (void)changeOrientationNotification:(NSNotification *)notify{
     
+    if ([UIDevice currentDevice].orientation != UIDeviceOrientationPortraitUpsideDown && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceUp && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceDown) currentOrientation = [UIDevice currentDevice].orientation; //设置当前方向
+        
     [self updateOrientationLayout];
-    
+        
 }
 
 - (void)updateOrientationLayout{
     
-    self.config.LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80%
-    
-    if (!isShowingKeyboard) {
+    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? iOS8 ? CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f: CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
         
-        CGRect alertViewFrame = self.alertView.frame;
-        
-        alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
-        
-        self.alertView.frame = alertViewFrame;
-        
-        self.alertView.center = CGPointMake(CGRectGetWidth(self.alertWindow.frame) / 2 , CGRectGetHeight(self.alertWindow.frame) / 2);
-    }
+        if (!isShowingKeyboard) {
+            
+            CGRect alertViewFrame = self.alertView.frame;
+            
+            alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
+            
+            self.alertView.frame = alertViewFrame;
+            
+            if (iOS8) self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , CGRectGetHeight(self.view.frame) / 2); //iOS 8 以下处理
+        }
     
     if (self.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
-        [self.alertWindowImageView removeFromSuperview];
-        
-        _alertWindowImageView = nil;
-        
-        [self.alertViewController.view addSubview:self.alertWindowImageView];
-        
-        [self.alertViewController.view sendSubviewToBack:self.alertWindowImageView];
+        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];;
     }
     
 }
@@ -1083,7 +1118,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     alertViewWidth = self.config.modelAlertMaxWidth;
     
-    [self.alertViewController.view addSubview: self.alertView];
+    [self.view addSubview: self.alertView];
     
     //开始内部处理
     
@@ -1101,7 +1136,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 
                 NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : @" ";
                 
-                UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, alertViewHeight, alertViewWidth - 40, 0)];
+                UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
                 
                 [self.alertView addSubview:titleLabel];
                 
@@ -1136,7 +1171,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
                 
                 NSString *content = self.config.modelContentStr ? self.config.modelContentStr : @" ";
                 
-                UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, alertViewHeight, alertViewWidth - 40, 0)];
+                UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
                 
                 [self.alertView addSubview:contentLabel];
                 
@@ -1187,7 +1222,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             case LEEAlertCustomSubViewTypeTextField:
             {
                 
-                UITextField *textField = [[UITextField alloc]initWithFrame:CGRectMake(20, alertViewHeight, alertViewWidth - 40 , 40)];
+                UITextField *textField = [[UITextField alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin , 40.0f)];
                 
                 textField.borderStyle = UITextBorderStyleRoundedRect;
                 
@@ -1319,41 +1354,22 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
     
-    CGRect alertViewFrame = self.alertView.frame;
-    
-    alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
-    
-    self.alertView.frame = alertViewFrame;
-    
-    self.alertView.center = CGPointMake(CGRectGetWidth(self.alertWindow.frame) / 2 , CGRectGetHeight(self.alertWindow.frame) / 2);
-    
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    //发送通知
+    [self updateOrientationLayout]; //更新布局
     
-    NSDictionary * notifyInfo = @{@"customAlert" : self , @"alertWindow" : self.alertWindow};
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:LEEAlertShowNotification object:self userInfo:notifyInfo];
-    
-    //设置当前自定义Alert代理对象
-    
-    [LEEAlert shareAlertManager].currentCustomAlertDelegate = self;
+    if (!iOS8) [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
     
     //开启显示警示框动画
     
     [self showAlertAnimations];
-    
 }
 
 - (void)cancelButtonAction:(UIButton *)sender{
     
     if (self.config.modelCancelButtonAction) self.config.modelCancelButtonAction();
     
-    [self closeAnimationsWithCompletionBlock:^{
-        
-        _config = nil;
-    }];
-    
+    [self closeAnimations];
 }
 
 - (void)buttonAction:(UIButton *)sender{
@@ -1362,39 +1378,12 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     if (buttonAction) buttonAction();
     
-    if (self.config.modelIsCustomButtonClickClose) {
-        
-        [self closeAnimationsWithCompletionBlock:^{
-            
-            _config = nil;
-        }];
-        
-    }
-    
-}
-
-- (CGRect)getLabelTextHeight:(UILabel *)label{
-    
-    CGRect rect = [label.text boundingRectWithSize:CGSizeMake(CGRectGetWidth(label.frame), MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
-    
-    return rect;
-}
-
-- (void)alertWindowTapAction:(UITapGestureRecognizer *)tap{
-    
-    if (self.config.modelIsAlertWindowTouchClose) {
-        
-        [self closeAnimationsWithCompletionBlock:^{
-            
-            _config = nil;
-        }];
-        
-    }
-    
+    if (self.config.modelIsCustomButtonClickClose) [self closeAnimations];
 }
 
 - (void)alertViewTapAction:(UITapGestureRecognizer *)tap{
     
+    //拦截AlertView点击响应
 }
 
 #pragma mark start animations
@@ -1403,21 +1392,18 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     if (self.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
-        self.alertWindowImageView.alpha = 0.0f;
+        self.alertBackgroundImageView.alpha = 0.0f;
         
-        [self.alertViewController.view addSubview:self.alertWindowImageView];
-        
-        [self.alertViewController.view sendSubviewToBack:self.alertWindowImageView];
-        
+        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
     }
-    
-    self.alertView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
-    
-    self.alertView.alpha = 0.0f;
     
     self.alertWindow.hidden = NO;
     
     [self.alertWindow makeKeyAndVisible];
+    
+    self.alertView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+    
+    self.alertView.alpha = 0.0f;
     
     __weak typeof(self) weakSelf = self;
     
@@ -1425,7 +1411,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [UIView animateWithDuration:self.config.modelAlertOpenAnimationDuration animations:^{
             
-            weakSelf.alertWindow.backgroundColor = [weakSelf.alertWindow.backgroundColor colorWithAlphaComponent:0.6f];
+            weakSelf.view.backgroundColor = [weakSelf.view.backgroundColor colorWithAlphaComponent:0.6f];
             
             weakSelf.alertView.transform = CGAffineTransformIdentity;
             
@@ -1437,7 +1423,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         [UIView animateWithDuration:self.config.modelAlertOpenAnimationDuration animations:^{
             
-            weakSelf.alertWindowImageView.alpha = 1.0f;
+            weakSelf.alertBackgroundImageView.alpha = 1.0f;
             
             weakSelf.alertView.transform = CGAffineTransformIdentity;
             
@@ -1453,9 +1439,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
 
 - (void)closeAnimations{
     
+    __weak typeof(self) weakSelf = self;
+    
     [self closeAnimationsWithCompletionBlock:^{
         
-        _config = nil;
+        if (weakSelf.closeAction) weakSelf.closeAction();
     }];
     
 }
@@ -1470,11 +1458,11 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         if (weakSelf.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeTranslucent) {
             
-            weakSelf.alertWindow.backgroundColor = [weakSelf.alertWindow.backgroundColor colorWithAlphaComponent:0.0f];
+            weakSelf.view.backgroundColor = [weakSelf.view.backgroundColor colorWithAlphaComponent:0.0f];
             
         } else if (weakSelf.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
             
-            weakSelf.alertWindowImageView.alpha = 0.0f;
+            weakSelf.alertBackgroundImageView.alpha = 0.0f;
         }
         
         weakSelf.alertView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
@@ -1492,16 +1480,295 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         [weakSelf.alertWindow resignKeyWindow];
         
         if (completionBlock) completionBlock();
-        
     }];
     
+}
+
+- (UIImage *)getCurrentKeyWindowImage{
+    
+    UIGraphicsBeginImageContext(self.currentKeyWindow.frame.size);
+    
+    [self.currentKeyWindow.layer renderInContext:UIGraphicsGetCurrentContext()];
+    
+    UIImage *image =UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
+- (CGRect)getLabelTextHeight:(UILabel *)label{
+    
+    CGRect rect = [label.text boundingRectWithSize:CGSizeMake(CGRectGetWidth(label.frame), MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
+    
+    return rect;
+}
+
+- (void)rotationUpdateWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
+    
+    switch (interfaceOrientation) {
+            
+        case UIInterfaceOrientationPortrait:
+        {
+            if (isShowingKeyboard) {
+             
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                if (alertViewHeight - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+                
+                CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
+                
+                if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
+                
+                if (alertViewFrame.origin.y < 10) alertViewFrame.origin.y = 10;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , self.alertView.center.y);
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2, self.alertView.center.y);
+            }
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformIdentity;
+        
+            self.alertBackgroundImageView.frame = self.view.frame;
+        }
+            break;
+            
+        case UIInterfaceOrientationLandscapeLeft:
+        {
+            if (isShowingKeyboard) {
+
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                if (alertViewHeight - keyboardFrame.origin.x > -20) alertViewFrame.size.height = keyboardFrame.origin.x - 20;
+                
+                alertViewFrame.origin.y = (keyboardFrame.origin.x - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , self.alertView.center.y);
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
+            }
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+            
+            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+        }
+            break;
+            
+        case UIInterfaceOrientationLandscapeRight:
+        {
+            if (isShowingKeyboard) {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                if (alertViewHeight - (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) > -20) alertViewFrame.size.height = (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) - 20;
+                
+                alertViewFrame.origin.y = ((CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) / 2);
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
+            }
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(-(M_PI / 2));
+            
+            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+- (UIWindow *)currentKeyWindow{
+    
+    if (!_currentKeyWindow) _currentKeyWindow = [LEEAlert shareAlertManager].mainWindow;
+    
+    if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
+    
+    if (_currentKeyWindow) if (![LEEAlert shareAlertManager].mainWindow) [LEEAlert shareAlertManager].mainWindow = _currentKeyWindow;
+    
+    return _currentKeyWindow;
+}
+
+- (UIImageView *)alertBackgroundImageView{
+    
+    if (!_alertBackgroundImageView) _alertBackgroundImageView = [[UIImageView alloc]initWithFrame:self.view.frame];
+    
+    return _alertBackgroundImageView;
+}
+
+-(UIScrollView *)alertView{
+    
+    if (!_alertView) {
+        
+        _alertView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, 280, 100)];
+        
+        _alertView.backgroundColor = self.config.modelAlertViewColor;
+        
+        _alertView.directionalLockEnabled = YES;
+        
+        _alertView.bounces = NO;
+        
+        UITapGestureRecognizer *alertViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertViewTapAction:)];
+        
+        [_alertView addGestureRecognizer:alertViewTap];
+    }
+    
+    return _alertView;
+}
+
+-(NSMutableArray *)alertButtonArray{
+    
+    if (!_alertButtonArray) _alertButtonArray = [NSMutableArray array];
+    
+    return _alertButtonArray;
+}
+
+#pragma mark - Rotation
+
+- (BOOL)shouldAutorotate{
+    
+    return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    
+    return UIInterfaceOrientationMaskAll;
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+        
+        self.alertBackgroundImageView.frame = self.view.frame;
+        
+    } completion:nil];
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    
+    if (!iOS8) [self rotationUpdateWithInterfaceOrientation:toInterfaceOrientation]; //iOS 8 以下处理
+}
+
+@end
+
+@interface LEEAlertCustom ()<LEEAlertManagerDelegate>
+
+@property (nonatomic , strong ) UIWindow *alertWindow;
+
+@property (nonatomic , strong ) LEEAlertViewController *alertViewController;
+
+@end
+
+static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
+
+@implementation LEEAlertCustom
+
+- (void)dealloc{
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    _config = nil;
+    
+    _alertViewController = nil;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+    
+        //发送通知
+        
+        NSDictionary * notifyInfo = @{@"customAlert" : self , @"alertWindow" : self.alertWindow};
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:LEEAlertShowNotification object:self userInfo:notifyInfo];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alertShowNotification:) name:LEEAlertShowNotification object:nil];
+        
+        //设置当前自定义Alert代理对象
+        
+        [LEEAlert shareAlertManager].currentCustomAlertDelegate = self;
+        
+        self.alertWindow.rootViewController = self.alertViewController;
+        
+        self.alertViewController.alertWindow = self.alertWindow;
+        
+        __weak typeof(self) weakSelf = self;
+        
+        self.alertViewController.closeAction = ^(){
+          
+            weakSelf.alertWindow.rootViewController = nil;
+            
+            _alertViewController = nil;
+            
+            _alertWindow = nil;
+            
+            _config = nil;
+            
+        };
+        
+    }
+    return self;
+}
+
+- (void)alertShowNotification:(NSNotification *)notify{
+    
+    NSDictionary *notifyInfo = notify.userInfo;
+    
+    if (notifyInfo[@"customAlert"] != self) [self.alertViewController closeAnimations];
+}
+
+- (void)alertWindowTapAction:(UITapGestureRecognizer *)tap{
+    
+    if (self.config.modelIsAlertWindowTouchClose) [self.alertViewController closeAnimations];
 }
 
 #pragma mark LEEAlertManagerDelegate
 
 -(void)customAlertCloseDelegate{
     
-    [self closeAnimations];
+    [self.alertViewController closeAnimations];
 }
 
 #pragma mark LazyLoading
@@ -1512,26 +1779,18 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         _config = [[LEEAlertConfigModel alloc]init];
         
-        __weak typeof(self) weakSelf = self;
-        
-        __strong typeof(weakSelf) strongSelf = weakSelf;
+        __strong typeof(self) strongSelf = self;
         
         _config.modelFinishConfig = ^(UIViewController *vc){
             
-            [strongSelf configAlert];
+            strongSelf.alertViewController.config = strongSelf.config;
+            
+            [strongSelf.alertViewController configAlert];
         };
         
     }
     
     return _config;
-}
-
-- (UIWindow *)currentKeyWindow{
-    
-    if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
-    
-    return _currentKeyWindow;
-    
 }
 
 - (UIWindow *)alertWindow{
@@ -1549,88 +1808,16 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         UITapGestureRecognizer *alertWindowTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertWindowTapAction:)];
         
         [_alertWindow addGestureRecognizer:alertWindowTap];
-        
-        _alertWindow.rootViewController = self.alertViewController;
     }
     
     return _alertWindow;
 }
 
-- (UIImageView *)alertWindowImageView{
+- (LEEAlertViewController *)alertViewController{
     
-    if (!_alertWindowImageView) {
-        
-        _alertWindowImageView = [[UIImageView alloc]initWithFrame:self.alertViewController.view.frame];
-        
-        UIGraphicsBeginImageContext(self.currentKeyWindow.frame.size);
-        
-        [self.currentKeyWindow.layer renderInContext:UIGraphicsGetCurrentContext()];
-        
-        UIImage *image =UIGraphicsGetImageFromCurrentImageContext();
-        
-        UIGraphicsEndImageContext();
-        
-        _alertWindowImageView.image = [image LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
-    }
+    if (!_alertViewController) _alertViewController = [[LEEAlertViewController alloc] init];
     
-    return _alertWindowImageView;
-}
-
--(UIView *)alertView{
-    
-    if (!_alertView) {
-        
-        _alertView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, 280, 100)];
-        
-        _alertView.backgroundColor = self.config.modelAlertViewColor;
-        
-        _alertView.directionalLockEnabled = YES;
-        
-        UITapGestureRecognizer *alertViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertViewTapAction:)];
-        
-        [_alertView addGestureRecognizer:alertViewTap];
-    }
-    
-    return _alertView;
-}
-
-- (AlertViewController *)alertViewController{
-    
-    if (!_alertViewController) _alertViewController = [[AlertViewController alloc] init];
-    
-    return _alertViewController;
-        
-}
-
--(NSMutableArray *)alertButtonArray{
-    
-    if (!_alertButtonArray) _alertButtonArray = [NSMutableArray array];
-    
-    return _alertButtonArray;
-}
-
-@end
-
-@implementation AlertViewController
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        
-        self.view.backgroundColor = [UIColor clearColor];
-    }
-    return self;
-}
-
-- (BOOL)shouldAutorotate{
-
-    return YES;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    
-    return UIInterfaceOrientationMaskAll;
+    return _alertViewController;       
 }
 
 @end
