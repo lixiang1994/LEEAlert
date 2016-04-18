@@ -131,7 +131,6 @@
     //自定义Alert 如果不设置取消按钮(包括标题,点击事件,自定义取消按钮) 默认是不会有取消按钮的, 不过这样就可能无法关闭
     //上面我添加了点击Alert背景关闭的设置.customAlertTouchClose() 为了方便演示.
     
-    [self button5Action];
 }
 
 - (void)button2Action{
