@@ -734,15 +734,12 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
             } else {
                 
-#ifdef LEEDebugWithAssert
                 /*
                  * keywindow的rootViewController 获取不到 建议传入视图控制器对象
                  *
                  * 建议: XXX.system.config.XXX().XXX().showFromViewController(视图控制器对象);
                  */
                 NSAssert(self, @"LEEAlert : keywindow的rootViewController 获取不到 建议传入视图控制器对象");
-#endif
-                
             }
             
         }
@@ -1422,9 +1419,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    if (iOS8) [self updateOrientationLayout]; //更新布局
+    if (iOS8) [self updateOrientationLayout]; //更新布局 iOS 8 以上处理
     
-    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //更新布局 iOS 8 以下处理
     
     //开启显示警示框动画
     
