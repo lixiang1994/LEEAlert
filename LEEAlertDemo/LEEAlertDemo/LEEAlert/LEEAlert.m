@@ -992,7 +992,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         } else {
             
-            [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+            [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
         }
         
     } completion:^(BOOL finished) {}];
@@ -1025,7 +1025,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
         } else {
             
-            [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+            [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
         }
         
     } completion:^(BOOL finished) {}];
@@ -1039,7 +1039,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)changeOrientationNotification:(NSNotification *)notify{
     
-    if ([UIDevice currentDevice].orientation != UIDeviceOrientationPortraitUpsideDown && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceUp && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceDown) currentOrientation = [UIDevice currentDevice].orientation; //设置当前方向
+    if ([UIDevice currentDevice].orientation != UIDeviceOrientationPortraitUpsideDown &&
+        [UIDevice currentDevice].orientation != UIDeviceOrientationFaceUp &&
+        [UIDevice currentDevice].orientation != UIDeviceOrientationFaceDown) currentOrientation = [UIDevice currentDevice].orientation; //设置当前方向
     
     if (self.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
@@ -1064,6 +1066,114 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         self.alertView.frame = alertViewFrame;
         
         self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , self.alertView.center.y);
+    }
+    
+    self.alertBackgroundImageView.frame = self.view.frame;
+}
+
+- (void)updateOrientationLayoutWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
+    
+    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
+    
+    switch (interfaceOrientation) {
+            
+        case UIInterfaceOrientationPortrait:
+        {
+            if (isShowingKeyboard) {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
+                
+                alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
+                
+                self.alertView.frame = alertViewFrame;
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+            }
+            
+            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2, self.alertView.center.y);
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformIdentity;
+            
+            self.alertBackgroundImageView.frame = self.view.frame;
+        }
+            break;
+            
+        case UIInterfaceOrientationLandscapeLeft:
+        {
+            if (isShowingKeyboard) {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = keyboardFrame.origin.x - alertViewHeight < 20 ? keyboardFrame.origin.x - 20 : alertViewHeight;
+                
+                alertViewFrame.origin.y = (keyboardFrame.origin.x - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+            }
+            
+            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+            
+            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+        }
+            break;
+            
+        case UIInterfaceOrientationLandscapeRight:
+        {
+            if (isShowingKeyboard) {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                CGFloat availableHeight = (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width);
+                
+                alertViewFrame.size.height = availableHeight - alertViewHeight < 20 ? availableHeight - 20 : alertViewHeight;
+                
+                alertViewFrame.origin.y = (availableHeight - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+                
+            } else {
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                
+                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
+                
+                self.alertView.frame = alertViewFrame;
+            }
+            
+            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , self.alertView.center.y);
+            
+            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(-(M_PI / 2));
+            
+            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
+        }
+            break;
+            
+        default:
+            break;
     }
     
 }
@@ -1314,7 +1424,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     if (iOS8) [self updateOrientationLayout]; //更新布局
     
-    if (!iOS8) [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
     
     //开启显示警示框动画
     
@@ -1460,113 +1570,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return rect;
 }
 
-- (void)rotationUpdateWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
-    
-    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
-    
-    switch (interfaceOrientation) {
-            
-        case UIInterfaceOrientationPortrait:
-        {
-            if (isShowingKeyboard) {
-             
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
-                
-                alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
-                
-                self.alertView.frame = alertViewFrame;
-                
-            } else {
-                
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
-                
-                alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
-                
-                self.alertView.frame = alertViewFrame;
-            }
-            
-            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2, self.alertView.center.y);
-            
-            self.alertBackgroundImageView.transform = CGAffineTransformIdentity;
-        
-            self.alertBackgroundImageView.frame = self.view.frame;
-        }
-            break;
-            
-        case UIInterfaceOrientationLandscapeLeft:
-        {
-            if (isShowingKeyboard) {
-
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                alertViewFrame.size.height = keyboardFrame.origin.x - alertViewHeight < 20 ? keyboardFrame.origin.x - 20 : alertViewHeight;
-                
-                alertViewFrame.origin.y = (keyboardFrame.origin.x - alertViewFrame.size.height) / 2;
-                
-                self.alertView.frame = alertViewFrame;
-                
-            } else {
-                
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
-                
-                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
-                
-                self.alertView.frame = alertViewFrame;
-            }
-            
-            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
-            
-            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-            
-            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-        }
-            break;
-            
-        case UIInterfaceOrientationLandscapeRight:
-        {
-            if (isShowingKeyboard) {
-                
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                CGFloat availableHeight = (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width);
-                
-                alertViewFrame.size.height = availableHeight - alertViewHeight < 20 ? availableHeight - 20 : alertViewHeight;
-            
-                alertViewFrame.origin.y = (availableHeight - alertViewFrame.size.height) / 2;
-                
-                self.alertView.frame = alertViewFrame;
-                
-            } else {
-                
-                CGRect alertViewFrame = self.alertView.frame;
-                
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
-                
-                alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
-                
-                self.alertView.frame = alertViewFrame;
-            }
-            
-            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , self.alertView.center.y);
-            
-            self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(-(M_PI / 2));
-            
-            self.alertBackgroundImageView.frame = CGRectMake(0, 0, CGRectGetHeight(self.view.frame), CGRectGetWidth(self.view.frame));
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-
 - (UIWindow *)currentKeyWindow{
     
     if (!_currentKeyWindow) _currentKeyWindow = [LEEAlert shareAlertManager].mainWindow;
@@ -1624,20 +1627,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return UIInterfaceOrientationMaskAll;
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
-    [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
-        
-        self.alertBackgroundImageView.frame = self.view.frame;
-        
-    } completion:nil];
-}
-
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
     
-    if (!iOS8) [self rotationUpdateWithInterfaceOrientation:toInterfaceOrientation]; //iOS 8 以下处理
+    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:toInterfaceOrientation]; //iOS 8 以下处理
 }
 
 @end
@@ -1752,7 +1744,7 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         _alertWindow.backgroundColor = [self.config.modelAlertWindowBackGroundColor colorWithAlphaComponent:0.0f];
         
-        _alertWindow.windowLevel = UIWindowLevelAlert + 1994;
+        _alertWindow.windowLevel = UIWindowLevelAlert;
         
         _alertWindow.hidden = YES;
         
