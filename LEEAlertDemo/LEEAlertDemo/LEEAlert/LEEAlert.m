@@ -1550,6 +1550,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
+#pragma mark Tool
+
 - (UIImage *)getCurrentKeyWindowImage{
     
     UIGraphicsBeginImageContext(self.currentKeyWindow.frame.size);
@@ -1569,6 +1571,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     return rect;
 }
+
+#pragma mark LazyLoading
 
 - (UIWindow *)currentKeyWindow{
     
@@ -1615,7 +1619,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return _alertButtonArray;
 }
 
-#pragma mark - Rotation
+#pragma mark  Rotation
 
 - (BOOL)shouldAutorotate{
     
