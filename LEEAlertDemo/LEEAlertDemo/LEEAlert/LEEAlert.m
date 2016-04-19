@@ -39,7 +39,6 @@
     _system = nil;
     
     _custom = nil;
-    
 }
 
 + (LEEAlert *)shareAlertManager{
@@ -193,8 +192,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _modelIsCustomButtonClickClose = YES; //默认点击自定义按钮关闭
         
         _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent; //默认为半透明背景样式
-        
-        
     }
     return self;
 }
@@ -207,20 +204,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         _modelTitleStr = str;
         
-        BOOL isAddQueue = YES; //是否加入队列
+        //是否加入队列
         
-        for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
-            
-            if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeTitle) {
-                
-                isAddQueue = NO; //已存在 不加入
-                
-                break;
-            }
-            
-        }
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeTitle];
         
-        if (isAddQueue) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTitle)}];
+        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTitle)}];
         
         return weakSelf;
     };
@@ -235,20 +223,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         _modelContentStr = str;
         
-        BOOL isAddQueue = YES; //是否加入队列
+        //是否加入队列
         
-        for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
-            
-            if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeContent) {
-                
-                isAddQueue = NO; //已存在 不加入
-                
-                break;
-            }
-            
-        }
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeContent];
         
-        if (isAddQueue) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeContent)}];
+        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeContent)}];
         
         return weakSelf;
     };
@@ -393,20 +372,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         _modelCustomContentView = view;
         
-        BOOL isAddQueue = YES; //是否加入队列
+        //是否加入队列
         
-        for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
-            
-            if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeCustomView) {
-                
-                isAddQueue = NO; //已存在 不加入
-                
-                break;
-            }
-            
-        }
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeCustomView];
         
-        if (isAddQueue) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeCustomView)}];
+        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeCustomView)}];
         
         return weakSelf;
     };
@@ -702,15 +672,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     _alertViewButtonIndexDic = nil;
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        
-    }
-    return self;
-}
-
 - (void)configAlertWithShow:(UIViewController *)vc{
     
     NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : nil;
@@ -842,7 +803,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         }
         
         [alertView show];
-        
     }
     
     //清空按钮数组
@@ -852,7 +812,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     //清空输入框数组
     
     [self.config.modelTextFieldArray removeAllObjects];
-    
 }
 
 #pragma mark UIAlertViewDelegate
@@ -934,9 +893,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @interface LEEAlertViewController ()
 
-@property (nonatomic , strong ) LEEAlertConfigModel *config;
+@property (nonatomic , weak ) LEEAlertConfigModel *config;
 
-@property (nonatomic , strong ) UIWindow *alertWindow;
+@property (nonatomic , weak ) UIWindow *alertWindow;
 
 @property (nonatomic , strong ) UIWindow *currentKeyWindow;
 
@@ -1023,13 +982,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             CGRect alertViewFrame = weakSelf.alertView.frame;
             
-            if (alertViewHeight - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+            alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
             
-            CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
-            
-            if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
-            
-            if (alertViewFrame.origin.y < 10) alertViewFrame.origin.y = 10;
+            alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
             
             weakSelf.alertView.frame = alertViewFrame;
             
@@ -1085,29 +1040,30 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 - (void)changeOrientationNotification:(NSNotification *)notify{
     
     if ([UIDevice currentDevice].orientation != UIDeviceOrientationPortraitUpsideDown && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceUp && [UIDevice currentDevice].orientation != UIDeviceOrientationFaceDown) currentOrientation = [UIDevice currentDevice].orientation; //设置当前方向
-        
-    [self updateOrientationLayout];
-        
-}
-
-- (void)updateOrientationLayout{
-    
-    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? iOS8 ? CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f: CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
-        
-        if (!isShowingKeyboard) {
-            
-            CGRect alertViewFrame = self.alertView.frame;
-            
-            alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
-            
-            self.alertView.frame = alertViewFrame;
-            
-            if (iOS8) self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , CGRectGetHeight(self.view.frame) / 2); //iOS 8 以下处理
-        }
     
     if (self.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
         self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];;
+    }
+    
+    if (iOS8) [self updateOrientationLayout];
+}
+
+- (void)updateOrientationLayout{
+    
+    self.config.LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以上处理)
+    
+    if (!isShowingKeyboard) {
+        
+        CGRect alertViewFrame = self.alertView.frame;
+        
+        alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
+        
+        alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+        
+        self.alertView.frame = alertViewFrame;
+        
+        self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , self.alertView.center.y);
     }
     
 }
@@ -1356,7 +1312,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    [self updateOrientationLayout]; //更新布局
+    if (iOS8) [self updateOrientationLayout]; //更新布局
     
     if (!iOS8) [self rotationUpdateWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
     
@@ -1506,6 +1462,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)rotationUpdateWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
     
+    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
+    
     switch (interfaceOrientation) {
             
         case UIInterfaceOrientationPortrait:
@@ -1514,17 +1472,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
              
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                if (alertViewHeight - keyboardFrame.origin.y > -20) alertViewFrame.size.height = keyboardFrame.origin.y - 20;
+                alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
                 
-                CGFloat resultY = alertViewFrame.size.height + alertViewFrame.origin.y - keyboardFrame.origin.y;
-                
-                if (resultY > - 10) alertViewFrame.origin.y -= resultY + 10;
-                
-                if (alertViewFrame.origin.y < 10) alertViewFrame.origin.y = 10;
+                alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , self.alertView.center.y);
                 
             } else {
                 
@@ -1535,9 +1487,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2, self.alertView.center.y);
             }
+            
+            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2, self.alertView.center.y);
             
             self.alertBackgroundImageView.transform = CGAffineTransformIdentity;
         
@@ -1551,13 +1503,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                if (alertViewHeight - keyboardFrame.origin.x > -20) alertViewFrame.size.height = keyboardFrame.origin.x - 20;
+                alertViewFrame.size.height = keyboardFrame.origin.x - alertViewHeight < 20 ? keyboardFrame.origin.x - 20 : alertViewHeight;
                 
                 alertViewFrame.origin.y = (keyboardFrame.origin.x - alertViewFrame.size.height) / 2;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , self.alertView.center.y);
                 
             } else {
                 
@@ -1568,9 +1518,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
             }
+            
+            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
             
             self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
             
@@ -1584,13 +1534,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                if (alertViewHeight - (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) > -20) alertViewFrame.size.height = (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) - 20;
+                CGFloat availableHeight = (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width);
                 
-                alertViewFrame.origin.y = ((CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) - alertViewFrame.size.height) / 2;
+                alertViewFrame.size.height = availableHeight - alertViewHeight < 20 ? availableHeight - 20 : alertViewHeight;
+            
+                alertViewFrame.origin.y = (availableHeight - alertViewFrame.size.height) / 2;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , (CGRectGetWidth(self.view.frame) - keyboardFrame.size.width) / 2);
                 
             } else {
                 
@@ -1601,9 +1551,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
                 
                 self.alertView.frame = alertViewFrame;
-                
-                self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2, self.alertView.center.y);
             }
+            
+            self.alertView.center = CGPointMake(CGRectGetHeight(self.view.frame) / 2 , self.alertView.center.y);
             
             self.alertBackgroundImageView.transform = CGAffineTransformMakeRotation(-(M_PI / 2));
             
@@ -1738,6 +1688,8 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         self.alertViewController.closeAction = ^(){
           
+            //释放
+            
             weakSelf.alertWindow.rootViewController = nil;
             
             _alertViewController = nil;
@@ -1745,7 +1697,6 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
             _alertWindow = nil;
             
             _config = nil;
-            
         };
         
     }
