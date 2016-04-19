@@ -6,7 +6,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    1.0
+ *  @version    V1.0
  */
 
 

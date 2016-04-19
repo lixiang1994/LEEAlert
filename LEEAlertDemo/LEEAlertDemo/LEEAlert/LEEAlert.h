@@ -7,15 +7,13 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    1.0
+ *  @version    V1.0
  */
-
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 @class LEEAlertSystem , LEEAlertCustom , LEEAlertConfigModel;
-
 
 typedef LEEAlertConfigModel *(^LEEConfigAlert)();
 typedef LEEAlertConfigModel *(^LEEConfigAlertToInteger)(NSInteger number);
@@ -60,21 +58,16 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  */
 @property (nonatomic , strong ) LEEAlertCustom *custom;
 
-/**
- *  初始化Alert
- *
- *  @return 返回一个LEEAlert对象
- */
+/** 初始化Alert */
+
 + (LEEAlert *)alert;
 
-/**
- *  设置主窗口
- */
+/** 设置主窗口 */
+
 + (void)configMainWindow:(UIWindow *)window;
 
-/**
- *  关闭自定义Alert
- */
+/** 关闭自定义Alert */
+
 + (void)closeCustomAlert;
 
 @end
