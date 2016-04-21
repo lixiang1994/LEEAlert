@@ -1444,9 +1444,12 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     if (self.config.modelIsCustomButtonClickClose) [self closeAnimations];
 }
 
-- (void)alertViewTapAction:(UITapGestureRecognizer *)tap{
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     
     //拦截AlertView点击响应
+    
+    if (self.config.modelIsAlertWindowTouchClose) [self closeAnimations];
+    
 }
 
 #pragma mark start animations
@@ -1600,10 +1603,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _alertView.directionalLockEnabled = YES;
         
         _alertView.bounces = NO;
-        
-        UITapGestureRecognizer *alertViewTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertViewTapAction:)];
-        
-        [_alertView addGestureRecognizer:alertViewTap];
     }
     
     return _alertView;
@@ -1703,11 +1702,6 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     if (notifyInfo[@"customAlert"] != self) [self.alertViewController closeAnimations];
 }
 
-- (void)alertWindowTapAction:(UITapGestureRecognizer *)tap{
-    
-    if (self.config.modelIsAlertWindowTouchClose) [self.alertViewController closeAnimations];
-}
-
 #pragma mark LEEAlertManagerDelegate
 
 -(void)customAlertCloseDelegate{
@@ -1748,10 +1742,6 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         _alertWindow.windowLevel = UIWindowLevelAlert;
         
         _alertWindow.hidden = YES;
-        
-        UITapGestureRecognizer *alertWindowTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(alertWindowTapAction:)];
-        
-        [_alertWindow addGestureRecognizer:alertWindowTap];
     }
     
     return _alertWindow;
