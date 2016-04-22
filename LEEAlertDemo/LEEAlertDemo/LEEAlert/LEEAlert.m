@@ -1596,7 +1596,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     if (!_alertView) {
         
-        _alertView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, 280, 100)];
+        _alertView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.config.modelAlertMaxWidth, 0)];
         
         _alertView.backgroundColor = self.config.modelAlertViewColor;
         
