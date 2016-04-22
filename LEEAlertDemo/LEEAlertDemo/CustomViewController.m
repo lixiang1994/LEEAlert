@@ -365,7 +365,7 @@
         
     })
     .LeeCustomCornerRadius(20.0f)  //设置自定义Alert的圆角半径 默认为 10
-    .LeeCustomAlertMaxWidth(375 + 40)   //设置自定义Alert的最大宽度 默认为 280 (也就是最小设备屏幕宽度 320 去除两边20的间距)
+    .LeeCustomAlertMaxWidth(280.0f)   //设置自定义Alert的最大宽度 默认为 280 (也就是最小设备屏幕宽度 320 去除两边20的间距)
     .LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f)   //设置自定义Alert的最大高度 默认为屏幕高度的80%
     .LeeCustomSubViewMargin(10.0f)  //设置自定义Alert的子控件上下边距 默认为 10
     .LeeCustomTopSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert上边缘的边距 默认 20
