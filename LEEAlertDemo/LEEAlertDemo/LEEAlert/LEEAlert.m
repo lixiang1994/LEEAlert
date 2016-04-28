@@ -834,7 +834,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     } else {
         
         if (self.config.modelCancelButtonAction) self.config.modelCancelButtonAction();
-        
     }
     
 }
@@ -913,10 +912,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     CGFloat alertViewMaxHeight;
     CGFloat alertViewHeight;
     CGFloat alertViewWidth;
+    CGFloat customViewHeight;
     CGRect keyboardFrame;
     UIDeviceOrientation currentOrientation;
     BOOL isShowingKeyboard;
-    BOOL isChangeCustomViewFrame;
 }
 
 - (void)dealloc{
@@ -950,8 +949,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         [self addNotification];
         
         currentOrientation = (UIDeviceOrientation)self.interfaceOrientation; //默认当前方向
-        
-        isChangeCustomViewFrame = YES; //默认可以改变
     }
     return self;
 }
@@ -1056,7 +1053,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)updateOrientationLayout{
     
-    alertViewMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) >  CGRectGetWidth([[UIScreen mainScreen] bounds]) ? self.config.modelAlertMaxHeight : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //(iOS 8 以上处理)
+    alertViewMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) >  CGRectGetWidth([[UIScreen mainScreen] bounds]) ? self.config.modelAlertMaxHeight : CGRectGetHeight([[UIScreen mainScreen] bounds]) - 20.0f; //(iOS 8 以上处理)
     
     if (!isShowingKeyboard) {
         
@@ -1076,7 +1073,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)updateOrientationLayoutWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
     
-    alertViewMaxHeight = UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : self.config.modelAlertMaxHeight; //(iOS 8 以下处理)
+    alertViewMaxHeight = UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) - 20.0f : self.config.modelAlertMaxHeight; //(iOS 8 以下处理)
     
     switch (interfaceOrientation) {
             
@@ -1183,8 +1180,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)updateAlertViewSubViewsLayout{
     
-    isChangeCustomViewFrame = NO;
-    
     alertViewHeight = 0.0f;
     
     alertViewWidth = self.config.modelAlertMaxWidth;
@@ -1197,6 +1192,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         subViewFrame.origin.y = alertViewHeight;
         
+        if (subView == self.config.modelCustomContentView) customViewHeight = subViewFrame.size.height;
+        
         subView.frame = subViewFrame;
         
         alertViewHeight += subViewFrame.size.height;
@@ -1207,7 +1204,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     if (self.alertSubViewArray.count > 0) {
         
         alertViewHeight -= self.config.modelTopSubViewMargin;
-    
+        
         alertViewHeight += self.config.modelBottomSubViewMargin;
     }
     
@@ -1246,6 +1243,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
     self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
+    
+    if (iOS8) [self updateOrientationLayout]; //更新方向布局 iOS 8 以上处理
+    
+    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //更新方向布局 iOS 8 以下处理
 }
 
 - (void)configAlert{
@@ -1338,6 +1339,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                     CGRect customContentViewFrame = self.config.modelCustomContentView.frame;
                     
                     customContentViewFrame.origin.y = alertViewHeight += customContentViewFrame.origin.y;
+                    
+                    customViewHeight = customContentViewFrame.size.height;
                     
                     self.config.modelCustomContentView.frame = customContentViewFrame;
                     
@@ -1434,10 +1437,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    if (iOS8) [self updateOrientationLayout]; //更新方向布局 iOS 8 以上处理
-    
-    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //更新方向布局 iOS 8 以下处理
-    
     //开启显示警示框动画
     
     [self showAlertAnimations];
@@ -1466,9 +1465,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
     
-    if (isChangeCustomViewFrame) [self updateAlertViewSubViewsLayout];
+    UIView *customView = (UIView *)object;
     
-    isChangeCustomViewFrame = YES;
+    if (customViewHeight != CGRectGetHeight(customView.frame)) [self updateAlertViewSubViewsLayout];
 }
 
 #pragma mark start animations

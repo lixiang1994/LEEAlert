@@ -12,6 +12,10 @@
 
 #import "DemoTableViewController.h"
 
+#import "LEEAlert.h"
+
+#import "ShareView.h"
+
 @interface DemoTableViewController ()
 
 @property (nonatomic , strong ) NSArray *titleArray;
@@ -31,11 +35,45 @@
     
     self.navigationItem.title = @"示例列表";
     
-    _titleArray = @[];
+    _titleArray = @[@"打开分享"];
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     
 }
+
+#pragma mark - 打开分享
+
+- (void)openShare{
+    
+    //初始化分享视图
+    
+    ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(10, 0, 260, 0)];
+    
+    shareView.OpenShareBlock = ^(ShareType type){
+        
+        NSLog(@"%d" , type);
+        
+        //关闭自定义LEEAlert
+        
+        [LEEAlert closeCustomAlert];
+        
+    };
+    
+    //使用自定义类型的LEEAlert显示分享视图
+    
+    [LEEAlert alert].custom.config
+    .LeeCustomView(shareView) //添加分享视图
+    .LeeAddCustomButton(^(UIButton *button){
+        
+        [button setTitle:@"取消" forState:UIControlStateNormal]; //添加一个自定义按钮 并设置标题为取消
+        
+        [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal]; //设置按钮标题颜色
+    })
+    .LeeCustomAlertViewColor([UIColor colorWithRed:247/255.0f green:247/255.0f blue:247/255.0f alpha:1.0f]) //设置ActionSheet视图颜色
+    .LeeShow();
+    
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -71,7 +109,19 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    
+    switch (indexPath.row) {
+        case 0:
+            
+            //打开分享
+            
+            [self openShare];
+            
+            break;
+            
+        default:
+            break;
+    }
+
 }
 
 /*
