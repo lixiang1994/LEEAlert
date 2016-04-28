@@ -900,6 +900,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @property (nonatomic , strong ) UIScrollView *alertView;
 
+@property (nonatomic , strong ) NSMutableArray *alertSubViewArray;
+
 @property (nonatomic , strong ) NSMutableArray *alertButtonArray;
 
 @property (nonatomic , copy ) void (^closeAction)();
@@ -908,11 +910,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @implementation LEEAlertViewController
 {
+    CGFloat alertViewMaxHeight;
     CGFloat alertViewHeight;
     CGFloat alertViewWidth;
     CGRect keyboardFrame;
     UIDeviceOrientation currentOrientation;
     BOOL isShowingKeyboard;
+    BOOL isChangeCustomViewFrame;
 }
 
 - (void)dealloc{
@@ -946,6 +950,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         [self addNotification];
         
         currentOrientation = (UIDeviceOrientation)self.interfaceOrientation; //默认当前方向
+        
+        isChangeCustomViewFrame = YES; //默认可以改变
     }
     return self;
 }
@@ -1012,7 +1018,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             CGRect alertViewFrame = weakSelf.alertView.frame;
             
-            alertViewFrame.size.height = alertViewHeight > weakSelf.config.modelAlertMaxHeight ? weakSelf.config.modelAlertMaxHeight : alertViewHeight;;
+            alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
             
             alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
             
@@ -1050,13 +1056,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)updateOrientationLayout{
     
-    self.config.LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以上处理)
+    alertViewMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) >  CGRectGetWidth([[UIScreen mainScreen] bounds]) ? self.config.modelAlertMaxHeight : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //(iOS 8 以上处理)
     
     if (!isShowingKeyboard) {
         
         CGRect alertViewFrame = self.alertView.frame;
         
-        alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;
+        alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;
         
         alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
         
@@ -1070,7 +1076,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)updateOrientationLayoutWithInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
     
-    self.config.LeeCustomAlertMaxHeight(UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f); //更新最大高度屏幕80% (iOS 8 以下处理)
+    alertViewMaxHeight = UIDeviceOrientationIsLandscape(currentOrientation) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.8f : self.config.modelAlertMaxHeight; //(iOS 8 以下处理)
     
     switch (interfaceOrientation) {
             
@@ -1090,7 +1096,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
                 
                 alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
                 
@@ -1121,7 +1127,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
                 
                 alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
                 
@@ -1154,7 +1160,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 CGRect alertViewFrame = self.alertView.frame;
                 
-                alertViewFrame.size.height = alertViewHeight > self.config.modelAlertMaxHeight ? self.config.modelAlertMaxHeight : alertViewHeight;;
+                alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
                 
                 alertViewFrame.origin.y = (CGRectGetWidth(self.view.frame) - alertViewFrame.size.height) / 2;
                 
@@ -1175,20 +1181,82 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
+- (void)updateAlertViewSubViewsLayout{
+    
+    isChangeCustomViewFrame = NO;
+    
+    alertViewHeight = 0.0f;
+    
+    alertViewWidth = self.config.modelAlertMaxWidth;
+    
+    alertViewHeight += self.config.modelTopSubViewMargin;
+    
+    for (UIView *subView in self.alertSubViewArray) {
+        
+        CGRect subViewFrame = subView.frame;
+        
+        subViewFrame.origin.y = alertViewHeight;
+        
+        subView.frame = subViewFrame;
+        
+        alertViewHeight += subViewFrame.size.height;
+        
+        alertViewHeight += self.config.modelSubViewMargin;
+    }
+    
+    if (self.alertSubViewArray.count > 0) {
+        
+        alertViewHeight -= self.config.modelTopSubViewMargin;
+    
+        alertViewHeight += self.config.modelBottomSubViewMargin;
+    }
+    
+    for (UIButton *button in self.alertButtonArray) {
+        
+        CGRect buttonFrame = button.frame;
+        
+        buttonFrame.origin.y = alertViewHeight;
+        
+        button.frame = buttonFrame;
+        
+        alertViewHeight += buttonFrame.size.height;
+    }
+    
+    if (self.alertButtonArray.count == 2) {
+        
+        UIButton *buttonA = self.alertButtonArray.count == self.config.modelButtonArray.count ? [self.alertButtonArray firstObject] : [self.alertButtonArray lastObject];
+        
+        UIButton *buttonB = self.alertButtonArray.count == self.config.modelButtonArray.count ? [self.alertButtonArray lastObject] : [self.alertButtonArray firstObject];
+        
+        CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame);
+        
+        CGFloat buttonBHeight = CGRectGetHeight(buttonB.frame);
+        
+        CGFloat maxHeight = buttonAHeight > buttonBHeight ? buttonAHeight : buttonBHeight;
+        
+        CGFloat minHeight = buttonAHeight < buttonBHeight ? buttonAHeight : buttonBHeight;
+        
+        CGFloat minY = buttonA.frame.origin.y > buttonB.frame.origin.y ? buttonB.frame.origin.y : buttonA.frame.origin.y;
+        
+        buttonA.frame = CGRectMake(0, minY, alertViewWidth / 2, maxHeight);
+        
+        buttonB.frame = CGRectMake(alertViewWidth / 2, minY, alertViewWidth / 2, maxHeight);
+        
+        alertViewHeight -= minHeight;
+    }
+    
+    self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
+}
+
 - (void)configAlert{
     
     alertViewHeight = 0.0f;
     
     alertViewWidth = self.config.modelAlertMaxWidth;
     
+    alertViewMaxHeight = self.config.modelAlertMaxHeight;
+    
     [self.view addSubview: self.alertView];
-    
-    //开始内部处理
-    
-    if (self.config.modelCustomSubViewsQueue.count > 0) {
-        
-        alertViewHeight += self.config.modelTopSubViewMargin;
-    }
     
     for (NSDictionary *item in self.config.modelCustomSubViewsQueue) {
         
@@ -1202,6 +1270,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
                 
                 [self.alertView addSubview:titleLabel];
+                
+                [self.alertSubViewArray addObject:titleLabel];
                 
                 titleLabel.textAlignment = NSTextAlignmentCenter;
                 
@@ -1224,9 +1294,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 titleLabelFrame.size.height = titleLabelRect.size.height;
                 
                 titleLabel.frame = titleLabelFrame;
-                
-                alertViewHeight += titleLabelFrame.size.height + self.config.modelSubViewMargin;
-                
             }
                 break;
             case LEEAlertCustomSubViewTypeContent:
@@ -1237,6 +1304,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
                 
                 [self.alertView addSubview:contentLabel];
+                
+                [self.alertSubViewArray addObject:contentLabel];
                 
                 contentLabel.textAlignment = NSTextAlignmentCenter;
                 
@@ -1259,9 +1328,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 contentLabelFrame.size.height = contentLabelRect.size.height;
                 
                 contentLabel.frame = contentLabelFrame;
-                
-                alertViewHeight += contentLabelFrame.size.height + self.config.modelSubViewMargin;
-                
             }
                 break;
             case LEEAlertCustomSubViewTypeCustomView:
@@ -1271,13 +1337,15 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                     
                     CGRect customContentViewFrame = self.config.modelCustomContentView.frame;
                     
-                    customContentViewFrame.origin.y = alertViewHeight;
+                    customContentViewFrame.origin.y = alertViewHeight += customContentViewFrame.origin.y;
                     
                     self.config.modelCustomContentView.frame = customContentViewFrame;
                     
                     [self.alertView addSubview:self.config.modelCustomContentView];
                     
-                    alertViewHeight += CGRectGetHeight(self.config.modelCustomContentView.frame) + self.config.modelSubViewMargin;
+                    [self.alertSubViewArray addObject:self.config.modelCustomContentView];
+                    
+                    [self.config.modelCustomContentView addObserver: self forKeyPath: @"frame" options: NSKeyValueObservingOptionNew context: nil];
                 }
                 
             }
@@ -1291,12 +1359,11 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 [self.alertView addSubview:textField];
                 
+                [self.alertSubViewArray addObject:textField];
+                
                 void(^addTextField)(UITextField *textField) = item[@"block"];
                 
                 if (addTextField) addTextField(textField);
-                
-                alertViewHeight += CGRectGetHeight(textField.frame) + self.config.modelSubViewMargin;
-                
             }
                 break;
                 
@@ -1304,13 +1371,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 break;
         }
         
-    }
-    
-    if (self.config.modelCustomSubViewsQueue.count > 0) {
-        
-        alertViewHeight -= self.config.modelSubViewMargin;
-        
-        alertViewHeight += self.config.modelBottomSubViewMargin;
     }
     
     for (NSDictionary *buttonDic in self.config.modelButtonArray) {
@@ -1340,8 +1400,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         [self.alertButtonArray addObject:button];
         
         if (addButton) addButton(button);
-        
-        alertViewHeight += CGRectGetHeight(button.frame);
     }
     
     if (self.config.modelCancelButtonTitleStr || self.config.modelCancelButtonAction || self.config.modelCancelButtonBlock) {
@@ -1364,64 +1422,21 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         [self.alertView addSubview:cancelButton];
         
+        [self.alertButtonArray addObject:cancelButton];
+        
         if (self.config.modelCancelButtonBlock) {
             
             self.config.modelCancelButtonBlock(cancelButton);
         }
-        
-        alertViewHeight += CGRectGetHeight(cancelButton.frame);
-        
-        if (self.alertButtonArray.count == 1) {
-            
-            UIButton *button = [self.alertButtonArray firstObject];
-            
-            CGFloat buttonHeight = CGRectGetHeight(button.frame);
-            
-            CGFloat cancelButtonHeight = CGRectGetHeight(cancelButton.frame);
-            
-            CGFloat maxHeight = buttonHeight > cancelButtonHeight ? buttonHeight : cancelButtonHeight;
-            
-            CGFloat minHeight = buttonHeight < cancelButtonHeight ? buttonHeight : cancelButtonHeight;
-            
-            cancelButton.frame = CGRectMake(0, button.frame.origin.y, alertViewWidth / 2, maxHeight);
-            
-            button.frame = CGRectMake(alertViewWidth / 2, button.frame.origin.y, alertViewWidth / 2, maxHeight);
-            
-            alertViewHeight -= minHeight;
-        }
-        
-    } else {
-        
-        if (self.alertButtonArray.count == 2) {
-            
-            UIButton *buttonA = [self.alertButtonArray firstObject];
-            
-            UIButton *buttonB = [self.alertButtonArray lastObject];
-            
-            CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame);
-            
-            CGFloat buttonBHeight = CGRectGetHeight(buttonB.frame);
-            
-            CGFloat maxHeight = buttonAHeight > buttonBHeight ? buttonAHeight : buttonBHeight;
-            
-            CGFloat minHeight = buttonAHeight < buttonBHeight ? buttonAHeight : buttonBHeight;
-            
-            buttonA.frame = CGRectMake(0, buttonA.frame.origin.y, alertViewWidth / 2, maxHeight);
-            
-            buttonB.frame = CGRectMake(alertViewWidth / 2, buttonA.frame.origin.y, alertViewWidth / 2, maxHeight);
-            
-            alertViewHeight -= minHeight;
-        }
-        
     }
     
-    self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
+    [self updateAlertViewSubViewsLayout]; //更新子视图布局
     
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    if (iOS8) [self updateOrientationLayout]; //更新布局 iOS 8 以上处理
+    if (iOS8) [self updateOrientationLayout]; //更新方向布局 iOS 8 以上处理
     
-    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //更新布局 iOS 8 以下处理
+    if (!iOS8) [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //更新方向布局 iOS 8 以下处理
     
     //开启显示警示框动画
     
@@ -1446,10 +1461,14 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     
-    //拦截AlertView点击响应
+    if (self.config.modelIsAlertWindowTouchClose) [self closeAnimations];   //拦截AlertView点击响应
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
     
-    if (self.config.modelIsAlertWindowTouchClose) [self closeAnimations];
+    if (isChangeCustomViewFrame) [self updateAlertViewSubViewsLayout];
     
+    isChangeCustomViewFrame = YES;
 }
 
 #pragma mark start animations
@@ -1508,6 +1527,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     __weak typeof(self) weakSelf = self;
     
     [self closeAnimationsWithCompletionBlock:^{
+        
+        [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
         
         if (weakSelf.closeAction) weakSelf.closeAction();
     }];
@@ -1606,6 +1627,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
     return _alertView;
+}
+
+-(NSMutableArray *)alertSubViewArray{
+    
+    if (!_alertSubViewArray) _alertSubViewArray = [NSMutableArray array];
+    
+    return _alertSubViewArray;
 }
 
 -(NSMutableArray *)alertButtonArray{

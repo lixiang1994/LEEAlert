@@ -277,7 +277,7 @@
     
     UIButton *customViewCloseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     
-    customViewCloseButton.frame = CGRectMake(0, 0, 100, 30);
+    customViewCloseButton.frame = CGRectMake(0, 0, 90, 30);
     
     [customViewCloseButton setBackgroundColor:[UIColor lightGrayColor]];
     
@@ -288,6 +288,21 @@
     [customViewCloseButton addTarget:self action:@selector(customViewCloseButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     [customView addSubview:customViewCloseButton];
+    
+    UIButton *customViewChangeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    
+    customViewChangeButton.frame = CGRectMake(90, 0, 150, 30);
+    
+    [customViewChangeButton setBackgroundColor:[UIColor blackColor]];
+    
+    [customViewChangeButton setTitle:@"改变自定义视图大小" forState:UIControlStateNormal];
+    
+    [customViewChangeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
+    [customViewChangeButton addTarget:self action:@selector(customViewChangeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [customView addSubview:customViewChangeButton];
+    
     
     //使用自定义Alert
     
@@ -366,7 +381,7 @@
     })
     .LeeCustomCornerRadius(20.0f)  //设置自定义Alert的圆角半径 默认为 10
     .LeeCustomAlertMaxWidth(280.0f)   //设置自定义Alert的最大宽度 默认为 280 (也就是最小设备屏幕宽度 320 去除两边20的间距)
-    .LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f)   //设置自定义Alert的最大高度 默认为屏幕高度的80%
+    .LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) - 50)   //设置自定义Alert的最大高度 默认为屏幕高度的80%
     .LeeCustomSubViewMargin(10.0f)  //设置自定义Alert的子控件上下边距 默认为 10
     .LeeCustomTopSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert上边缘的边距 默认 20
     .LeeCustomBottomSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert下边缘的边距 (如果有按钮存在 则是距离按钮部分的边距) 默认 20
@@ -393,6 +408,25 @@
     //关闭自定义Alert
     
     [LEEAlert closeCustomAlert];
+    
+}
+
+- (void)customViewChangeButtonAction:(UIButton *)sender{
+    
+    UIView *customView = sender.superview;
+    
+    CGRect customViewFrame = customView.frame;
+    
+    if (customViewFrame.size.height == 200) {
+        
+        customViewFrame.size.height = 100;
+        
+    } else {
+        
+        customViewFrame.size.height = 200;
+    }
+    
+    customView.frame = customViewFrame;
     
 }
 
