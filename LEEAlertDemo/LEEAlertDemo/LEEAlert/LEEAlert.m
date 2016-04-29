@@ -932,6 +932,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     _alertView = nil;
     
+    _alertSubViewArray = nil;
+    
     _alertButtonArray = nil;
 }
 
@@ -1255,8 +1257,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     alertViewWidth = self.config.modelAlertMaxWidth;
     
-    alertViewMaxHeight = self.config.modelAlertMaxHeight;
-    
     [self.view addSubview: self.alertView];
     
     for (NSDictionary *item in self.config.modelCustomSubViewsQueue) {
@@ -1338,7 +1338,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                     
                     CGRect customContentViewFrame = self.config.modelCustomContentView.frame;
                     
-                    customContentViewFrame.origin.y = alertViewHeight += customContentViewFrame.origin.y;
+                    customContentViewFrame.origin.y = alertViewHeight;
                     
                     customViewHeight = customContentViewFrame.size.height;
                     
