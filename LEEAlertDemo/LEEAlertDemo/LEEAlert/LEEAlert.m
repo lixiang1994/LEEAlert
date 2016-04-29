@@ -1481,6 +1481,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
     }
     
+    [self.currentKeyWindow endEditing:YES]; //结束输入 收起键盘
+    
     self.alertWindow.hidden = NO;
     
     [self.alertWindow makeKeyAndVisible];
