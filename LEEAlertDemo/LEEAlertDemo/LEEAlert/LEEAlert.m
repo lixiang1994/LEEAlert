@@ -1186,7 +1186,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     alertViewWidth = self.config.modelAlertMaxWidth;
     
-    alertViewHeight += self.config.modelTopSubViewMargin;
+    if (self.alertSubViewArray.count > 0) alertViewHeight += self.config.modelTopSubViewMargin;
     
     for (UIView *subView in self.alertSubViewArray) {
         
