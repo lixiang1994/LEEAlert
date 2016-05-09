@@ -155,7 +155,6 @@
     
     [self setupAutoHeightWithBottomView:_buttonArray.lastObject bottomMargin:10.0f];
     
-//    self.height = ceilf((double)_buttonArray.count / singleCount) * buttonHeight + 20.0f;
 }
 
 #pragma mark - 分享按钮点击事件

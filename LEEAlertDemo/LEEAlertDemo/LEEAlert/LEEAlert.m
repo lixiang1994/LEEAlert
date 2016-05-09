@@ -661,6 +661,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @property (nonatomic , strong ) NSMutableDictionary *alertViewButtonIndexDic;
 
+@property (nonatomic , strong ) UIWindow *currentKeyWindow;
+
 @end
 
 @implementation LEEAlertSystem
@@ -670,6 +672,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     _config = nil;
     
     _alertViewButtonIndexDic = nil;
+    
+    _currentKeyWindow = nil;
 }
 
 - (void)configAlertWithShow:(UIViewController *)vc{
@@ -728,9 +732,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
         } else {
             
-            if ([UIApplication sharedApplication].keyWindow.rootViewController) {
+            if (self.currentKeyWindow) {
                 
-                [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController animated:YES completion:^{}];
+                [self.currentKeyWindow.rootViewController presentViewController:alertController animated:YES completion:^{}];
                 
             } else {
                 
@@ -881,6 +885,17 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     if (!_alertViewButtonIndexDic) _alertViewButtonIndexDic = [NSMutableDictionary dictionary];
     
     return _alertViewButtonIndexDic;
+}
+
+- (UIWindow *)currentKeyWindow{
+    
+    if (!_currentKeyWindow) _currentKeyWindow = [LEEAlert shareAlertManager].mainWindow;
+    
+    if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
+    
+    if (_currentKeyWindow) if (![LEEAlert shareAlertManager].mainWindow) [LEEAlert shareAlertManager].mainWindow = _currentKeyWindow;
+    
+    return _currentKeyWindow;
 }
 
 @end
