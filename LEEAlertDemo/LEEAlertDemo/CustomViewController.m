@@ -122,7 +122,7 @@
     //自定义 Alert 默认无取消按钮
     
     [LEEAlert alert].custom.config
-    .LeeTitle(@"标题")
+//    .LeeTitle(@"标题")
     .LeeContent(@"自定义 Alert 内容")
     .LeeCustomAlertTouchClose()
     .LeeShow();
@@ -167,6 +167,8 @@
     .LeeCustomTitle(^(UILabel *label){
         
         //这里可以随意标题Label (不过不建议乱改frame属性)
+        
+//        label.font = [UIFont systemFontOfSize:16.0f];
         
     })
     .LeeTitle(@"自定义标题")
@@ -392,7 +394,7 @@
     .LeeCustomAlertViewColor([UIColor whiteColor])   //设置自定义Alert的颜色 默认为白色
     .LeeCustomAlertViewBackGroundColor([UIColor blackColor])   //设置自定义Alert的半透明或者模糊的背景渲染颜色
     .LeeCustomAlertTouchClose()   //设置自定义Alert的背景点击关闭功能
-    .LeeCustomButtonClickNotClose()   //设置自定义Alert的自定义按钮点击不关闭Alert
+    .LeeCustomButtonClickNotClose()   //设置自定义Alert博爱1的自定义按钮点击不关闭Alert
     .LeeCustomAlertViewBackGroundStypeBlur()   //设置自定义Alert的背景样式为高斯模糊样式 如果不设置这项 默认为半透明样式
     .LeeShow();    //显示Alert
     

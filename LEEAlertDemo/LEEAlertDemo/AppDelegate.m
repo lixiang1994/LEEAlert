@@ -15,6 +15,8 @@
 
 #import "DemoTableViewController.h"
 
+#import "LEEAlert.h"
+
 @interface AppDelegate ()
 
 @end
@@ -56,6 +58,10 @@
     [tabBarController addChildViewController:demoTableNC];
 
     self.window.rootViewController = tabBarController;
+    
+    //设置主窗口
+    
+//    [LEEAlert configMainWindow:self.window];
     
     return YES;
 }

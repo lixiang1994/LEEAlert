@@ -698,6 +698,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             if (cancelButtonAction) cancelButtonAction();
             
+            if (weakSelf) weakSelf.config = nil;
         }];
         
         [alertController addAction:alertAction];
@@ -712,16 +713,15 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 if (buttonAction) buttonAction();
                 
+                if (weakSelf) weakSelf.config = nil;
             }];
             
             [alertController addAction:alertAction];
-            
         }
         
         for (void(^addTextField)(UITextField *textField) in self.config.modelTextFieldArray) {
             
-            [alertController addTextFieldWithConfigurationHandler:addTextField];
-            
+            [alertController addTextFieldWithConfigurationHandler:addTextField];   
         }
         
         //弹出 Alert
@@ -734,7 +734,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             if (self.currentKeyWindow) {
                 
-                [self.currentKeyWindow.rootViewController presentViewController:alertController animated:YES completion:^{}];
+                [[self getPresentedViewController:self.currentKeyWindow.rootViewController] presentViewController:alertController animated:YES completion:^{}];
                 
             } else {
                 
@@ -742,15 +742,12 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                  * keywindow的rootViewController 获取不到 建议传入视图控制器对象
                  *
                  * 建议: XXX.system.config.XXX().XXX().showFromViewController(视图控制器对象);
+                 * 或者: 在appDelegate内设置主窗口 [LEEAlert configMainWindow:self.window];
                  */
                 NSAssert(self, @"LEEAlert : keywindow的rootViewController 获取不到 建议传入视图控制器对象");
             }
             
         }
-        
-        //释放模型
-        
-        _config = nil;
         
     } else {
         
@@ -813,6 +810,21 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     //清空输入框数组
     
     [self.config.modelTextFieldArray removeAllObjects];
+}
+
+#pragma mark Tool
+
+- (UIViewController *)getPresentedViewController:(UIViewController *)vc{
+    
+    if (vc.presentedViewController) {
+        
+        return [self getPresentedViewController:vc.presentedViewController];
+        
+    } else {
+        
+        return vc;
+    }
+    
 }
 
 #pragma mark UIAlertViewDelegate
@@ -892,6 +904,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     if (!_currentKeyWindow) _currentKeyWindow = [LEEAlert shareAlertManager].mainWindow;
     
     if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
+    
+    if (_currentKeyWindow.windowLevel != UIWindowLevelNormal) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"windowLevel == %ld AND hidden == 0 " , UIWindowLevelNormal];
+        
+        _currentKeyWindow = [[UIApplication sharedApplication].windows filteredArrayUsingPredicate:predicate].firstObject;
+    }
     
     if (_currentKeyWindow) if (![LEEAlert shareAlertManager].mainWindow) [LEEAlert shareAlertManager].mainWindow = _currentKeyWindow;
     
@@ -1407,9 +1426,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         [button setTitle:buttonTitle forState:UIControlStateNormal];
         
-        [button setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255.0f alpha:1.0f] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255/255.0f alpha:1.0f] forState:UIControlStateNormal];
         
         [button setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+        
+        [button setBackgroundImage:[self getImageWithColor:[UIColor clearColor]] forState:UIControlStateNormal];
+        
+        [button setBackgroundImage:[self getImageWithColor:[[UIColor lightGrayColor] colorWithAlphaComponent:0.2f]] forState:UIControlStateHighlighted];
         
         [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -1432,9 +1455,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         [cancelButton setTitle:self.config.modelCancelButtonTitleStr ? self.config.modelCancelButtonTitleStr : @"取消" forState:UIControlStateNormal];
         
-        [cancelButton setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255.0f alpha:1.0f] forState:UIControlStateNormal];
+        [cancelButton setTitleColor:[UIColor colorWithRed:0/255.0f green:122/255.0f blue:255/255.0f alpha:1.0f] forState:UIControlStateNormal];
         
         [cancelButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+        
+        [cancelButton setBackgroundImage:[self getImageWithColor:[UIColor clearColor]] forState:UIControlStateNormal];
+        
+        [cancelButton setBackgroundImage:[self getImageWithColor:[[UIColor lightGrayColor] colorWithAlphaComponent:0.2f]] forState:UIControlStateHighlighted];
         
         [cancelButton addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         
@@ -1602,6 +1629,25 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return image;
 }
 
+- (UIImage *)getImageWithColor:(UIColor *)color {
+    
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    
+    UIGraphicsBeginImageContext(rect.size);
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
 - (CGRect)getLabelTextHeight:(UILabel *)label{
     
     CGRect rect = [label.text boundingRectWithSize:CGSizeMake(CGRectGetWidth(label.frame), MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
@@ -1616,6 +1662,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     if (!_currentKeyWindow) _currentKeyWindow = [LEEAlert shareAlertManager].mainWindow;
     
     if (!_currentKeyWindow) _currentKeyWindow = [UIApplication sharedApplication].keyWindow;
+    
+    if (_currentKeyWindow.windowLevel != UIWindowLevelNormal) {
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"windowLevel == %ld AND hidden == 0 " , UIWindowLevelNormal];
+        
+        _currentKeyWindow = [[UIApplication sharedApplication].windows filteredArrayUsingPredicate:predicate].firstObject;
+    }
     
     if (_currentKeyWindow) if (![LEEAlert shareAlertManager].mainWindow) [LEEAlert shareAlertManager].mainWindow = _currentKeyWindow;
     
