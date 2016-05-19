@@ -109,7 +109,9 @@
     
     //使用SDAutoLayout循环布局分享按钮
     
-    NSInteger singleCount = _infoArray.count / 2;
+    NSInteger lineNumber = ceilf((double)_infoArray.count / 3); //小数向上取整
+    
+    NSInteger singleCount = ceilf((double)_infoArray.count / lineNumber);
     
     CGFloat buttonWidth = self.width / singleCount;
     
