@@ -143,10 +143,10 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 /** 设置 Alert 自定义警示框半透明或模糊背景颜色 -> 格式: .LeeCustomAlertViewBackGroundColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToColor LeeCustomAlertViewBackGroundColor;
 
-/** 设置 Alert 自定义警示框半透明背景样式 [默认] -> 格式: .LeeCustomAlertViewBackGroundStypeTranslucent() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertViewBackGroundStypeTranslucent;
-/** 设置 Alert 自定义警示框模糊背景样式 -> 格式: .LeeCustomAlertViewBackGroundStypeBlur() */
-@property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertViewBackGroundStypeBlur;
+/** 设置 Alert 自定义警示框半透明背景样式及透明度 [默认] -> 格式: .LeeCustomAlertViewBackGroundStypeTranslucent(0.6f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertViewBackGroundStypeTranslucent;
+/** 设置 Alert 自定义警示框模糊背景样式及透明度 -> 格式: .LeeCustomAlertViewBackGroundStypeBlur(0.6f) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToFloat LeeCustomAlertViewBackGroundStypeBlur;
 
 /** 设置 Alert 自定义警示框背景触摸关闭 -> 格式: .LeeCustomAlertTouchClose() */
 @property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertTouchClose;

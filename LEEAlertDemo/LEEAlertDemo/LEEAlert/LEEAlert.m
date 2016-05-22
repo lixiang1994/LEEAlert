@@ -137,6 +137,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @property (nonatomic , assign , readonly ) CGFloat modelAlertMaxHeight;
 @property (nonatomic , assign , readonly ) CGFloat modelAlertOpenAnimationDuration;
 @property (nonatomic , assign , readonly ) CGFloat modelAlertCloseAnimationDuration;
+@property (nonatomic , assign , readonly ) CGFloat modelAlertCustomBackGroundStypeColorAlpha;
 
 @property (nonatomic , strong , readonly ) UIColor *modelAlertViewColor;
 @property (nonatomic , strong , readonly ) UIColor *modelAlertWindowBackGroundColor;
@@ -184,6 +185,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         _modelAlertMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //默认最大高度屏幕80%
         _modelAlertOpenAnimationDuration = 0.3f; //默认警示框打开动画时长
         _modelAlertCloseAnimationDuration = 0.2f; //默认警示框关闭动画时长
+        _modelAlertCustomBackGroundStypeColorAlpha = 0.6f; //自定义背景样式颜色透明度 默认为半透明背景样式 透明度为0.6f
         
         _modelAlertViewColor = [UIColor whiteColor]; //默认警示框颜色
         _modelAlertWindowBackGroundColor = [UIColor blackColor]; //默认警示框背景半透明或者模糊颜色
@@ -552,26 +554,30 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlert)LeeCustomAlertViewBackGroundStypeTranslucent{
+-(LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeTranslucent{
     
     __weak typeof(self) weakSelf = self;
     
-    return ^(){
+    return ^(CGFloat number){
         
         _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent;
+        
+        _modelAlertCustomBackGroundStypeColorAlpha = number;
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlert)LeeCustomAlertViewBackGroundStypeBlur{
+-(LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeBlur{
     
     __weak typeof(self) weakSelf = self;
     
-    return ^(){
+    return ^(CGFloat number){
         
         _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeBlur;
+        
+        _modelAlertCustomBackGroundStypeColorAlpha = number;
         
         return weakSelf;
     };
@@ -1520,7 +1526,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         self.alertBackgroundImageView.alpha = 0.0f;
         
-        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];
+        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyBlurWithRadius:10.0f tintColor:[self.config.modelAlertWindowBackGroundColor colorWithAlphaComponent:self.config.modelAlertCustomBackGroundStypeColorAlpha] saturationDeltaFactor:1.0f maskImage:nil];
     }
     
     [self.currentKeyWindow endEditing:YES]; //结束输入 收起键盘
@@ -1539,7 +1545,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         [UIView animateWithDuration:self.config.modelAlertOpenAnimationDuration animations:^{
             
-            weakSelf.view.backgroundColor = [weakSelf.view.backgroundColor colorWithAlphaComponent:0.6f];
+            weakSelf.view.backgroundColor = [weakSelf.view.backgroundColor colorWithAlphaComponent:weakSelf.config.modelAlertCustomBackGroundStypeColorAlpha];
             
             weakSelf.alertView.transform = CGAffineTransformIdentity;
             
