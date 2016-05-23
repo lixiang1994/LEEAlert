@@ -1245,7 +1245,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     if (self.alertSubViewArray.count > 0) {
         
-        alertViewHeight -= self.config.modelTopSubViewMargin;
+        alertViewHeight -= self.config.modelSubViewMargin;
         
         alertViewHeight += self.config.modelBottomSubViewMargin;
     }

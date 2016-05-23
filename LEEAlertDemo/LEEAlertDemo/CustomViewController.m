@@ -386,7 +386,7 @@
     .LeeCustomAlertMaxHeight(CGRectGetHeight([[UIScreen mainScreen] bounds]) - 50)   //设置自定义Alert的最大高度 默认为屏幕高度的80%
     .LeeCustomSubViewMargin(10.0f)  //设置自定义Alert的子控件上下边距 默认为 10
     .LeeCustomTopSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert上边缘的边距 默认 20
-    .LeeCustomBottomSubViewMargin(20.0f)   //设置自定义Alert的第一个子控件距离Alert下边缘的边距 (如果有按钮存在 则是距离按钮部分的边距) 默认 20
+    .LeeCustomBottomSubViewMargin(20.0f)   //设置自定义Alert的最后一个子控件距离Alert下边缘的边距 (如果有按钮存在 则是距离按钮部分的边距) 默认 20
     .LeeCustomLeftSubViewMargin(20.0f)   //设置自定义ActionSheet的子控件距离左侧边缘间距 //默认为20
     .LeeCustomRightSubViewMargin(20.0f)   //设置自定义ActionSheet的子控件距离右侧边缘间距 //默认为20
     .LeeCustomAlertOpenAnimationDuration(0.3f)   //设置自定义Alert的打开动画效果时长 默认0.3秒
