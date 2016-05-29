@@ -62,6 +62,8 @@
     
     if (self) {
         
+        _infoArray = infoArray;
+        
         _buttonArray = [NSMutableArray array];
         
         _pageViewArray = [NSMutableArray array];
