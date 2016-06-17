@@ -1087,7 +1087,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     if (self.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
-        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:self.config.modelAlertWindowBackGroundColor];;
+        self.alertBackgroundImageView.image = [[self getCurrentKeyWindowImage] LeeAlert_ApplyTintEffectWithColor:[self.config.modelAlertWindowBackGroundColor colorWithAlphaComponent:self.config.modelAlertCustomBackGroundStypeColorAlpha]];
     }
     
     if (iOS8) [self updateOrientationLayout];
