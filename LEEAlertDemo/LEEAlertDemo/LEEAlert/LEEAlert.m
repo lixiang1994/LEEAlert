@@ -1012,32 +1012,38 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
+    CGRect beginKeyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    
     //取得键盘的动画时间，这样可以在视图上移的时候更连贯
     
     double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
-    __weak typeof(self) weakSelf = self;
-    
-    [UIView animateWithDuration:duration animations:^{
+    if (keyboardFrame.size.height > 0 && beginKeyboardFrame.origin.y - keyboardFrame.origin.y > 0) {
         
-        if (iOS8) {
-            
-            CGRect alertViewFrame = weakSelf.alertView.frame;
-            
-            alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
-            
-            alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
-            
-            weakSelf.alertView.frame = alertViewFrame;
-            
-            weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.view.frame) / 2 , weakSelf.alertView.center.y);
+        __weak typeof(self) weakSelf = self;
         
-        } else {
+        [UIView animateWithDuration:duration animations:^{
             
-            [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
-        }
+            if (iOS8) {
+                
+                CGRect alertViewFrame = weakSelf.alertView.frame;
+                
+                alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
+                
+                alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
+                
+                weakSelf.alertView.frame = alertViewFrame;
+                
+                weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.view.frame) / 2 , weakSelf.alertView.center.y);
+                
+            } else {
+                
+                [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+            }
+            
+        } completion:^(BOOL finished) {}];
         
-    } completion:^(BOOL finished) {}];
+    }
     
 }
 
@@ -1051,7 +1057,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     __weak typeof(self) weakSelf = self;
     
-    [UIView animateWithDuration:duration animations:^{
+    [UIView animateWithDuration:duration ? duration : 0.25f animations:^{
         
         if (iOS8) {
             
