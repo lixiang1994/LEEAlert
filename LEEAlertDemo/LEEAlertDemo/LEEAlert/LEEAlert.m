@@ -1022,7 +1022,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         __weak typeof(self) weakSelf = self;
         
-        [UIView animateWithDuration:duration animations:^{
+        [UIView animateWithDuration:duration ? duration : 0.25f animations:^{
             
             if (iOS8) {
                 
