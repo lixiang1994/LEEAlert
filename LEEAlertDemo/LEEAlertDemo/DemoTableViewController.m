@@ -16,6 +16,8 @@
 
 #import "ShareView.h"
 
+#import "ViewController.h"
+
 @interface DemoTableViewController ()
 
 @property (nonatomic , strong ) NSArray *titleArray;
@@ -56,7 +58,7 @@
         //关闭自定义LEEAlert
         
         [LEEAlert closeCustomAlert];
-        
+
     };
     
     //使用自定义类型的LEEAlert显示分享视图

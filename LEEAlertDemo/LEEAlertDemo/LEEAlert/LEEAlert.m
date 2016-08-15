@@ -1583,7 +1583,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     [self closeAnimationsWithCompletionBlock:^{
         
-        [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
+        if (weakSelf.config.modelCustomContentView) [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
         
         if (weakSelf.closeAction) weakSelf.closeAction();
     }];
