@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		9B0049C81CCF3244001AC212 /* DemoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0049C71CCF3244001AC212 /* DemoTableViewController.m */; };
-		9B0049D91CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0049D61CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.m */; };
-		9B0049DA1CCF349A001AC212 /* UIView+SDAutoLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0049D81CCF349A001AC212 /* UIView+SDAutoLayout.m */; };
 		9B3620EB1CD20BD900B3E611 /* ShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3620EA1CD20BD900B3E611 /* ShareView.m */; };
 		9B3FAF831CAA310100A66F95 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3FAF821CAA310100A66F95 /* main.m */; };
 		9B3FAF861CAA310100A66F95 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3FAF851CAA310100A66F95 /* AppDelegate.m */; };
@@ -21,6 +19,8 @@
 		9B3FAFA71CAA310100A66F95 /* LEEAlertDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3FAFA61CAA310100A66F95 /* LEEAlertDemoUITests.m */; };
 		9B3FAFB71CAA32E100A66F95 /* LEEAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3FAFB61CAA32E100A66F95 /* LEEAlert.m */; };
 		9B3FAFBA1CAB680300A66F95 /* CustomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3FAFB91CAB680300A66F95 /* CustomViewController.m */; };
+		9BD5D0051D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD5D0021D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.m */; };
+		9BD5D0061D66C85C00E8C8A0 /* UIView+SDAutoLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD5D0041D66C85C00E8C8A0 /* UIView+SDAutoLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,10 +43,6 @@
 /* Begin PBXFileReference section */
 		9B0049C61CCF3244001AC212 /* DemoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoTableViewController.h; sourceTree = "<group>"; };
 		9B0049C71CCF3244001AC212 /* DemoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoTableViewController.m; sourceTree = "<group>"; };
-		9B0049D51CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+SDAutoTableViewCellHeight.h"; sourceTree = "<group>"; };
-		9B0049D61CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+SDAutoTableViewCellHeight.m"; sourceTree = "<group>"; };
-		9B0049D71CCF349A001AC212 /* UIView+SDAutoLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SDAutoLayout.h"; sourceTree = "<group>"; };
-		9B0049D81CCF349A001AC212 /* UIView+SDAutoLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SDAutoLayout.m"; sourceTree = "<group>"; };
 		9B3620E91CD20BD900B3E611 /* ShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareView.h; sourceTree = "<group>"; };
 		9B3620EA1CD20BD900B3E611 /* ShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareView.m; sourceTree = "<group>"; };
 		9B3FAF7E1CAA310100A66F95 /* LEEAlertDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LEEAlertDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,6 +65,11 @@
 		9B3FAFB61CAA32E100A66F95 /* LEEAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEEAlert.m; sourceTree = "<group>"; };
 		9B3FAFB81CAB680300A66F95 /* CustomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomViewController.h; sourceTree = "<group>"; };
 		9B3FAFB91CAB680300A66F95 /* CustomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomViewController.m; sourceTree = "<group>"; };
+		9BD5D0001D66C85C00E8C8A0 /* SDAutoLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDAutoLayout.h; sourceTree = "<group>"; };
+		9BD5D0011D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+SDAutoTableViewCellHeight.h"; sourceTree = "<group>"; };
+		9BD5D0021D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+SDAutoTableViewCellHeight.m"; sourceTree = "<group>"; };
+		9BD5D0031D66C85C00E8C8A0 /* UIView+SDAutoLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SDAutoLayout.h"; sourceTree = "<group>"; };
+		9BD5D0041D66C85C00E8C8A0 /* UIView+SDAutoLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SDAutoLayout.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,17 +97,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9B0049D41CCF349A001AC212 /* SDAutoLayout */ = {
-			isa = PBXGroup;
-			children = (
-				9B0049D51CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.h */,
-				9B0049D61CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.m */,
-				9B0049D71CCF349A001AC212 /* UIView+SDAutoLayout.h */,
-				9B0049D81CCF349A001AC212 /* UIView+SDAutoLayout.m */,
-			);
-			path = SDAutoLayout;
-			sourceTree = "<group>";
-		};
 		9B3620E71CD20BD900B3E611 /* DemoView */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,7 +151,7 @@
 				9B3FAF8D1CAA310100A66F95 /* Assets.xcassets */,
 				9B3FAF8F1CAA310100A66F95 /* LaunchScreen.storyboard */,
 				9B3FAF921CAA310100A66F95 /* Info.plist */,
-				9B0049D41CCF349A001AC212 /* SDAutoLayout */,
+				9BD5CFFF1D66C85C00E8C8A0 /* SDAutoLayout */,
 				9B3FAF811CAA310100A66F95 /* Supporting Files */,
 			);
 			path = LEEAlertDemo;
@@ -200,6 +190,18 @@
 				9B3FAFB61CAA32E100A66F95 /* LEEAlert.m */,
 			);
 			path = LEEAlert;
+			sourceTree = "<group>";
+		};
+		9BD5CFFF1D66C85C00E8C8A0 /* SDAutoLayout */ = {
+			isa = PBXGroup;
+			children = (
+				9BD5D0001D66C85C00E8C8A0 /* SDAutoLayout.h */,
+				9BD5D0011D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.h */,
+				9BD5D0021D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.m */,
+				9BD5D0031D66C85C00E8C8A0 /* UIView+SDAutoLayout.h */,
+				9BD5D0041D66C85C00E8C8A0 /* UIView+SDAutoLayout.m */,
+			);
+			path = SDAutoLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -333,12 +335,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B0049D91CCF349A001AC212 /* UITableView+SDAutoTableViewCellHeight.m in Sources */,
 				9B3620EB1CD20BD900B3E611 /* ShareView.m in Sources */,
 				9B0049C81CCF3244001AC212 /* DemoTableViewController.m in Sources */,
-				9B0049DA1CCF349A001AC212 /* UIView+SDAutoLayout.m in Sources */,
+				9BD5D0051D66C85C00E8C8A0 /* UITableView+SDAutoTableViewCellHeight.m in Sources */,
 				9B3FAF891CAA310100A66F95 /* ViewController.m in Sources */,
 				9B3FAFBA1CAB680300A66F95 /* CustomViewController.m in Sources */,
+				9BD5D0061D66C85C00E8C8A0 /* UIView+SDAutoLayout.m in Sources */,
 				9B3FAF861CAA310100A66F95 /* AppDelegate.m in Sources */,
 				9B3FAF831CAA310100A66F95 /* main.m in Sources */,
 				9B3FAFB71CAA32E100A66F95 /* LEEAlert.m in Sources */,
@@ -484,6 +486,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = QCC328325S;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -498,6 +501,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = QCC328325S;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

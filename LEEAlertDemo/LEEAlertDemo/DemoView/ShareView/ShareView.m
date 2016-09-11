@@ -330,7 +330,7 @@
     .xIs(0)
     .yIs(0)
     .widthRatioToView(self , 1)
-    .heightRatioToView(_pageViewArray.lastObject , 1);
+    .heightRatioToView(_pageViewArray.firstObject , 1);
     
     [_scrollView setupAutoContentSizeWithRightView:_pageViewArray.lastObject rightMargin:0.0f];
     

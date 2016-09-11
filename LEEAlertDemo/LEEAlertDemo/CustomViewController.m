@@ -154,7 +154,7 @@
         
     })
     .LeeCustomAlertViewBackGroundStypeBlur(0.6f)
-    .LeeCustomAlertViewBackGroundColor([UIColor whiteColor])
+    .LeeCustomAlertViewBackGroundColor([UIColor blackColor])
     .LeeShow();
     
 }

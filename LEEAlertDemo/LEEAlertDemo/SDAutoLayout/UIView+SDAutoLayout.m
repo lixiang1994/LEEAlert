@@ -58,6 +58,8 @@
 @property (nonatomic, strong) SDAutoLayoutModelItem *widthEqualHeight;
 @property (nonatomic, strong) SDAutoLayoutModelItem *heightEqualWidth;
 
+@property (nonatomic, strong) SDAutoLayoutModelItem *lastModelItem;
+
 @end
 
 @implementation SDAutoLayoutModel
@@ -88,6 +90,8 @@
 @synthesize minHeightIs = _minHeightIs;
 @synthesize widthEqualToHeight = _widthEqualToHeight;
 @synthesize heightEqualToWidth = _heightEqualToWidth;
+@synthesize offset = _offset;
+
 
 - (MarginToView)leftSpaceToView
 {
@@ -124,10 +128,14 @@
 - (MarginToView)marginToViewblockWithKey:(NSString *)key
 {
     __weak typeof(self) weakSelf = self;
-    return ^(UIView *view, CGFloat value) {
+    return ^(id viewOrViewsArray, CGFloat value) {
         SDAutoLayoutModelItem *item = [SDAutoLayoutModelItem new];
         item.value = @(value);
-        item.refView = view;
+        if ([viewOrViewsArray isKindOfClass:[UIView class]]) {
+            item.refView = viewOrViewsArray;
+        } else if ([viewOrViewsArray isKindOfClass:[NSArray class]]) {
+            item.refViewsArray = [viewOrViewsArray copy];
+        }
         [weakSelf setValue:item forKey:key];
         return weakSelf;
     };
@@ -138,8 +146,10 @@
     if (!_widthIs) {
         __weak typeof(self) weakSelf = self;
         _widthIs = ^(CGFloat value) {
-            weakSelf.needsAutoResizeView.width = value;
             weakSelf.needsAutoResizeView.fixedWidth = @(value);
+            SDAutoLayoutModelItem *widthItem = [SDAutoLayoutModelItem new];
+            widthItem.value = @(value);
+            weakSelf.width = widthItem;
             return weakSelf;
         };
     }
@@ -151,8 +161,10 @@
     if (!_heightIs) {
         __weak typeof(self) weakSelf = self;
         _heightIs = ^(CGFloat value) {
-            weakSelf.needsAutoResizeView.height = value;
             weakSelf.needsAutoResizeView.fixedHeight = @(value);
+            SDAutoLayoutModelItem *heightItem = [SDAutoLayoutModelItem new];
+            heightItem.value = @(value);
+            weakSelf.height = heightItem;
             return weakSelf;
         };
     }
@@ -240,6 +252,10 @@
         SDAutoLayoutModelItem *item = [SDAutoLayoutModelItem new];
         item.refView = view;
         [weakSelf setValue:item forKey:key];
+        weakSelf.lastModelItem = item;
+        if ([view isKindOfClass:NSClassFromString(@"UITableViewCellContentView")] && ([key isEqualToString:@"equalCenterY"] || [key isEqualToString:@"equalBottom"])) {
+            view.shouldReadjustFrameBeforeStoreCache = YES;
+        }
         return weakSelf;
     };
 }
@@ -300,9 +316,9 @@
     return ^(CGFloat value) {
         
         if ([key isEqualToString:@"x"]) {
-            weakSelf.needsAutoResizeView.left = value;
+            weakSelf.needsAutoResizeView.left_sd = value;
         } else if ([key isEqualToString:@"y"]) {
-            weakSelf.needsAutoResizeView.top = value;
+            weakSelf.needsAutoResizeView.top_sd = value;
         } else if ([key isEqualToString:@"centerX"]) {
             weakSelf.centerX = @(value);
         } else if ([key isEqualToString:@"centerY"]) {
@@ -384,8 +400,9 @@
     if (!_widthEqualToHeight) {
         _widthEqualToHeight = ^() {
             weakSelf.widthEqualHeight = [SDAutoLayoutModelItem new];
+            weakSelf.lastModelItem = weakSelf.widthEqualHeight;
             // 主动触发一次赋值操作
-            weakSelf.needsAutoResizeView.height = weakSelf.needsAutoResizeView.height;
+            weakSelf.needsAutoResizeView.height_sd = weakSelf.needsAutoResizeView.height_sd;
             return weakSelf;
         };
     }
@@ -399,12 +416,25 @@
     if (!_heightEqualToWidth) {
         _heightEqualToWidth = ^() {
             weakSelf.heightEqualWidth = [SDAutoLayoutModelItem new];
+            weakSelf.lastModelItem = weakSelf.heightEqualWidth;
             // 主动触发一次赋值操作
-            weakSelf.needsAutoResizeView.width = weakSelf.needsAutoResizeView.width;
+            weakSelf.needsAutoResizeView.width_sd = weakSelf.needsAutoResizeView.width_sd;
             return weakSelf;
         };
     }
     return _heightEqualToWidth;
+}
+
+- (SDAutoLayoutModel *(^)(CGFloat))offset
+{
+    __weak typeof(self) weakSelf = self;
+    if (!_offset) {
+        _offset = ^(CGFloat offset) {
+            weakSelf.lastModelItem.offset = offset;
+            return weakSelf;
+        };
+    }
+    return _offset;
 }
 
 @end
@@ -585,6 +615,65 @@
 
 @end
 
+@implementation UIView (SDAutoFlowItems)
+
+- (void)setupAutoWidthFlowItems:(NSArray *)viewsArray withPerRowItemsCount:(NSInteger)perRowItemsCount verticalMargin:(CGFloat)verticalMargin horizontalMargin:(CGFloat)horizontalMagin verticalEdgeInset:(CGFloat)vInset horizontalEdgeInset:(CGFloat)hInset
+{
+    self.sd_categoryManager.flowItems = viewsArray;
+    self.sd_categoryManager.perRowItemsCount = perRowItemsCount;
+    self.sd_categoryManager.verticalMargin = verticalMargin;
+    self.sd_categoryManager.horizontalMargin = horizontalMagin;
+    self.verticalEdgeInset = vInset;
+    self.horizontalEdgeInset = hInset;
+    
+    self.sd_categoryManager.lastWidth = 0;
+    
+    if (viewsArray.count) {
+        [self setupAutoHeightWithBottomView:viewsArray.lastObject bottomMargin:vInset];
+    } else {
+        [self clearAutoHeigtSettings];
+    }
+}
+
+- (void)clearAutoWidthFlowItemsSettings
+{
+    [self setupAutoWidthFlowItems:nil withPerRowItemsCount:0 verticalMargin:0 horizontalMargin:0 verticalEdgeInset:0 horizontalEdgeInset:0];
+}
+
+- (void)setupAutoMarginFlowItems:(NSArray *)viewsArray withPerRowItemsCount:(NSInteger)perRowItemsCount itemWidth:(CGFloat)itemWidth verticalMargin:(CGFloat)verticalMargin verticalEdgeInset:(CGFloat)vInset horizontalEdgeInset:(CGFloat)hInset
+{
+    self.sd_categoryManager.shouldShowAsAutoMarginViews = YES;
+    self.sd_categoryManager.flowItemWidth = itemWidth;
+    [self setupAutoWidthFlowItems:viewsArray withPerRowItemsCount:perRowItemsCount verticalMargin:verticalMargin horizontalMargin:0 verticalEdgeInset:vInset horizontalEdgeInset:hInset];
+}
+
+- (void)clearAutoMarginFlowItemsSettings
+{
+    [self setupAutoMarginFlowItems:nil withPerRowItemsCount:0 itemWidth:0 verticalMargin:0 verticalEdgeInset:0 horizontalEdgeInset:0];
+}
+
+- (void)setHorizontalEdgeInset:(CGFloat)horizontalEdgeInset
+{
+    self.sd_categoryManager.horizontalEdgeInset = horizontalEdgeInset;
+}
+
+- (CGFloat)horizontalEdgeInset
+{
+    return self.sd_categoryManager.horizontalEdgeInset;
+}
+
+- (void)setVerticalEdgeInset:(CGFloat)verticalEdgeInset
+{
+    self.sd_categoryManager.verticalEdgeInset = verticalEdgeInset;
+}
+
+- (CGFloat)verticalEdgeInset
+{
+    return self.sd_categoryManager.verticalEdgeInset;
+}
+
+@end
+
 @implementation UIScrollView (SDAutoContentSize)
 
 - (void)setupAutoContentSizeWithBottomView:(UIView *)bottomView bottomMargin:(CGFloat)bottomMargin
@@ -630,7 +719,7 @@
     if (self.sd_maxWidth) {
         [self sizeToFit];
     } else if (self.autoHeightRatioValue) {
-        self.frame = CGRectZero;
+        self.size_sd = CGSizeZero;
     }
 }
 
@@ -653,7 +742,7 @@
 {
     NSAssert(self.ownLayoutModel, @"请在布局完成之后再做此步设置！");
     if (lineCount > 0) {
-        self.sd_layout.maxHeightIs(self.font.lineHeight * lineCount);
+        self.sd_layout.maxHeightIs(self.font.lineHeight * lineCount + 0.1);
     } else {
         self.sd_layout.maxHeightIs(MAXFLOAT);
     }
@@ -661,8 +750,33 @@
 
 @end
 
+@implementation UIButton (SDExtention)
+
+- (void)setupAutoSizeWithHorizontalPadding:(CGFloat)hPadding buttonHeight:(CGFloat)buttonHeight
+{
+    self.fixedHeight = @(buttonHeight);
+    
+    self.titleLabel.sd_layout
+    .leftSpaceToView(self, hPadding)
+    .topEqualToView(self)
+    .heightIs(buttonHeight);
+    
+    [self.titleLabel setSingleLineAutoResizeWithMaxWidth:MAXFLOAT];
+    [self setupAutoWidthWithRightView:self.titleLabel rightMargin:hPadding];
+}
+
+@end
+
 
 @implementation SDAutoLayoutModelItem
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _offset = 0;
+    }
+    return self;
+}
 
 @end
 
@@ -704,7 +818,7 @@
 - (void)setFixedWidth:(NSNumber *)fixedWidth
 {
     if (fixedWidth) {
-        self.width = [fixedWidth floatValue];
+        self.width_sd = [fixedWidth floatValue];
     }
     objc_setAssociatedObject(self, @selector(fixedWidth), fixedWidth, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -717,7 +831,7 @@
 - (void)setFixedHeight:(NSNumber *)fixedHeight
 {
     if (fixedHeight) {
-        self.height = [fixedHeight floatValue];
+        self.height_sd = [fixedHeight floatValue];
     }
     objc_setAssociatedObject(self, @selector(fixedHeight), fixedHeight, OBJC_ASSOCIATION_RETAIN);
 }
@@ -841,6 +955,22 @@
     return [self sd_layout];
 }
 
+- (BOOL)sd_isClosingAotuLayout
+{
+    return self.sd_categoryManager.sd_isClosingAotuLayout;
+}
+
+- (void)setSd_closeAotuLayout:(BOOL)sd_closeAotuLayout
+{
+    self.sd_categoryManager.sd_closeAotuLayout = sd_closeAotuLayout;
+}
+
+- (void)removeFromSuperviewAndClearAutoLayoutSettings
+{
+    [self sd_clearAutoLayoutSettings];
+    [self removeFromSuperview];
+}
+
 - (void)sd_clearAutoLayoutSettings
 {
     SDAutoLayoutModel *model = [self ownLayoutModel];
@@ -884,17 +1014,69 @@
     // 如果程序崩溃在这行代码说明是你的view在执行“layoutSubvies”方法时出了问题而不是在此自动布局库内部出现了问题，请检查你的“layoutSubvies”方法
     [self sd_layoutSubviews];
     
+    [self sd_layoutSubviewsHandle];
+}
+
+- (void)sd_layoutSubviewsHandle{
+
     if (self.sd_equalWidthSubviews.count) {
         __block CGFloat totalMargin = 0;
         [self.sd_equalWidthSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
             SDAutoLayoutModel *model = view.sd_layout;
-            CGFloat left = model.left ? [model.left.value floatValue] : model.needsAutoResizeView.left;
+            CGFloat left = model.left ? [model.left.value floatValue] : model.needsAutoResizeView.left_sd;
             totalMargin += (left + [model.right.value floatValue]);
         }];
-        CGFloat averageWidth = (self.width - totalMargin) / self.sd_equalWidthSubviews.count;
+        CGFloat averageWidth = (self.width_sd - totalMargin) / self.sd_equalWidthSubviews.count;
         [self.sd_equalWidthSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
-            view.width = averageWidth;
+            view.width_sd = averageWidth;
             view.fixedWidth = @(averageWidth);
+        }];
+    }
+    
+    if (self.sd_categoryManager.flowItems.count && (self.sd_categoryManager.lastWidth != self.width_sd)) {
+        
+        self.sd_categoryManager.lastWidth = self.width_sd;
+        
+        NSInteger perRowItemsCount = self.sd_categoryManager.perRowItemsCount;
+        CGFloat horizontalMargin = 0;
+        CGFloat w = 0;
+        if (self.sd_categoryManager.shouldShowAsAutoMarginViews) {
+            w = self.sd_categoryManager.flowItemWidth;
+            long itemsCount = self.sd_categoryManager.perRowItemsCount;
+            if (itemsCount > 1) {
+                horizontalMargin = (self.width_sd - (self.horizontalEdgeInset * 2) - itemsCount * w) / (itemsCount - 1);
+            }
+        } else {
+            horizontalMargin = self.sd_categoryManager.horizontalMargin;
+            w = (self.width_sd - (self.horizontalEdgeInset * 2) - (perRowItemsCount - 1) * horizontalMargin) / perRowItemsCount;
+        }
+        CGFloat verticalMargin = self.sd_categoryManager.verticalMargin;
+        
+        __block UIView *referencedView = self;
+        [self.sd_categoryManager.flowItems enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
+            if (idx < perRowItemsCount) {
+                if (idx == 0) {
+                    /* 保留
+                    BOOL shouldShowAsAutoMarginViews = self.sd_categoryManager.shouldShowAsAutoMarginViews;
+                     */
+                    view.sd_layout
+                    .leftSpaceToView(referencedView, self.horizontalEdgeInset)
+                    .topSpaceToView(referencedView, self.verticalEdgeInset)
+                    .widthIs(w);
+                } else {
+                    view.sd_layout
+                    .leftSpaceToView(referencedView, horizontalMargin)
+                    .topEqualToView(referencedView)
+                    .widthIs(w);
+                }
+                referencedView = view;
+            } else {
+                referencedView = self.sd_categoryManager.flowItems[idx - perRowItemsCount];
+                view.sd_layout
+                .leftEqualToView(referencedView)
+                .widthIs(w)
+                .topSpaceToView(referencedView, verticalMargin);
+            }
         }];
     }
     
@@ -908,9 +1090,19 @@
         
         [self.autoLayoutModelsArray enumerateObjectsUsingBlock:^(SDAutoLayoutModel *model, NSUInteger idx, BOOL *stop) {
             if (idx < caches.count) {
-                model.needsAutoResizeView.frame = [[caches objectAtIndex:idx] CGRectValue];
+                CGRect originalFrame = model.needsAutoResizeView.frame;
+                CGRect newFrame = [[caches objectAtIndex:idx] CGRectValue];
+                if (CGRectEqualToRect(originalFrame, newFrame)) {
+                    [model.needsAutoResizeView setNeedsLayout];
+                } else {
+                    model.needsAutoResizeView.frame = newFrame;
+                }
                 [self setupCornerRadiusWithView:model.needsAutoResizeView model:model];
+                model.needsAutoResizeView.sd_categoryManager.hasSetFrameWithCache = YES;
             } else {
+                if (model.needsAutoResizeView.sd_categoryManager.hasSetFrameWithCache) {
+                    model.needsAutoResizeView.sd_categoryManager.hasSetFrameWithCache = NO;
+                }
                 [self sd_resizeWithModel:model];
             }
         }];
@@ -924,24 +1116,28 @@
         if ([cell isKindOfClass:[UITableViewCell class]]) {
             CGFloat height = 0;
             for (UIView *view in cell.sd_bottomViewsArray) {
-                height = MAX(height, view.bottom);
+                height = MAX(height, view.bottom_sd);
             }
             cell.autoHeight = height + cell.sd_bottomViewBottomMargin;
         }
     } else if (![self isKindOfClass:[UITableViewCell class]] && (self.sd_bottomViewsArray.count || self.sd_rightViewsArray.count)) {
+        if (self.sd_categoryManager.hasSetFrameWithCache) {
+            self.sd_categoryManager.hasSetFrameWithCache = NO;
+            return;
+        }
         CGFloat contentHeight = 0;
         CGFloat contentWidth = 0;
         if (self.sd_bottomViewsArray) {
             CGFloat height = 0;
             for (UIView *view in self.sd_bottomViewsArray) {
-                height = MAX(height, view.bottom);
+                height = MAX(height, view.bottom_sd);
             }
             contentHeight = height + self.sd_bottomViewBottomMargin;
         }
         if (self.sd_rightViewsArray) {
             CGFloat width = 0;
             for (UIView *view in self.sd_rightViewsArray) {
-                width = MAX(width, view.right);
+                width = MAX(width, view.right_sd);
             }
             contentWidth = width + self.sd_rightViewRightMargin;
         }
@@ -955,30 +1151,44 @@
                 contentSize.width = contentWidth;
             }
             if (contentSize.width <= 0) {
-                contentSize.width = scrollView.width;
+                contentSize.width = scrollView.width_sd;
             }
             if (!CGSizeEqualToSize(contentSize, scrollView.contentSize)) {
                 scrollView.contentSize = contentSize;
             }
         } else {
             // 如果这里出现循环调用情况请把demo发送到gsdios@126.com，谢谢配合。
-            if (self.sd_bottomViewsArray.count && (floorf(contentHeight) != floorf(self.height))) {
-                self.height = contentHeight;
-                self.fixedHeight = @(self.height);
+            if (self.sd_bottomViewsArray.count && (floorf(contentHeight) != floorf(self.height_sd))) {
+                self.height_sd = contentHeight;
+                self.fixedHeight = @(self.height_sd);
             }
             
-            if (self.sd_rightViewsArray.count && (floorf(contentWidth) != floorf(self.width))) {
-                self.width = contentWidth;
-                self.fixedWidth = @(self.width);
+            if (self.sd_rightViewsArray.count && (floorf(contentWidth) != floorf(self.width_sd))) {
+                self.width_sd = contentWidth;
+                self.fixedWidth = @(self.width_sd);
             }
         }
         
-        if (![self isKindOfClass:[UIScrollView class]] && self.sd_rightViewsArray.count && (self.ownLayoutModel.right || self.ownLayoutModel.equalRight)) {
-            [self layoutRightWithView:self model:self.ownLayoutModel];
+        SDAutoLayoutModel *model = self.ownLayoutModel;
+        
+        if (![self isKindOfClass:[UIScrollView class]] && self.sd_rightViewsArray.count && (model.right || model.equalRight || model.centerX || model.equalCenterX)) {
+            self.fixedWidth = @(self.width);
+            if (model.right || model.equalRight) {
+                [self layoutRightWithView:self model:model];
+            } else {
+                [self layoutLeftWithView:self model:model];
+            }
+            self.fixedWidth = nil;
         }
         
-        if (![self isKindOfClass:[UIScrollView class]] && self.sd_bottomViewsArray.count && (self.ownLayoutModel.bottom || self.ownLayoutModel.equalBottom)) {
-            [self layoutBottomWithView:self model:self.ownLayoutModel];
+        if (![self isKindOfClass:[UIScrollView class]] && self.sd_bottomViewsArray.count && (model.bottom || model.equalBottom || model.centerY || model.equalCenterY)) {
+            self.fixedHeight = @(self.height);
+            if (model.bottom || model.equalBottom) {
+                [self layoutBottomWithView:self model:model];
+            } else {
+                [self layoutTopWithView:self model:model];
+            }
+            self.fixedHeight = nil;
         }
         
         if (self.didFinishAutoLayoutBlock) {
@@ -991,11 +1201,11 @@
 {
     UIView *view = model.needsAutoResizeView;
     
-    if (!view) return;
+    if (!view || view.sd_isClosingAotuLayout) return;
     
     if (view.sd_maxWidth && (model.rightSpaceToView || model.rightEqualToView)) { // 靠右布局前提设置
         [self layoutAutoWidthWidthView:view model:model];
-        view.fixedWidth = @(view.width);
+        view.fixedWidth = @(view.width_sd);
     }
     
     [self layoutWidthWithView:view model:model];
@@ -1006,9 +1216,9 @@
     
     [self layoutRightWithView:view model:model];
     
-    if (view.autoHeightRatioValue && view.width > 0 && (model.bottomEqualToView || model.bottomSpaceToView)) { // 底部布局前提设置
+    if (view.autoHeightRatioValue && view.width_sd > 0 && (model.bottomEqualToView || model.bottomSpaceToView)) { // 底部布局前提设置
         [self layoutAutoHeightWidthView:view model:model];
-        view.fixedHeight = @(view.height);
+        view.fixedHeight = @(view.height_sd);
     }
     
     
@@ -1020,32 +1230,32 @@
         [self layoutAutoWidthWidthView:view model:model];
     }
     
-    if (model.maxWidth && [model.maxWidth floatValue] < view.width) {
-        view.width = [model.maxWidth floatValue];
+    if (model.maxWidth && [model.maxWidth floatValue] < view.width_sd) {
+        view.width_sd = [model.maxWidth floatValue];
     }
     
-    if (model.minWidth && [model.minWidth floatValue] > view.width) {
-        view.width = [model.minWidth floatValue];
+    if (model.minWidth && [model.minWidth floatValue] > view.width_sd) {
+        view.width_sd = [model.minWidth floatValue];
     }
     
-    if (view.autoHeightRatioValue && view.width > 0) {
+    if (view.autoHeightRatioValue && view.width_sd > 0) {
         [self layoutAutoHeightWidthView:view model:model];
     }
     
-    if (model.maxHeight && [model.maxHeight floatValue] < view.height) {
-        view.height = [model.maxHeight floatValue];
+    if (model.maxHeight && [model.maxHeight floatValue] < view.height_sd) {
+        view.height_sd = [model.maxHeight floatValue];
     }
     
-    if (model.minHeight && [model.minHeight floatValue] > view.height) {
-        view.height = [model.minHeight floatValue];
+    if (model.minHeight && [model.minHeight floatValue] > view.height_sd) {
+        view.height_sd = [model.minHeight floatValue];
     }
     
     if (model.widthEqualHeight) {
-        view.width = view.height;
+        view.width_sd = view.height_sd;
     }
     
     if (model.heightEqualWidth) {
-        view.height = view.width;
+        view.height_sd = view.width_sd;
     }
     
     if (view.didFinishAutoLayoutBlock) {
@@ -1056,31 +1266,29 @@
         [view layoutSubviews];
     }
     
-    
     [self setupCornerRadiusWithView:view model:model];
-    
 }
 
 - (void)layoutAutoHeightWidthView:(UIView *)view model:(SDAutoLayoutModel *)model
 {
     if ([view.autoHeightRatioValue floatValue] > 0) {
-        view.height = view.width * [view.autoHeightRatioValue floatValue];
+        view.height_sd = view.width_sd * [view.autoHeightRatioValue floatValue];
     } else {
         if ([view isKindOfClass:[UILabel class]]) {
             UILabel *label = (UILabel *)view;
             label.numberOfLines = 0;
             if (label.text.length) {
                 if (!label.isAttributedContent) {
-                    CGRect rect = [label.text boundingRectWithSize:CGSizeMake(label.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
-                    label.height = rect.size.height;
+                    CGRect rect = [label.text boundingRectWithSize:CGSizeMake(label.width_sd, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
+                    label.height_sd = rect.size.height + 0.1;
                 } else {
                     [label sizeToFit];
                 }
             } else {
-                label.height = 0;
+                label.height_sd = 0;
             }
         } else {
-            view.height = 0;
+            view.height_sd = 0;
         }
     }
 }
@@ -1093,16 +1301,19 @@
         label.numberOfLines = 1;
         if (label.text.length) {
             if (!label.isAttributedContent) {
-                CGRect rect = [label.text boundingRectWithSize:CGSizeMake(width, label.height) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
-                label.width = rect.size.width;
+                CGRect rect = [label.text boundingRectWithSize:CGSizeMake(MAXFLOAT, label.height_sd) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil];
+                if (rect.size.width > width) {
+                    rect.size.width = width;
+                }
+                label.width_sd = rect.size.width + 0.1;
             } else{
                 [label sizeToFit];
-                if (label.width > width) {
-                    label.width = width;
+                if (label.width_sd > width) {
+                    label.width_sd = width;
                 }
             }
         } else {
-            label.width = 0;
+            label.size_sd = CGSizeZero;
         }
     }
 }
@@ -1110,22 +1321,22 @@
 - (void)layoutWidthWithView:(UIView *)view model:(SDAutoLayoutModel *)model
 {
     if (model.width) {
-        view.width = [model.width.value floatValue];
-        view.fixedWidth = @(view.width);
+        view.width_sd = [model.width.value floatValue];
+        view.fixedWidth = @(view.width_sd);
     } else if (model.ratio_width) {
-        view.width = model.ratio_width.refView.width * [model.ratio_width.value floatValue];
-        view.fixedWidth = @(view.width);
+        view.width_sd = model.ratio_width.refView.width_sd * [model.ratio_width.value floatValue];
+        view.fixedWidth = @(view.width_sd);
     }
 }
 
 - (void)layoutHeightWithView:(UIView *)view model:(SDAutoLayoutModel *)model
 {
     if (model.height) {
-        view.height = [model.height.value floatValue];
-        view.fixedHeight = @(view.height);
+        view.height_sd = [model.height.value floatValue];
+        view.fixedHeight = @(view.height_sd);
     } else if (model.ratio_height) {
-        view.height = [model.ratio_height.value floatValue] * model.ratio_height.refView.height;
-        view.fixedHeight = @(view.height);
+        view.height_sd = [model.ratio_height.value floatValue] * model.ratio_height.refView.height_sd;
+        view.fixedHeight = @(view.height_sd);
     }
 }
 
@@ -1134,33 +1345,46 @@
     if (model.left) {
         if (view.superview == model.left.refView) {
             if (!view.fixedWidth) { // view.autoLeft && view.autoRight
-                view.width = view.right - [model.left.value floatValue];
+                view.width_sd = view.right_sd - [model.left.value floatValue];
             }
-            view.left = [model.left.value floatValue];
+            view.left_sd = [model.left.value floatValue];
         } else {
-            if (!view.fixedWidth) { // view.autoLeft && view.autoRight
-                view.width = view.right - model.left.refView.right - [model.left.value floatValue];
+            if (model.left.refViewsArray.count) {
+                CGFloat lastRefRight = 0;
+                for (UIView *ref in model.left.refViewsArray) {
+                    if ([ref isKindOfClass:[UIView class]] && ref.right_sd > lastRefRight) {
+                        model.left.refView = ref;
+                        lastRefRight = ref.right_sd;
+                    }
+                }
             }
-            view.left = model.left.refView.right + [model.left.value floatValue];
+            if (!view.fixedWidth) { // view.autoLeft && view.autoRight
+                view.width_sd = view.right_sd - model.left.refView.right_sd - [model.left.value floatValue];
+            }
+            view.left_sd = model.left.refView.right_sd + [model.left.value floatValue];
         }
         
     } else if (model.equalLeft) {
         if (!view.fixedWidth) {
-            view.width = view.right - model.equalLeft.refView.left;
+            if (model.needsAutoResizeView == view.superview) {
+                view.width_sd = view.right_sd - (0 + model.equalLeft.offset);
+            } else {
+                view.width_sd = view.right_sd  - (model.equalLeft.refView.left_sd + model.equalLeft.offset);
+            }
         }
         if (view.superview == model.equalLeft.refView) {
-            view.left = 0;
+            view.left_sd = 0 + model.equalLeft.offset;
         } else {
-            view.left = model.equalLeft.refView.left;
+            view.left_sd = model.equalLeft.refView.left_sd + model.equalLeft.offset;
         }
     } else if (model.equalCenterX) {
         if (view.superview == model.equalCenterX.refView) {
-            view.centerX = model.equalCenterX.refView.width * 0.5;
+            view.centerX_sd = model.equalCenterX.refView.width_sd * 0.5 + model.equalCenterX.offset;
         } else {
-            view.centerX = model.equalCenterX.refView.centerX;
+            view.centerX_sd = model.equalCenterX.refView.centerX_sd + model.equalCenterX.offset;
         }
     } else if (model.centerX) {
-        view.centerX = [model.centerX floatValue];
+        view.centerX_sd = [model.centerX floatValue];
     }
 }
 
@@ -1169,27 +1393,27 @@
     if (model.right) {
         if (view.superview == model.right.refView) {
             if (!view.fixedWidth) { // view.autoLeft && view.autoRight
-                view.width = model.right.refView.width - view.left - [model.right.value floatValue];
+                view.width_sd = model.right.refView.width_sd - view.left_sd - [model.right.value floatValue];
             }
-            view.right = model.right.refView.width - [model.right.value floatValue];
+            view.right_sd = model.right.refView.width_sd - [model.right.value floatValue];
         } else {
             if (!view.fixedWidth) { // view.autoLeft && view.autoRight
-                view.width =  model.right.refView.left - view.left - [model.right.value floatValue];
+                view.width_sd =  model.right.refView.left_sd - view.left_sd - [model.right.value floatValue];
             }
-            view.right = model.right.refView.left - [model.right.value floatValue];
+            view.right_sd = model.right.refView.left_sd - [model.right.value floatValue];
         }
     } else if (model.equalRight) {
         if (!view.fixedWidth) {
             if (model.equalRight.refView == view.superview) {
-                view.width = model.equalRight.refView.width - view.left;
+                view.width_sd = model.equalRight.refView.width_sd - view.left_sd + model.equalRight.offset;
             } else {
-                view.width = model.equalRight.refView.right - view.left;
+                view.width_sd = model.equalRight.refView.right_sd - view.left_sd + model.equalRight.offset;
             }
         }
         
-        view.right = model.equalRight.refView.right;
+        view.right_sd = model.equalRight.refView.right_sd + model.equalRight.offset;
         if (view.superview == model.equalRight.refView) {
-            view.right = model.equalRight.refView.width;
+            view.right_sd = model.equalRight.refView.width_sd + model.equalRight.offset;
         }
         
     }
@@ -1200,35 +1424,44 @@
     if (model.top) {
         if (view.superview == model.top.refView) {
             if (!view.fixedHeight) { // view.autoTop && view.autoBottom && view.bottom
-                view.height = view.bottom - [model.top.value floatValue];
+                view.height_sd = view.bottom_sd - [model.top.value floatValue];
             }
-            view.top = [model.top.value floatValue];
+            view.top_sd = [model.top.value floatValue];
         } else {
-            if (!view.fixedHeight) { // view.autoTop && view.autoBottom && view.bottom
-                view.height = view.bottom - model.top.refView.bottom - [model.top.value floatValue];
+            if (model.top.refViewsArray.count) {
+                CGFloat lastRefBottom = 0;
+                for (UIView *ref in model.top.refViewsArray) {
+                    if ([ref isKindOfClass:[UIView class]] && ref.bottom_sd > lastRefBottom) {
+                        model.top.refView = ref;
+                        lastRefBottom = ref.bottom_sd;
+                    }
+                }
             }
-            view.top = model.top.refView.bottom + [model.top.value floatValue];
+            if (!view.fixedHeight) { // view.autoTop && view.autoBottom && view.bottom
+                view.height_sd = view.bottom_sd - model.top.refView.bottom_sd - [model.top.value floatValue];
+            }
+            view.top_sd = model.top.refView.bottom_sd + [model.top.value floatValue];
         }
     } else if (model.equalTop) {
         if (view.superview == model.equalTop.refView) {
             if (!view.fixedHeight) {
-                view.height = view.bottom;
+                view.height_sd = view.bottom_sd - model.equalTop.offset;
             }
-            view.top = 0;
+            view.top_sd = 0 + model.equalTop.offset;
         } else {
             if (!view.fixedHeight) {
-                view.height = view.bottom - model.equalTop.refView.top;
+                view.height_sd = view.bottom_sd - (model.equalTop.refView.top_sd + model.equalTop.offset);
             }
-            view.top = model.equalTop.refView.top;
+            view.top_sd = model.equalTop.refView.top_sd + model.equalTop.offset;
         }
     } else if (model.equalCenterY) {
         if (view.superview == model.equalCenterY.refView) {
-            view.centerY = model.equalCenterY.refView.height * 0.5;
+            view.centerY_sd = model.equalCenterY.refView.height_sd * 0.5 + model.equalCenterY.offset;
         } else {
-            view.centerY = model.equalCenterY.refView.centerY;
+            view.centerY_sd = model.equalCenterY.refView.centerY_sd + model.equalCenterY.offset;
         }
     } else if (model.centerY) {
-        view.centerY = [model.centerY floatValue];
+        view.centerY_sd = [model.centerY floatValue];
     }
 }
 
@@ -1237,28 +1470,31 @@
     if (model.bottom) {
         if (view.superview == model.bottom.refView) {
             if (!view.fixedHeight) {
-                view.height = view.superview.height - view.top - [model.bottom.value floatValue];
+                view.height_sd = view.superview.height_sd - view.top_sd - [model.bottom.value floatValue];
             }
-            view.bottom = model.bottom.refView.height - [model.bottom.value floatValue];
+            view.bottom_sd = model.bottom.refView.height_sd - [model.bottom.value floatValue];
         } else {
             if (!view.fixedHeight) {
-                view.height = model.bottom.refView.top - view.top - [model.bottom.value floatValue];
+                view.height_sd = model.bottom.refView.top_sd - view.top_sd - [model.bottom.value floatValue];
             }
-            view.bottom = model.bottom.refView.top - [model.bottom.value floatValue];
+            view.bottom_sd = model.bottom.refView.top_sd - [model.bottom.value floatValue];
         }
         
     } else if (model.equalBottom) {
         if (view.superview == model.equalBottom.refView) {
             if (!view.fixedHeight) {
-                view.height = view.superview.height - view.top;
+                view.height_sd = view.superview.height_sd - view.top_sd + model.equalBottom.offset;
             }
-            view.bottom = model.equalBottom.refView.height;
+            view.bottom_sd = model.equalBottom.refView.height_sd + model.equalBottom.offset;
         } else {
             if (!view.fixedHeight) {
-                view.height = model.equalBottom.refView.bottom - view.top;
+                view.height_sd = model.equalBottom.refView.bottom_sd - view.top_sd + model.equalBottom.offset;
             }
-            view.bottom = model.equalBottom.refView.bottom;
+            view.bottom_sd = model.equalBottom.refView.bottom_sd + model.equalBottom.offset;
         }
+    }
+    if (model.widthEqualHeight && !view.fixedHeight) {
+        [self layoutRightWithView:view model:model];
     }
 }
 
@@ -1270,10 +1506,10 @@
     
     if (view.sd_cornerRadius && (cornerRadius != [view.sd_cornerRadius floatValue])) {
         newCornerRadius = [view.sd_cornerRadius floatValue];
-    } else if (view.sd_cornerRadiusFromWidthRatio && (cornerRadius != [view.sd_cornerRadiusFromWidthRatio floatValue] * view.width)) {
-        newCornerRadius = view.width * [view.sd_cornerRadiusFromWidthRatio floatValue];
-    } else if (view.sd_cornerRadiusFromHeightRatio && (cornerRadius != view.height * [view.sd_cornerRadiusFromHeightRatio floatValue])) {
-        newCornerRadius = view.height * [view.sd_cornerRadiusFromHeightRatio floatValue];
+    } else if (view.sd_cornerRadiusFromWidthRatio && (cornerRadius != [view.sd_cornerRadiusFromWidthRatio floatValue] * view.width_sd)) {
+        newCornerRadius = view.width_sd * [view.sd_cornerRadiusFromWidthRatio floatValue];
+    } else if (view.sd_cornerRadiusFromHeightRatio && (cornerRadius != view.height_sd * [view.sd_cornerRadiusFromHeightRatio floatValue])) {
+        newCornerRadius = view.height_sd * [view.sd_cornerRadiusFromHeightRatio floatValue];
     }
     
     if (newCornerRadius > 0) {
@@ -1289,113 +1525,162 @@
 
 @end
 
+@implementation UIButton (SDAutoLayoutButton)
+
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSString *selString = @"layoutSubviews";
+        NSString *mySelString = [@"sd_button_" stringByAppendingString:selString];
+        
+        Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
+        Method myMethod = class_getInstanceMethod(self, NSSelectorFromString(mySelString));
+        method_exchangeImplementations(originalMethod, myMethod);
+    });
+}
+
+- (void)sd_button_layoutSubviews
+{
+    // 如果程序崩溃在这行代码说明是你的view在执行“layoutSubvies”方法时出了问题而不是在此自动布局库内部出现了问题，请检查你的“layoutSubvies”方法
+    [self sd_button_layoutSubviews];
+    
+    [self sd_layoutSubviewsHandle];
+    
+}
+
+@end
+
 
 @implementation UIView (SDChangeFrame)
 
-- (CGFloat)left {
+- (BOOL)shouldReadjustFrameBeforeStoreCache
+{
+    return self.sd_categoryManager.shouldReadjustFrameBeforeStoreCache;
+}
+
+- (void)setShouldReadjustFrameBeforeStoreCache:(BOOL)shouldReadjustFrameBeforeStoreCache
+{
+    self.sd_categoryManager.shouldReadjustFrameBeforeStoreCache = shouldReadjustFrameBeforeStoreCache;
+}
+
+- (CGFloat)left_sd {
     return self.frame.origin.x;
 }
 
-- (void)setLeft:(CGFloat)x {
+- (void)setLeft_sd:(CGFloat)x_sd {
     CGRect frame = self.frame;
-    frame.origin.x = x;
+    frame.origin.x = x_sd;
     self.frame = frame;
 }
 
-- (CGFloat)top {
+- (CGFloat)top_sd {
     return self.frame.origin.y;
 }
 
-- (void)setTop:(CGFloat)y {
+- (void)setTop_sd:(CGFloat)y_sd {
     CGRect frame = self.frame;
-    frame.origin.y = y;
+    frame.origin.y = y_sd;
     self.frame = frame;
 }
 
-- (CGFloat)right {
+- (CGFloat)right_sd {
     return self.frame.origin.x + self.frame.size.width;
 }
 
-- (void)setRight:(CGFloat)right {
+- (void)setRight_sd:(CGFloat)right_sd {
     CGRect frame = self.frame;
-    frame.origin.x = right - frame.size.width;
+    frame.origin.x = right_sd - frame.size.width;
     self.frame = frame;
 }
 
-- (CGFloat)bottom {
+- (CGFloat)bottom_sd {
     return self.frame.origin.y + self.frame.size.height;
 }
 
-- (void)setBottom:(CGFloat)bottom {
+- (void)setBottom_sd:(CGFloat)bottom_sd {
     CGRect frame = self.frame;
-    frame.origin.y = bottom - frame.size.height;
+    frame.origin.y = bottom_sd - frame.size.height;
     self.frame = frame;
 }
 
-- (CGFloat)centerX
+- (CGFloat)centerX_sd
 {
-    return self.left + self.width * 0.5;
+    return self.left_sd + self.width_sd * 0.5;
 }
 
-- (void)setCenterX:(CGFloat)centerX
+- (void)setCenterX_sd:(CGFloat)centerX_sd
 {
-    self.left = centerX - self.width * 0.5;
+    self.left_sd = centerX_sd - self.width_sd * 0.5;
 }
 
-- (CGFloat)centerY
+- (CGFloat)centerY_sd
 {
-    return self.top + self.height * 0.5;
+    return self.top_sd + self.height_sd * 0.5;
 }
 
-- (void)setCenterY:(CGFloat)centerY
+- (void)setCenterY_sd:(CGFloat)centerY_sd
 {
-    self.top = centerY - self.height * 0.5;
+    self.top_sd = centerY_sd - self.height_sd * 0.5;
 }
 
-- (CGFloat)width {
+- (CGFloat)width_sd {
     return self.frame.size.width;
 }
 
-- (void)setWidth:(CGFloat)width {
+- (void)setWidth_sd:(CGFloat)width_sd {
     if (self.ownLayoutModel.widthEqualHeight) {
-        if (width != self.height) return;
+        if (width_sd != self.height_sd) return;
     }
-    CGRect frame = self.frame;
-    frame.size.width = width;
+    [self setWidth:width_sd];
     if (self.ownLayoutModel.heightEqualWidth) {
-        frame.size.height = width;
+        self.height_sd = width_sd;
     }
-    self.frame = frame;
 }
 
-- (CGFloat)height {
+- (CGFloat)height_sd {
     return self.frame.size.height;
 }
 
-- (void)setHeight:(CGFloat)height {
+- (void)setHeight_sd:(CGFloat)height_sd {
     if (self.ownLayoutModel.heightEqualWidth) {
-        if (height != self.width) return;
+        if (height_sd != self.width_sd) return;
     }
-    CGRect frame = self.frame;
-    frame.size.height = height;
+    [self setHeight:height_sd];
     if (self.ownLayoutModel.widthEqualHeight) {
-        frame.size.width = height;
+        self.width_sd = height_sd;
     }
-    self.frame = frame;
 }
 
-- (CGPoint)origin {
+- (CGPoint)origin_sd {
     return self.frame.origin;
 }
 
-- (void)setOrigin:(CGPoint)origin {
+- (void)setOrigin_sd:(CGPoint)origin_sd {
     CGRect frame = self.frame;
-    frame.origin = origin;
+    frame.origin = origin_sd;
     self.frame = frame;
 }
 
-- (CGSize)size {
+- (CGSize)size_sd {
     return self.frame.size;
+}
+
+- (void)setSize_sd:(CGSize)size_sd {
+    [self setSize:size_sd];
+}
+
+- (void)setWidth:(CGFloat)width
+{
+    CGRect frame = self.frame;
+    frame.size.width = width;
+    self.frame = frame;
+}
+
+- (void)setHeight:(CGFloat)height {
+    CGRect frame = self.frame;
+    frame.size.height = height;
+    self.frame = frame;
 }
 
 - (void)setSize:(CGSize)size {
@@ -1404,9 +1689,94 @@
     self.frame = frame;
 }
 
+// 兼容旧版本
+
+- (CGFloat)left
+{
+    return self.left_sd;
+}
+
+- (void)setLeft:(CGFloat)left
+{
+    self.left_sd = left;
+}
+
+- (CGFloat)right
+{
+    return self.right_sd;
+}
+
+- (void)setRight:(CGFloat)right
+{
+    self.right_sd = right;
+}
+
+- (CGFloat)width
+{
+    return self.width_sd;
+}
+
+- (CGFloat)height
+{
+    return self.height_sd;
+}
+
+- (CGFloat)top
+{
+    return self.top_sd;
+}
+
+- (void)setTop:(CGFloat)top
+{
+    self.top_sd = top;
+}
+
+- (CGFloat)bottom
+{
+    return self.bottom_sd;
+}
+
+- (void)setBottom:(CGFloat)bottom
+{
+    self.bottom_sd = bottom;
+}
+
+- (CGFloat)centerX
+{
+    return self.centerX_sd;
+}
+
+- (void)setCenterX:(CGFloat)centerX
+{
+    self.centerX_sd = centerX;
+}
+
+- (CGFloat)centerY
+{
+    return self.centerY_sd;
+}
+
+- (void)setCenterY:(CGFloat)centerY
+{
+    self.centerY_sd = centerY;
+}
+
+- (CGPoint)origin
+{
+    return self.origin_sd;
+}
+
+- (void)setOrigin:(CGPoint)origin
+{
+    self.origin_sd = origin;
+}
+
+- (CGSize)size
+{
+    return self.size_sd;
+}
+
 @end
-
-
 
 @implementation SDUIViewCategoryManager
 

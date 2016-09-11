@@ -17,6 +17,7 @@
 #import <Accelerate/Accelerate.h>
 
 #define iOS8 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+#define iOS10 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0)
 
 @interface LEEAlert ()
 
@@ -984,6 +985,12 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         self.view.backgroundColor = [UIColor clearColor];
         
+        self.edgesForExtendedLayout=UIRectEdgeNone;
+        
+        self.extendedLayoutIncludesOpaqueBars=NO;
+        
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        
         self.alertBackgroundImageView.backgroundColor = [UIColor clearColor];
         
         [self.view addSubview:self.alertBackgroundImageView];
@@ -1003,86 +1010,97 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(keyboardDidChangeFrame:) name:UIKeyboardDidChangeFrameNotification object:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientationNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)keyboardWillShown:(NSNotification *) notify{
     
-    isShowingKeyboard = YES;
-    
     keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    CGRect beginKeyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    
-    //取得键盘的动画时间，这样可以在视图上移的时候更连贯
-    
-    double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    
-    if (keyboardFrame.size.height > 0 && beginKeyboardFrame.origin.y - keyboardFrame.origin.y > 0) {
-        
-        __weak typeof(self) weakSelf = self;
-        
-        [UIView animateWithDuration:duration ? duration : 0.25f animations:^{
-            
-            if (iOS8) {
-                
-                CGRect alertViewFrame = weakSelf.alertView.frame;
-                
-                alertViewFrame.size.height = keyboardFrame.origin.y - alertViewHeight < 20 ? keyboardFrame.origin.y - 20 : alertViewHeight;
-                
-                alertViewFrame.origin.y = keyboardFrame.origin.y - alertViewFrame.size.height - 10;
-                
-                weakSelf.alertView.frame = alertViewFrame;
-                
-                weakSelf.alertView.center = CGPointMake(CGRectGetWidth(weakSelf.view.frame) / 2 , weakSelf.alertView.center.y);
-                
-            } else {
-                
-                [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
-            }
-            
-        } completion:^(BOOL finished) {}];
-        
-    }
-    
+
+    isShowingKeyboard = YES;
 }
 
 - (void)keyboardWillHidden:(NSNotification *) notify{
     
     keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
+    isShowingKeyboard = NO;
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *) notify{
+    
+}
+
+- (void)keyboardDidChangeFrame:(NSNotification *) notify{
+ 
     double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
-    isShowingKeyboard = NO;
+    keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
-    __weak typeof(self) weakSelf = self;
-    
-    [UIView animateWithDuration:duration ? duration : 0.25f animations:^{
+    if (isShowingKeyboard) {
+        
+        [UIView beginAnimations:@"keyboardDidChangeFrame" context:NULL];
+        
+        [UIView setAnimationDuration:duration];
         
         if (iOS8) {
             
-            CGRect alertViewFrame = weakSelf.alertView.frame;
+            if (keyboardFrame.size.height) {
+                
+                CGFloat keyboardY = keyboardFrame.origin.y;
+                
+                CGRect alertViewFrame = self.alertView.frame;
+                
+                CGFloat tempAlertViewHeight = keyboardY - alertViewHeight < 20 ? keyboardY - 20 : alertViewHeight;
+                
+                alertViewFrame.size.height = tempAlertViewHeight;
+                
+                alertViewFrame.origin.y = keyboardY - alertViewFrame.size.height - 10;
+                
+                self.alertView.frame = alertViewFrame;
+            }
             
-            alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
+            [self.alertView setContentOffset:CGPointZero animated:NO];
             
-            alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+            [self.alertView scrollRectToVisible:[self findFirstResponder:self.alertView].frame animated:YES];
             
-            weakSelf.alertView.frame = alertViewFrame;
-            
-            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , weakSelf.alertView.center.y);
+            self.alertView.center = CGPointMake(CGRectGetWidth([[UIScreen mainScreen] bounds]) / 2 , self.alertView.center.y);
             
         } else {
             
             [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
         }
         
-    } completion:^(BOOL finished) {}];
+        [UIView commitAnimations];
+        
+    } else {
+        
+        [UIView beginAnimations:@"keyboardDidChangeFrame" context:NULL];
+        
+        [UIView setAnimationDuration:duration];
+        
+        if (iOS8) {
+            
+            CGRect alertViewFrame = self.alertView.frame;
+            
+            alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;;
+            
+            alertViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - alertViewFrame.size.height) / 2;
+            
+            self.alertView.frame = alertViewFrame;
+            
+            self.alertView.center = CGPointMake(CGRectGetWidth(self.view.frame) / 2 , self.alertView.center.y);
+            
+        } else {
+            
+            [self updateOrientationLayoutWithInterfaceOrientation:self.interfaceOrientation]; //iOS 8 以下处理
+        }
+        
+        [UIView commitAnimations];
+    }
     
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *) notify{
-    
-    if (isShowingKeyboard) keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 }
 
 - (void)changeOrientationNotification:(NSNotification *)notify{
@@ -1667,6 +1685,20 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return rect;
 }
 
+- (UIView *)findFirstResponder:(UIView *)view{
+    
+    if (view.isFirstResponder) return view;
+    
+    for (UIView *subView in view.subviews) {
+        
+        UIView *firstResponder = [self findFirstResponder:subView];
+        
+        if (firstResponder) return firstResponder;
+    }
+    
+    return nil;
+}
+
 #pragma mark LazyLoading
 
 - (UIWindow *)currentKeyWindow{
@@ -2028,4 +2060,5 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     
     return outputImage;
 }
+
 @end
