@@ -19,12 +19,6 @@
 #define iOS8 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 #define iOS10 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0)
 
-@protocol LEEAlertProtocol <NSObject>
-
-- (void)closeAlertWithCompletionBlock:(void (^)())completionBlock;
-
-@end
-
 @interface LEEAlert ()
 
 @property (nonatomic , strong ) UIWindow *mainWindow;
@@ -32,6 +26,12 @@
 @property (nonatomic , strong ) UIWindow *alertWindow;
 
 @property (nonatomic , strong ) NSMutableArray <LEEAlertCustom *>*customAlertArray;
+
+@end
+
+@protocol LEEAlertProtocol <NSObject>
+
+- (void)closeAlertWithCompletionBlock:(void (^)())completionBlock;
 
 @end
 
@@ -44,6 +44,8 @@
     _custom = nil;
     
     _mainWindow = nil;
+    
+    _alertWindow = nil;
 }
 
 + (LEEAlert *)shareAlertManager{
@@ -1926,6 +1928,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
 }
+
+#pragma mark LEEAlertProtocol
 
 - (void)closeAlertWithCompletionBlock:(void (^)())completionBlock{
     

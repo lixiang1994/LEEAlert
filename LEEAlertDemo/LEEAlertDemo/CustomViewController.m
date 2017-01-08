@@ -350,7 +350,7 @@
         //添加按钮 传入按钮标题 和点击事件的Block
         
         NSLog(@"点击了添加的按钮");
-        [self button3Action];
+        
     })
     .LeeCancelButtonTitle(@"取消")   //设置取消按钮标题
     .LeeCancelButtonAction(^(){
