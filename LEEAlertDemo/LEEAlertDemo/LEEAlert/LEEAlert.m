@@ -6,7 +6,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    V1.0
+ *  @version    V1.1
  */
 
 
@@ -19,17 +19,19 @@
 #define iOS8 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 #define iOS10 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0)
 
-@interface LEEAlert ()
+@protocol LEEAlertProtocol <NSObject>
 
-@property (nonatomic , weak ) id currentCustomAlertDelegate;
-
-@property (nonatomic , strong ) UIWindow *mainWindow;
+- (void)closeAlertWithCompletionBlock:(void (^)())completionBlock;
 
 @end
 
-@protocol LEEAlertManagerDelegate <NSObject>
+@interface LEEAlert ()
 
-- (void)customAlertCloseDelegate;
+@property (nonatomic , strong ) UIWindow *mainWindow;
+
+@property (nonatomic , strong ) UIWindow *alertWindow;
+
+@property (nonatomic , strong ) NSMutableArray <LEEAlertCustom *>*customAlertArray;
 
 @end
 
@@ -40,6 +42,8 @@
     _system = nil;
     
     _custom = nil;
+    
+    _mainWindow = nil;
 }
 
 + (LEEAlert *)shareAlertManager{
@@ -49,7 +53,6 @@
     dispatch_once(&onceToken, ^{
         
         alertManager = [LEEAlert alert];
-        
     });
     
     return alertManager;
@@ -57,21 +60,32 @@
 
 + (LEEAlert *)alert{
     
-    LEEAlert *alert = [[LEEAlert alloc]init];
+    LEEAlert *alert = [[LEEAlert alloc] init];
     
     return alert;
 }
 
-+(void)configMainWindow:(UIWindow *)window{
++ (void)configMainWindow:(UIWindow *)window{
     
     if (window) [LEEAlert shareAlertManager].mainWindow = window;
 }
 
 + (void)closeCustomAlert{
     
-    if ([LEEAlert shareAlertManager].currentCustomAlertDelegate && [[LEEAlert shareAlertManager].currentCustomAlertDelegate respondsToSelector:@selector(customAlertCloseDelegate)]) {
+    [self closeCustomAlertWithCompletionBlock:nil];
+}
+
++ (void)closeCustomAlertWithCompletionBlock:(void (^)())completionBlock{
+    
+    if ([LEEAlert shareAlertManager].customAlertArray.count) {
         
-        [[LEEAlert shareAlertManager].currentCustomAlertDelegate customAlertCloseDelegate];
+        LEEAlertCustom *custom = [LEEAlert shareAlertManager].customAlertArray.lastObject;
+        
+        if ([custom respondsToSelector:@selector(closeAlertWithCompletionBlock:)]) [custom performSelector:@selector(closeAlertWithCompletionBlock:) withObject:completionBlock];
+    
+    } else {
+        
+        if (completionBlock) completionBlock();
     }
     
 }
@@ -90,6 +104,29 @@
     if (!_custom) _custom = [[LEEAlertCustom alloc]init];
     
     return _custom;
+}
+
+- (NSMutableArray *)customAlertArray{
+    
+    if (!_customAlertArray) _customAlertArray = [NSMutableArray array];
+    
+    return _customAlertArray;
+}
+
+- (UIWindow *)alertWindow{
+    
+    if (!_alertWindow) {
+        
+        _alertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        _alertWindow.backgroundColor = [UIColor clearColor];
+        
+        _alertWindow.windowLevel = UIWindowLevelAlert;
+        
+        _alertWindow.hidden = YES;
+    }
+    
+    return _alertWindow;
 }
 
 @end
@@ -118,45 +155,45 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 /* 以下为配置模型属性 ╮(╯▽╰)╭ 无视就好 */
 
-@property (nonatomic , copy , readonly ) NSString *modelTitleStr;
-@property (nonatomic , copy , readonly ) NSString *modelContentStr;
-@property (nonatomic , copy , readonly ) NSString *modelCancelButtonTitleStr;
+@property (nonatomic , copy ) NSString *modelTitleStr;
+@property (nonatomic , copy ) NSString *modelContentStr;
+@property (nonatomic , copy ) NSString *modelCancelButtonTitleStr;
 
 @property (nonatomic , strong ) NSMutableArray *modelButtonArray;
 @property (nonatomic , strong ) NSMutableArray *modelTextFieldArray;
 @property (nonatomic , strong ) NSMutableArray *modelCustomSubViewsQueue;
 
-@property (nonatomic , strong , readonly ) UIView *modelCustomContentView;
+@property (nonatomic , strong ) UIView *modelCustomContentView;
 
-@property (nonatomic , assign , readonly ) CGFloat modelCornerRadius;
-@property (nonatomic , assign , readonly ) CGFloat modelSubViewMargin;
-@property (nonatomic , assign , readonly ) CGFloat modelTopSubViewMargin;
-@property (nonatomic , assign , readonly ) CGFloat modelBottomSubViewMargin;
-@property (nonatomic , assign , readonly ) CGFloat modelLeftSubViewMargin;
-@property (nonatomic , assign , readonly ) CGFloat modelRightSubViewMargin;
-@property (nonatomic , assign , readonly ) CGFloat modelAlertMaxWidth;
-@property (nonatomic , assign , readonly ) CGFloat modelAlertMaxHeight;
-@property (nonatomic , assign , readonly ) CGFloat modelAlertOpenAnimationDuration;
-@property (nonatomic , assign , readonly ) CGFloat modelAlertCloseAnimationDuration;
-@property (nonatomic , assign , readonly ) CGFloat modelAlertCustomBackGroundStypeColorAlpha;
+@property (nonatomic , assign ) CGFloat modelCornerRadius;
+@property (nonatomic , assign ) CGFloat modelSubViewMargin;
+@property (nonatomic , assign ) CGFloat modelTopSubViewMargin;
+@property (nonatomic , assign ) CGFloat modelBottomSubViewMargin;
+@property (nonatomic , assign ) CGFloat modelLeftSubViewMargin;
+@property (nonatomic , assign ) CGFloat modelRightSubViewMargin;
+@property (nonatomic , assign ) CGFloat modelAlertMaxWidth;
+@property (nonatomic , assign ) CGFloat modelAlertMaxHeight;
+@property (nonatomic , assign ) CGFloat modelAlertOpenAnimationDuration;
+@property (nonatomic , assign ) CGFloat modelAlertCloseAnimationDuration;
+@property (nonatomic , assign ) CGFloat modelAlertCustomBackGroundStypeColorAlpha;
 
-@property (nonatomic , strong , readonly ) UIColor *modelAlertViewColor;
-@property (nonatomic , strong , readonly ) UIColor *modelAlertWindowBackGroundColor;
+@property (nonatomic , strong ) UIColor *modelAlertViewColor;
+@property (nonatomic , strong ) UIColor *modelAlertWindowBackGroundColor;
 
-@property (nonatomic , assign , readonly ) BOOL modelIsAlertWindowTouchClose;
-@property (nonatomic , assign , readonly ) BOOL modelIsCustomButtonClickClose;
+@property (nonatomic , assign ) BOOL modelIsAlertWindowTouchClose;
+@property (nonatomic , assign ) BOOL modelIsCustomButtonClickClose;
 
 @property (nonatomic , copy ) void(^modelCancelButtonAction)();
 @property (nonatomic , copy ) void(^modelCancelButtonBlock)(UIButton *button);
 @property (nonatomic , copy ) void(^modelFinishConfig)(UIViewController *vc);
 
-@property (nonatomic , assign , readonly ) LEEAlertCustomBackGroundStype modelAlertCustomBackGroundStype;
+@property (nonatomic , assign ) LEEAlertCustomBackGroundStype modelAlertCustomBackGroundStype;
 
 @end
 
 @implementation LEEAlertConfigModel
 
--(void)dealloc{
+- (void)dealloc{
     
     _modelTitleStr = nil;
     _modelContentStr = nil;
@@ -199,123 +236,109 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return self;
 }
 
--(LEEConfigAlertToString)LeeTitle{
+- (LEEConfigAlertToString)LeeTitle{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(NSString *str){
         
-        _modelTitleStr = str;
-        
-        //是否加入队列
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeTitle];
-        
-        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTitle)}];
+        if (weakSelf) {
+            
+            weakSelf.modelTitleStr = str;
+            
+            //是否加入队列
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeTitle];
+            
+            if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTitle)}];
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToString)LeeContent{
+- (LEEConfigAlertToString)LeeContent{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(NSString *str){
         
-        _modelContentStr = str;
-        
-        //是否加入队列
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeContent];
-        
-        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeContent)}];
+        if (weakSelf) {
+            
+            weakSelf.modelContentStr = str;
+            
+            //是否加入队列
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeContent];
+            
+            if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeContent)}];
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToString)LeeCancelButtonTitle{
+- (LEEConfigAlertToString)LeeCancelButtonTitle{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(NSString *str){
         
-        _modelCancelButtonTitleStr = str;
+        if (weakSelf) {
+            
+            weakSelf.modelCancelButtonTitleStr = str;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToButtonBlock)LeeCancelButtonAction{
+- (LEEConfigAlertToButtonBlock)LeeCancelButtonAction{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^buttonAction)()){
         
-        if (buttonAction) weakSelf.modelCancelButtonAction = buttonAction;
+        if (weakSelf) {
+            
+            if (buttonAction) weakSelf.modelCancelButtonAction = buttonAction;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToButtonAndBlock)LeeAddButton{
+- (LEEConfigAlertToButtonAndBlock)LeeAddButton{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(NSString *title , void(^buttonAction)()){
         
-        [weakSelf.modelButtonArray addObject:@{@"title" : title , @"actionblock" : buttonAction}];
+        if (weakSelf) {
+            
+            [weakSelf.modelButtonArray addObject:@{@"title" : title , @"actionblock" : buttonAction}];
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToCustomTextField)LeeAddTextField{
+- (LEEConfigAlertToCustomTextField)LeeAddTextField{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^addTextField)(UITextField *textField)){
         
-        [weakSelf.modelTextFieldArray addObject:addTextField];
-        
-        [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTextField) , @"block" : addTextField}];
-        
-        return weakSelf;
-    };
-    
-}
-
-
--(LEEConfigAlertToCustomLabel)LeeCustomTitle{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(void(^addLabel)(UILabel *label)){
-        
-        NSDictionary *customSubViewInfo = @{@"type" : @(LEEAlertCustomSubViewTypeTitle) , @"block" : addLabel};
-        
-        if (_modelTitleStr) {
+        if (weakSelf) {
             
-            for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
-                
-                if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeTitle) {
-                    
-                    [weakSelf.modelCustomSubViewsQueue replaceObjectAtIndex:[weakSelf.modelCustomSubViewsQueue indexOfObject:item] withObject:customSubViewInfo];
-                    
-                    break;
-                }
-                
-            }
+            [weakSelf.modelTextFieldArray addObject:addTextField];
             
-        } else {
-            
-            [weakSelf.modelCustomSubViewsQueue addObject:customSubViewInfo];
+            [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeTextField) , @"block" : addTextField}];
         }
         
         return weakSelf;
@@ -323,30 +346,35 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomLabel)LeeCustomContent{
+
+- (LEEConfigAlertToCustomLabel)LeeCustomTitle{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^addLabel)(UILabel *label)){
         
-        NSDictionary *customSubViewInfo = @{@"type" : @(LEEAlertCustomSubViewTypeContent) , @"block" : addLabel};
-        
-        if (_modelContentStr) {
+        if (weakSelf) {
             
-            for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
+            NSDictionary *customSubViewInfo = @{@"type" : @(LEEAlertCustomSubViewTypeTitle) , @"block" : addLabel};
+            
+            if (weakSelf.modelTitleStr) {
                 
-                if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeContent) {
+                for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
                     
-                    [weakSelf.modelCustomSubViewsQueue replaceObjectAtIndex:[weakSelf.modelCustomSubViewsQueue indexOfObject:item] withObject:customSubViewInfo];
+                    if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeTitle) {
+                        
+                        [weakSelf.modelCustomSubViewsQueue replaceObjectAtIndex:[weakSelf.modelCustomSubViewsQueue indexOfObject:item] withObject:customSubViewInfo];
+                        
+                        break;
+                    }
                     
-                    break;
                 }
                 
+            } else {
+                
+                [weakSelf.modelCustomSubViewsQueue addObject:customSubViewInfo];
             }
             
-        } else {
-            
-            [weakSelf.modelCustomSubViewsQueue addObject:customSubViewInfo];
         }
         
         return weakSelf;
@@ -354,283 +382,381 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(LEEConfigAlertToCustomButton)LeeCustomCancelButton{
+- (LEEConfigAlertToCustomLabel)LeeCustomContent{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(void(^addLabel)(UILabel *label)){
+        
+        if (weakSelf) {
+            
+            NSDictionary *customSubViewInfo = @{@"type" : @(LEEAlertCustomSubViewTypeContent) , @"block" : addLabel};
+            
+            if (weakSelf.modelContentStr) {
+                
+                for (NSDictionary *item in weakSelf.modelCustomSubViewsQueue) {
+                    
+                    if ([item[@"type"] integerValue] == LEEAlertCustomSubViewTypeContent) {
+                        
+                        [weakSelf.modelCustomSubViewsQueue replaceObjectAtIndex:[weakSelf.modelCustomSubViewsQueue indexOfObject:item] withObject:customSubViewInfo];
+                        
+                        break;
+                    }
+                    
+                }
+                
+            } else {
+                
+                [weakSelf.modelCustomSubViewsQueue addObject:customSubViewInfo];
+            }
+
+        }
+
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigAlertToCustomButton)LeeCustomCancelButton{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^addButton)(UIButton *button)){
         
-        if (addButton) weakSelf.modelCancelButtonBlock = addButton;
+        if (weakSelf) {
+            
+            if (addButton) weakSelf.modelCancelButtonBlock = addButton;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToView)LeeCustomView{
+- (LEEConfigAlertToView)LeeCustomView{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(UIView *view){
         
-        _modelCustomContentView = view;
-        
-        //是否加入队列
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeCustomView];
-        
-        if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeCustomView)}];
+        if (weakSelf) {
+            
+            weakSelf.modelCustomContentView = view;
+            
+            //是否加入队列
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEEAlertCustomSubViewTypeCustomView];
+            
+            if ([weakSelf.modelCustomSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelCustomSubViewsQueue addObject:@{@"type" : @(LEEAlertCustomSubViewTypeCustomView)}];
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToCustomButton)LeeAddCustomButton{
+- (LEEConfigAlertToCustomButton)LeeAddCustomButton{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^addButton)(UIButton *button)){
         
-        [weakSelf.modelButtonArray addObject:@{@"title" : @"按钮" , @"block" : addButton}];
+        if (weakSelf) {
+            
+            [weakSelf.modelButtonArray addObject:@{@"title" : @"按钮" , @"block" : addButton}];
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomCornerRadius{
+- (LEEConfigAlertToFloat)LeeCustomCornerRadius{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelCornerRadius = number;
+        if (weakSelf) {
+            
+            weakSelf.modelCornerRadius = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomSubViewMargin{
+- (LEEConfigAlertToFloat)LeeCustomSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelSubViewMargin = number;
+        if (weakSelf) {
+            
+            weakSelf.modelSubViewMargin = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomTopSubViewMargin{
+- (LEEConfigAlertToFloat)LeeCustomTopSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelTopSubViewMargin = number;
+        if (weakSelf) {
+            
+            weakSelf.modelTopSubViewMargin = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomBottomSubViewMargin{
+- (LEEConfigAlertToFloat)LeeCustomBottomSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelBottomSubViewMargin = number;
+        if (weakSelf) {
+            
+            weakSelf.modelBottomSubViewMargin = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomLeftSubViewMargin{
+- (LEEConfigAlertToFloat)LeeCustomLeftSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelLeftSubViewMargin = number;
+        if (weakSelf) {
+            
+            weakSelf.modelLeftSubViewMargin = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomRightSubViewMargin{
+- (LEEConfigAlertToFloat)LeeCustomRightSubViewMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelRightSubViewMargin = number;
+        if (weakSelf) {
+            
+            weakSelf.modelRightSubViewMargin = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertMaxWidth{
+- (LEEConfigAlertToFloat)LeeCustomAlertMaxWidth{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertMaxWidth = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertMaxWidth = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertMaxHeight{
+- (LEEConfigAlertToFloat)LeeCustomAlertMaxHeight{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertMaxHeight = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertMaxHeight = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertOpenAnimationDuration{
+- (LEEConfigAlertToFloat)LeeCustomAlertOpenAnimationDuration{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertOpenAnimationDuration = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertOpenAnimationDuration = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertCloseAnimationDuration{
+- (LEEConfigAlertToFloat)LeeCustomAlertCloseAnimationDuration{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertCloseAnimationDuration = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertCloseAnimationDuration = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToColor)LeeCustomAlertViewColor{
+- (LEEConfigAlertToColor)LeeCustomAlertViewColor{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(UIColor *color){
         
-        _modelAlertViewColor = color;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertViewColor = color;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToColor)LeeCustomAlertViewBackGroundColor{
+- (LEEConfigAlertToColor)LeeCustomAlertViewBackGroundColor{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(UIColor *color){
         
-        _modelAlertWindowBackGroundColor = color;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertWindowBackGroundColor = color;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeTranslucent{
+- (LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeTranslucent{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent;
-        
-        _modelAlertCustomBackGroundStypeColorAlpha = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent;
+            
+            weakSelf.modelAlertCustomBackGroundStypeColorAlpha = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeBlur{
+- (LEEConfigAlertToFloat)LeeCustomAlertViewBackGroundStypeBlur{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeBlur;
-        
-        _modelAlertCustomBackGroundStypeColorAlpha = number;
+        if (weakSelf) {
+            
+            weakSelf.modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeBlur;
+            
+            weakSelf.modelAlertCustomBackGroundStypeColorAlpha = number;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlert)LeeCustomAlertTouchClose{
+- (LEEConfigAlert)LeeCustomAlertTouchClose{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(){
         
-        _modelIsAlertWindowTouchClose = YES;
+        if (weakSelf) {
+            
+            weakSelf.modelIsAlertWindowTouchClose = YES;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlert)LeeCustomButtonClickNotClose{
+- (LEEConfigAlert)LeeCustomButtonClickNotClose{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(){
         
-        _modelIsCustomButtonClickClose = NO;
+        if (weakSelf) {
+            
+            weakSelf.modelIsCustomButtonClickClose = NO;
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlert)LeeShow{
+- (LEEConfigAlert)LeeShow{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(){
         
-        if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(nil);
+        if (weakSelf) {
+            
+            if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(nil);
+        }
         
         return weakSelf;
     };
     
 }
 
--(LEEConfigAlertToViewController)LeeShowFromViewController{
+- (LEEConfigAlertToViewController)LeeShowFromViewController{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(UIViewController *viewController){
         
-        if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(viewController);
+        if (weakSelf) {
+            
+            if (weakSelf.modelFinishConfig) weakSelf.modelFinishConfig(viewController);
+        }
         
         return weakSelf;
     };
@@ -804,7 +930,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             void(^addTextField)(UITextField *textField) = [self.config.modelTextFieldArray objectAtIndex:i];
             
             if (addTextField) addTextField([alertView textFieldAtIndex:i]);
-            
         }
         
         [alertView show];
@@ -836,7 +961,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 #pragma mark UIAlertViewDelegate
 
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     if (alertView.alertViewStyle == UIAlertViewStylePlainTextInput) {
         
@@ -861,17 +986,19 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
 }
 
--(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
     
     //清空UIAlertView按钮下标字典
     
     [self.alertViewButtonIndexDic removeAllObjects];
     
+    __weak typeof(self) weakSelf = self;
+    
     //延迟释放模型 防止循环引用
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        _config = nil;
+        if (weakSelf) weakSelf.config = nil;
     });
     
 }
@@ -896,10 +1023,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     }
     
     return _config;
-    
 }
 
--(NSMutableDictionary *)alertViewButtonIndexDic{
+- (NSMutableDictionary *)alertViewButtonIndexDic{
     
     if (!_alertViewButtonIndexDic) _alertViewButtonIndexDic = [NSMutableDictionary dictionary];
     
@@ -931,8 +1057,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 @interface LEEAlertViewController ()
 
 @property (nonatomic , weak ) LEEAlertConfigModel *config;
-
-@property (nonatomic , weak ) UIWindow *alertWindow;
 
 @property (nonatomic , strong ) UIWindow *currentKeyWindow;
 
@@ -966,8 +1090,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     _config = nil;
     
     _currentKeyWindow = nil;
-    
-    _alertWindow = nil;
     
     _alertBackgroundImageView = nil;
     
@@ -1532,7 +1654,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     
-    if (self.config.modelIsAlertWindowTouchClose) [self closeAnimations];   //拦截AlertView点击响应
+    if (self.config.modelIsAlertWindowTouchClose) [self closeAnimations]; //拦截AlertView点击响应
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
@@ -1555,9 +1677,9 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     [self.currentKeyWindow endEditing:YES]; //结束输入 收起键盘
     
-    self.alertWindow.hidden = NO;
+    [LEEAlert shareAlertManager].alertWindow.hidden = NO;
     
-    [self.alertWindow makeKeyAndVisible];
+    [[LEEAlert shareAlertManager].alertWindow makeKeyAndVisible];
     
     self.alertView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
     
@@ -1597,20 +1719,12 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)closeAnimations{
     
-    __weak typeof(self) weakSelf = self;
-    
-    [self closeAnimationsWithCompletionBlock:^{
-        
-        if (weakSelf.config.modelCustomContentView) [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
-        
-        if (weakSelf.closeAction) weakSelf.closeAction();
-    }];
-    
+    [self closeAnimationsWithCompletionBlock:nil];
 }
 
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
-    [self.alertWindow endEditing:YES]; //结束输入 收起键盘
+    [[LEEAlert shareAlertManager].alertWindow endEditing:YES]; //结束输入 收起键盘
     
     __weak typeof(self) weakSelf = self;
     
@@ -1631,15 +1745,23 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
     } completion:^(BOOL finished) {
         
-        weakSelf.alertView.transform = CGAffineTransformIdentity;
+        if (weakSelf) {
+            
+            weakSelf.alertView.transform = CGAffineTransformIdentity;
+            
+            weakSelf.alertView.alpha = 1.0f;
+            
+            if (weakSelf.config.modelCustomContentView) [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
+            
+            [LEEAlert shareAlertManager].alertWindow.hidden = YES;
+            
+            [[LEEAlert shareAlertManager].alertWindow resignKeyWindow];
+            
+            if (weakSelf.closeAction) weakSelf.closeAction();
+            
+            if (completionBlock) completionBlock();
+        }
         
-        weakSelf.alertView.alpha = 1.0f;
-        
-        weakSelf.alertWindow.hidden = YES;
-        
-        [weakSelf.alertWindow resignKeyWindow];
-        
-        if (completionBlock) completionBlock();
     }];
     
 }
@@ -1726,7 +1848,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return _alertBackgroundImageView;
 }
 
--(UIScrollView *)alertView{
+- (UIScrollView *)alertView{
     
     if (!_alertView) {
         
@@ -1742,14 +1864,14 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     return _alertView;
 }
 
--(NSMutableArray *)alertSubViewArray{
+- (NSMutableArray *)alertSubViewArray{
     
     if (!_alertSubViewArray) _alertSubViewArray = [NSMutableArray array];
     
     return _alertSubViewArray;
 }
 
--(NSMutableArray *)alertButtonArray{
+- (NSMutableArray *)alertButtonArray{
     
     if (!_alertButtonArray) _alertButtonArray = [NSMutableArray array];
     
@@ -1775,79 +1897,39 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @end
 
-@interface LEEAlertCustom ()<LEEAlertManagerDelegate>
-
-@property (nonatomic , strong ) UIWindow *alertWindow;
+@interface LEEAlertCustom ()<LEEAlertProtocol>
 
 @property (nonatomic , strong ) LEEAlertViewController *alertViewController;
 
 @end
 
-static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
-
 @implementation LEEAlertCustom
 
 - (void)dealloc{
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     _config = nil;
     
     _alertViewController = nil;
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
+- (void)showAlert{
     
-        //发送通知
+    if (self.config) {
         
-        NSDictionary * notifyInfo = @{@"customAlert" : self , @"alertWindow" : self.alertWindow};
+        [LEEAlert shareAlertManager].alertWindow.backgroundColor = [self.config.modelAlertWindowBackGroundColor colorWithAlphaComponent:0.0f];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:LEEAlertShowNotification object:self userInfo:notifyInfo];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(alertShowNotification:) name:LEEAlertShowNotification object:nil];
+        [LEEAlert shareAlertManager].alertWindow.rootViewController = self.alertViewController;
         
-        //设置当前自定义Alert代理对象
+        self.alertViewController.config = self.config;
         
-        [LEEAlert shareAlertManager].currentCustomAlertDelegate = self;
-        
-        self.alertWindow.rootViewController = self.alertViewController;
-        
-        self.alertViewController.alertWindow = self.alertWindow;
-        
-        __weak typeof(self) weakSelf = self;
-        
-        self.alertViewController.closeAction = ^(){
-          
-            //释放
-            
-            weakSelf.alertWindow.rootViewController = nil;
-            
-            _alertViewController = nil;
-            
-            _alertWindow = nil;
-            
-            _config = nil;
-        };
-        
+        [self.alertViewController configAlert];
     }
-    return self;
+    
 }
 
-- (void)alertShowNotification:(NSNotification *)notify{
+- (void)closeAlertWithCompletionBlock:(void (^)())completionBlock{
     
-    NSDictionary *notifyInfo = notify.userInfo;
-    
-    if (notifyInfo[@"customAlert"] != self) [self.alertViewController closeAnimations];
-}
-
-#pragma mark LEEAlertManagerDelegate
-
--(void)customAlertCloseDelegate{
-    
-    [self.alertViewController closeAnimations];
+    [self.alertViewController closeAnimationsWithCompletionBlock:completionBlock];
 }
 
 #pragma mark LazyLoading
@@ -1858,13 +1940,28 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
         
         _config = [[LEEAlertConfigModel alloc]init];
         
-        __strong typeof(self) strongSelf = self;
+        __weak typeof(self) weakSelf = self;
         
         _config.modelFinishConfig = ^(UIViewController *vc){
             
-            strongSelf.alertViewController.config = strongSelf.config;
+            if (weakSelf) {
+                
+                if (![[LEEAlert shareAlertManager].customAlertArray containsObject:weakSelf]) {
+                    
+                    [LEEAlert closeCustomAlertWithCompletionBlock:^{
+                        
+                        if (weakSelf) [weakSelf showAlert];
+                    }];
+                    
+                    [[LEEAlert shareAlertManager].customAlertArray addObject:weakSelf];
+                
+                } else {
+                    
+                    [weakSelf showAlert];
+                }
+                
+            }
             
-            [strongSelf.alertViewController configAlert];
         };
         
     }
@@ -1872,25 +1969,38 @@ static NSString * const LEEAlertShowNotification = @"LEEAlertShowNotification";
     return _config;
 }
 
-- (UIWindow *)alertWindow{
-    
-    if (!_alertWindow) {
-        
-        _alertWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        
-        _alertWindow.backgroundColor = [self.config.modelAlertWindowBackGroundColor colorWithAlphaComponent:0.0f];
-        
-        _alertWindow.windowLevel = UIWindowLevelAlert;
-        
-        _alertWindow.hidden = YES;
-    }
-    
-    return _alertWindow;
-}
-
 - (LEEAlertViewController *)alertViewController{
     
-    if (!_alertViewController) _alertViewController = [[LEEAlertViewController alloc] init];
+    if (!_alertViewController) {
+        
+        _alertViewController = [[LEEAlertViewController alloc] init];
+        
+        __weak typeof(self) weakSelf = self;
+        
+        _alertViewController.closeAction = ^(){
+            
+            if (weakSelf) {
+                
+                [LEEAlert shareAlertManager].alertWindow.rootViewController = nil;
+                
+                weakSelf.alertViewController = nil;
+                
+                if ([LEEAlert shareAlertManager].customAlertArray.lastObject == weakSelf) {
+                    
+                    [[LEEAlert shareAlertManager].customAlertArray removeObject:weakSelf];
+                    
+                    if ([LEEAlert shareAlertManager].customAlertArray.count) {
+                        
+                        [LEEAlert shareAlertManager].customAlertArray.lastObject.config.modelFinishConfig(nil);
+                    }
+                    
+                }
+                
+            }
+            
+        };
+   
+    }
     
     return _alertViewController;       
 }

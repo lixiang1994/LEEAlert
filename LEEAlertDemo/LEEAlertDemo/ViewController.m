@@ -13,7 +13,7 @@
 #import "ViewController.h"
 
 #import "LEEAlert.h"
-
+#import <UserNotifications/UserNotifications.h>
 @interface ViewController ()
 
 @property (nonatomic , copy ) NSString *firstText; //第一个文本输入框内容
@@ -33,7 +33,6 @@
     //初始化子视图
     
     [self initSubviews];
-
 }
 
 - (void)initSubviews{

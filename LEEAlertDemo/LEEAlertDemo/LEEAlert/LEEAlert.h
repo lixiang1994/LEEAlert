@@ -7,7 +7,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
- *  @version    V1.0
+ *  @version    V1.1
  */
 
 #import <Foundation/Foundation.h>
@@ -84,7 +84,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
  
  设置方法结束后在最后请不要忘记使用.LeeShow()方法显示Alert.
  
- 最低支持iOS7及以上 ARC
+ 最低支持iOS7及以上 ARC ✌(˵¯̴͒ꇴ¯̴͒˵)✌
  
  *****************************************************
  */
@@ -161,12 +161,14 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 @end
 
 @interface LEEAlertSystem : NSObject
+
 /** 开始设置 */
 @property (nonatomic , strong ) LEEAlertConfigModel *config;
 
 @end
 
 @interface LEEAlertCustom : NSObject
+
 /** 开始设置 */
 @property (nonatomic , strong ) LEEAlertConfigModel *config;
 
