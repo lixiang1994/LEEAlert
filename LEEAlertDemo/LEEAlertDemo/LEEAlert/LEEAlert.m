@@ -1102,28 +1102,25 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     _alertButtonArray = nil;
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        
-        self.view.backgroundColor = [UIColor clearColor];
-        
-        self.edgesForExtendedLayout=UIRectEdgeNone;
-        
-        self.extendedLayoutIncludesOpaqueBars=NO;
-        
-        self.automaticallyAdjustsScrollViewInsets = NO;
-        
-        self.alertBackgroundImageView.backgroundColor = [UIColor clearColor];
-        
-        [self.view addSubview:self.alertBackgroundImageView];
-        
-        [self addNotification];
-        
-        currentOrientation = (UIDeviceOrientation)self.interfaceOrientation; //默认当前方向
-    }
-    return self;
+- (void)viewDidLoad{
+    
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor clearColor];
+    
+    self.edgesForExtendedLayout=UIRectEdgeNone;
+    
+    self.extendedLayoutIncludesOpaqueBars=NO;
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    self.alertBackgroundImageView.backgroundColor = [UIColor clearColor];
+    
+    [self.view addSubview:self.alertBackgroundImageView];
+    
+    [self addNotification];
+    
+    currentOrientation = (UIDeviceOrientation)self.interfaceOrientation; //默认当前方向
 }
 
 - (void)addNotification{
