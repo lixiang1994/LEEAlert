@@ -1723,6 +1723,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
+    if (self.config.modelCustomContentView) [self.config.modelCustomContentView removeObserver:self forKeyPath:@"frame"];
+    
     [[LEEAlert shareAlertManager].alertWindow endEditing:YES]; //结束输入 收起键盘
     
     __weak typeof(self) weakSelf = self;
@@ -1749,8 +1751,6 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             weakSelf.alertView.transform = CGAffineTransformIdentity;
             
             weakSelf.alertView.alpha = 1.0f;
-            
-            if (weakSelf.config.modelCustomContentView) [weakSelf.config.modelCustomContentView removeObserver:weakSelf forKeyPath:@"frame"];
             
             [LEEAlert shareAlertManager].alertWindow.hidden = YES;
             
