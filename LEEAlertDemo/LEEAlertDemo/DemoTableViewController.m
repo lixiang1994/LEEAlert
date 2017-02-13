@@ -58,7 +58,6 @@
         //关闭自定义LEEAlert
         
         [LEEAlert closeCustomAlert];
-
     };
     
     //使用自定义类型的LEEAlert显示分享视图

@@ -97,7 +97,7 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 @property (nonatomic , copy , readonly ) LEEConfigAlertToString LeeContent;
 /** 设置 Alert 取消按钮标题 -> 格式: .LeeCancelButtonTitle(@@"") */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToString LeeCancelButtonTitle;
-/** 设置 Alert 取消按钮响应事件Block -> 格式: .LeeCancelButtonAction(^(){ //code.. }) */
+/** 设置 Alert 取消按钮响应事件Block(取消按钮点击后会自动关闭Alert 请勿再次调用关闭方法) -> 格式: .LeeCancelButtonAction(^(){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToButtonBlock LeeCancelButtonAction;
 /** 设置 Alert 添加按钮 -> 格式: .LeeAddButton(@@"" , ^(){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigAlertToButtonAndBlock LeeAddButton;
