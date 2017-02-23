@@ -84,10 +84,7 @@
         LEEAlertCustom *custom = [LEEAlert shareAlertManager].customAlertArray.lastObject;
         
         if ([custom respondsToSelector:@selector(closeAlertWithCompletionBlock:)]) [custom performSelector:@selector(closeAlertWithCompletionBlock:) withObject:completionBlock];
-    
-    } else {
         
-        if (completionBlock) completionBlock();
     }
     
 }
@@ -184,6 +181,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @property (nonatomic , assign ) BOOL modelIsAlertWindowTouchClose;
 @property (nonatomic , assign ) BOOL modelIsCustomButtonClickClose;
+@property (nonatomic , assign ) BOOL modelIsAddQueue;
 
 @property (nonatomic , copy ) void(^modelCancelButtonAction)();
 @property (nonatomic , copy ) void(^modelCancelButtonBlock)(UIButton *button);
@@ -232,6 +230,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         
         _modelIsAlertWindowTouchClose = NO; //默认点击window不关闭
         _modelIsCustomButtonClickClose = YES; //默认点击自定义按钮关闭
+        _modelIsAddQueue = YES; //默认加入队列
         
         _modelAlertCustomBackGroundStype = LEEAlertCustomBackGroundStypeTranslucent; //默认为半透明背景样式
     }
@@ -726,6 +725,22 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
         if (weakSelf) {
             
             weakSelf.modelIsCustomButtonClickClose = NO;
+        }
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigAlertToBool)LeeAddQueue{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(BOOL result){
+        
+        if (weakSelf) {
+            
+            weakSelf.modelIsAddQueue = result;
         }
         
         return weakSelf;
@@ -1773,7 +1788,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
     
     [self.currentKeyWindow.layer renderInContext:UIGraphicsGetCurrentContext()];
     
-    UIImage *image =UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     
     UIGraphicsEndImageContext();
     
@@ -1947,18 +1962,29 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             if (weakSelf) {
                 
-                if (![[LEEAlert shareAlertManager].customAlertArray containsObject:weakSelf]) {
+                if ([LEEAlert shareAlertManager].customAlertArray.count) {
                     
-                    [LEEAlert closeCustomAlertWithCompletionBlock:^{
+                    if ([[LEEAlert shareAlertManager].customAlertArray containsObject:weakSelf]) {
                         
-                        if (weakSelf) [weakSelf showAlert];
-                    }];
+                        [weakSelf showAlert];
+                        
+                    } else {
+                        
+                        LEEAlertCustom *lastCustom = [LEEAlert shareAlertManager].customAlertArray.lastObject;
+                        
+                        [lastCustom closeAlertWithCompletionBlock:^{
+                            
+                            if (weakSelf) [weakSelf showAlert];
+                        }];
+                        
+                        [[LEEAlert shareAlertManager].customAlertArray addObject:weakSelf];
+                    }
                     
-                    [[LEEAlert shareAlertManager].customAlertArray addObject:weakSelf];
-                
                 } else {
                     
                     [weakSelf showAlert];
+                    
+                    [[LEEAlert shareAlertManager].customAlertArray addObject:weakSelf];
                 }
                 
             }
@@ -1988,13 +2014,16 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                 
                 if ([LEEAlert shareAlertManager].customAlertArray.lastObject == weakSelf) {
                     
-                    [[LEEAlert shareAlertManager].customAlertArray removeObject:weakSelf];
+                    [[LEEAlert shareAlertManager].customAlertArray removeLastObject];
                     
                     if ([LEEAlert shareAlertManager].customAlertArray.count) {
                         
                         [LEEAlert shareAlertManager].customAlertArray.lastObject.config.modelFinishConfig(nil);
                     }
                     
+                } else {
+                    
+                    if (!weakSelf.config.modelIsAddQueue) [[LEEAlert shareAlertManager].customAlertArray removeObject:weakSelf];
                 }
                 
             }

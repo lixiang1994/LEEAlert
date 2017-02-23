@@ -350,7 +350,8 @@
         //添加按钮 传入按钮标题 和点击事件的Block
         
         NSLog(@"点击了添加的按钮");
-        
+        [self button2Action];
+//        [LEEAlert closeCustomAlert];
     })
     .LeeCancelButtonTitle(@"取消")   //设置取消按钮标题
     .LeeCancelButtonAction(^(){
@@ -398,6 +399,7 @@
     .LeeCustomButtonClickNotClose()   //设置自定义Alert的自定义按钮点击不关闭Alert
 //    .LeeCustomAlertViewBackGroundStypeTranslucent(0.6f) //设置自定义Alert的背景样式为半透明样式 并传入透明度 默认为0.6f;
     .LeeCustomAlertViewBackGroundStypeBlur(0.6f)   //设置自定义Alert的背景样式为高斯模糊样式 并传入透明度 默认为0.6f (如果不设置这项 默认为半透明样式 0.6f透明度)
+    .LeeAddQueue(NO) //设置是否加入显示队列 加入队列后 如果正在显示时 弹出另一个alert 此alert会隐藏 当新的alert关闭后 再继续显示出来 不加入队列 则不会继续显示
     .LeeShow();    //显示Alert
     
     //补充说明: 自定义Alert的标题 内容 自定义视图 文本输入框 这些设置时默认会有先后顺序之分 , 如果你先设置了自定义视图 再设置了标题, 那么实际效果是自定义视图会在标题上面 以此类推 这样垂直排列下来, 遵守系统布局风格, 默认样式只能添加一个标题 一个内容 一个自定义视图 一堆按钮 或一堆输入框, 其中按钮的位置为最下方.

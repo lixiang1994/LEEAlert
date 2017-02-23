@@ -16,6 +16,7 @@
 @class LEEAlertSystem , LEEAlertCustom , LEEAlertConfigModel;
 
 typedef LEEAlertConfigModel *(^LEEConfigAlert)();
+typedef LEEAlertConfigModel *(^LEEConfigAlertToBool)(BOOL);
 typedef LEEAlertConfigModel *(^LEEConfigAlertToInteger)(NSInteger number);
 typedef LEEAlertConfigModel *(^LEEConfigAlertToFloat)(CGFloat number);
 typedef LEEAlertConfigModel *(^LEEConfigAlertToString)(NSString *str);
@@ -152,6 +153,9 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 @property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomAlertTouchClose;
 /** 设置 Alert 自定义按钮点击不关闭警示框 -> 格式: .LeeCustomButtonClickNotClose() */
 @property (nonatomic , copy , readonly ) LEEConfigAlert LeeCustomButtonClickNotClose;
+
+/** 显示 Alert 是否加入到队列 -> 格式: .LeeAddQueue(NO) */
+@property (nonatomic , copy , readonly ) LEEConfigAlertToBool LeeAddQueue;
 
 /** 显示 Alert 默认通过KeyWindow弹出 -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfigAlert LeeShow;
