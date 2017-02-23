@@ -1549,6 +1549,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
                     [self.alertSubViewArray addObject:self.config.modelCustomContentView];
                     
                     [self.config.modelCustomContentView addObserver: self forKeyPath: @"frame" options: NSKeyValueObservingOptionNew context: nil];
+                    
+                    [self.config.modelCustomContentView layoutSubviews];
                 }
                 
             }
