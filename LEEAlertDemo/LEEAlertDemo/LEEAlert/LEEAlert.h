@@ -68,6 +68,8 @@ typedef LEEAlertConfigModel *(^LEEConfigAlertToViewController)(UIViewController 
 
 + (void)closeCustomAlert;
 
++ (void)closeCustomAlertWithCompletionBlock:(void (^)())completionBlock;
+
 @end
 
 @interface LEEAlertConfigModel : NSObject
