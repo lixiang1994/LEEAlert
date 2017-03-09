@@ -1084,6 +1084,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @property (nonatomic , strong ) NSMutableArray *alertButtonArray;
 
+@property (nonatomic , assign ) BOOL isClosing;
+
 @property (nonatomic , copy ) void (^closeAction)();
 
 @end
@@ -1673,7 +1675,7 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             if (buttonAction) buttonAction();
         }];
-   
+        
     } else {
         
         if (buttonAction) buttonAction();
@@ -1753,6 +1755,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
+    if (self.isClosing) return;
+    
+    self.isClosing = YES;
+    
     if (self.config.modelCustomContentView) [self.config.modelCustomContentView removeObserver:self forKeyPath:@"frame"];
     
     [[LEEAlert shareAlertManager].alertWindow endEditing:YES]; //结束输入 收起键盘
@@ -1787,6 +1793,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             [[LEEAlert shareAlertManager].alertWindow resignKeyWindow];
             
             if (weakSelf.closeAction) weakSelf.closeAction();
+            
+            weakSelf.isClosing = NO;
             
             if (completionBlock) completionBlock();
         }
