@@ -84,7 +84,6 @@
         LEEAlertCustom *custom = [LEEAlert shareAlertManager].customAlertArray.lastObject;
         
         if ([custom respondsToSelector:@selector(closeAlertWithCompletionBlock:)]) [custom performSelector:@selector(closeAlertWithCompletionBlock:) withObject:completionBlock];
-        
     }
     
 }
@@ -1654,18 +1653,32 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)cancelButtonAction:(UIButton *)sender{
     
-    if (self.config.modelCancelButtonAction) self.config.modelCancelButtonAction();
+    __weak typeof(self) weakSelf = self;
     
-    [self closeAnimations];
+    [self closeAnimationsWithCompletionBlock:^{
+        
+        if (!weakSelf) return;
+        
+        if (weakSelf.config.modelCancelButtonAction) weakSelf.config.modelCancelButtonAction();
+    }];
 }
 
 - (void)buttonAction:(UIButton *)sender{
     
     void (^buttonAction)() = self.config.modelButtonArray[[self.alertButtonArray indexOfObject:sender]][@"actionblock"];
     
-    if (buttonAction) buttonAction();
+    if (self.config.modelIsCustomButtonClickClose) {
+        
+        [self closeAnimationsWithCompletionBlock:^{
+            
+            if (buttonAction) buttonAction();
+        }];
+   
+    } else {
+        
+        if (buttonAction) buttonAction();
+    }
     
-    if (self.config.modelIsCustomButtonClickClose) [self closeAnimations];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
