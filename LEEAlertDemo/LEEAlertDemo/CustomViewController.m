@@ -244,7 +244,7 @@
     
 }
 
--(void)submitbButtonAction:(UIButton *)sender{
+- (void)submitbButtonAction:(UIButton *)sender{
     
     NSString *contentTextFieldString = contentTextField.text;
     

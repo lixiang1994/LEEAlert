@@ -1655,14 +1655,13 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)cancelButtonAction:(UIButton *)sender{
     
-    __weak typeof(self) weakSelf = self;
+    void (^buttonAction)() = self.config.modelCancelButtonAction;
     
     [self closeAnimationsWithCompletionBlock:^{
         
-        if (!weakSelf) return;
-        
-        if (weakSelf.config.modelCancelButtonAction) weakSelf.config.modelCancelButtonAction();
+        if (buttonAction) buttonAction();
     }];
+    
 }
 
 - (void)buttonAction:(UIButton *)sender{
