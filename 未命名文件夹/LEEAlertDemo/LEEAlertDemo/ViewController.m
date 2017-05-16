@@ -23,11 +23,11 @@
     
 //    [self alert1WithTitle:@"eeeeeee"];
     
+//    [self alert2];
+
     [self alert2];
     
-    [self alert2];
-    
-    [self actionsheet1];
+//    [self actionsheet1];
 }
 
 - (void)alert1WithTitle:(NSString *)title{
@@ -87,6 +87,7 @@
     })
     .LeeAddTextField(^(UITextField *textField) {
         
+        textField.placeholder = @"输入框";
         
     })
 //    .LeeTitle(title)
@@ -129,7 +130,7 @@
 
 - (void)alert2{
     
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 200)];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 600)];
     
     view.backgroundColor = [UIColor redColor];
     
@@ -139,14 +140,9 @@
         
         action.title = @"一";
         
-        action.titleColor = [UIColor grayColor];
+        action.titleColor = [UIColor redColor];
         
         action.clickBlock = ^{
-            
-            [LEEAlert closeWithCompletionBlock:^{
-                
-                NSLog(@"关闭完成");
-            }];
             
             [LEEAlert closeWithCompletionBlock:^{
                 
@@ -157,12 +153,24 @@
         };
         
     })
+    .LeeAction(^(LEEAction *action) {
+        
+        action.title = @"二";
+        
+        action.titleColor = [UIColor grayColor];
+        
+        action.clickBlock = ^{
+            
+            NSLog(@"点击了2");
+        };
+        
+    })
     .LeeAddQueue()
     .LeeShow();
 }
 
 - (void)actionsheet1{
- 
+    
     [LEEAlert actionsheet].config
     .LeeTitle(@"标题标题标题")
     .LeeContent(@"内容哈哈内容内容内容内容内容内容内容内容内容")

@@ -18,6 +18,7 @@ typedef LEEAlertConfigModel *(^LEEConfigToString)(NSString *str);
 typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);
 typedef LEEAlertConfigModel *(^LEEConfigToColor)(UIColor *color);
 typedef LEEAlertConfigModel *(^LEEConfigToAction)(void(^)(LEEAction *action));
+typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (^)());
 typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^configLabel)(UILabel *label));
 typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField)(UITextField *textField));
 
@@ -47,17 +48,20 @@ typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField
 /** 设置 内容 -> 格式: .LeeContent(@@"") */
 @property (nonatomic , copy , readonly ) LEEConfigToString LeeContent;
 
-/** 设置 内容 -> 格式: .LeeAction(^(LEEAction *){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToAction LeeAction;
+/** 设置 动作 -> 格式: .LeeAction(@"name" , ^{ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock leeAction;
 
 /** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
 
-/** 设置 添加标题 -> 格式: .LeeCustomTitle(^(UILabel *label){ //code.. }) */
+/** 设置 添加标题 -> 格式: .LeeAddTitle(^(UILabel *label){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeAddTitle;
 
-/** 设置 添加内容 -> 格式: .LeeCustomContent(^(UILabel *label){ //code.. }) */
+/** 设置 添加内容 -> 格式: .LeeAddContent(^(UILabel *label){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeAddContent;
+
+/** 设置 动作 -> 格式: .LeeAction(^(LEEAction *){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToAction LeeAddAction;
 
 /** 设置 自定义视图 -> 格式: .LeeCustomView(UIView) */
 @property (nonatomic , copy , readonly ) LEEConfigToView LeeCustomView;
@@ -145,46 +149,17 @@ typedef NS_ENUM(NSInteger, LEEActionType) {
 
 @property (nonatomic , strong ) UIColor *backgroundColor;
 
+@property (nonatomic , strong ) UIColor *backgroundHighlightColor;
+
 @property (nonatomic , strong ) UIColor *borderColor;
+
+@property (nonatomic , assign ) CGFloat borderWidth;
 
 @property (nonatomic , assign ) LEEActionType type;
 
 @property (nonatomic , copy ) void (^clickBlock)();
 
 @end
-
-typedef NS_ENUM(NSInteger, LEEItemType) {
-    
-    LEEItemTypeTitle,
-    
-    LEEItemTypeContent,
-    
-    LEEItemTypeCustomView
-};
-
-@interface LEEAction : NSObject
-
-@property (nonatomic , strong ) NSString *title;
-
-@property (nonatomic , strong ) NSString *highlight;
-
-@property (nonatomic , strong ) UIFont *font;
-
-@property (nonatomic , strong ) UIColor *titleColor;
-
-@property (nonatomic , strong ) UIColor *highlightColor;
-
-@property (nonatomic , strong ) UIColor *backgroundColor;
-
-@property (nonatomic , strong ) UIColor *borderColor;
-
-@property (nonatomic , assign ) LEEActionType type;
-
-@property (nonatomic , copy ) void (^clickBlock)();
-
-@end
-
-
 
 typedef NS_ENUM(NSInteger, LEEAlertType) {
     

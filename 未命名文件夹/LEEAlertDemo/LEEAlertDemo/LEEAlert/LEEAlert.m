@@ -218,6 +218,45 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
+
+- (LEEConfigToString)LeeContent{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(NSString *str){
+        
+        if (weakSelf) {
+            
+            weakSelf.modelContentStr = str;
+            
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
+            
+            if ([weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeContent)}];
+        }
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToStringAndBlock)leeAction{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(NSString *title , void(^block)()){
+    
+        weakSelf.LeeAddAction(^(LEEAction *action) {
+           
+            action.title = title;
+            
+            action.clickBlock = block;
+        });
+        
+        return weakSelf;
+    };
+    
+}
+
 - (LEEConfigToConfigLabel)LeeAddTitle{
     
     __weak typeof(self) weakSelf = self;
@@ -241,26 +280,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 [weakSelf.modelSubViewsQueue addObject:info];
             }
             
-        }
-        
-        return weakSelf;
-    };
-    
-}
-
-- (LEEConfigToString)LeeContent{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(NSString *str){
-        
-        if (weakSelf) {
-            
-            weakSelf.modelContentStr = str;
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
-            
-            if ([weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeContent)}];
         }
         
         return weakSelf;
@@ -298,7 +317,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
-- (LEEConfigToAction)LeeAction{
+- (LEEConfigToAction)LeeAddAction{
     
     __weak typeof(self) weakSelf = self;
     
@@ -613,9 +632,111 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 @end
 
 
+@interface LEEActionButton : UIButton
+
+@property (nonatomic , strong ) UIColor *borderColor;
+
+@property (nonatomic , assign ) CGFloat borderWidth;
+
+- (void)addTopBorder;
+
+- (void)addBottomBorder;
+
+- (void)addLeftBorder;
+
+- (void)addRightBorder;
+
+@end
+
+@interface LEEActionButton ()
+
+@property (nonatomic , strong ) CALayer *topLayer;
+
+@property (nonatomic , strong ) CALayer *bottomLayer;
+
+@property (nonatomic , strong ) CALayer *leftLayer;
+
+@property (nonatomic , strong ) CALayer *rightLayer;
+
+@end
+
+@implementation LEEActionButton
+
+- (void)layoutSubviews{
+    
+    [super layoutSubviews];
+    
+    if (_topLayer) _topLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.borderWidth);
+    
+    if (_bottomLayer) _bottomLayer.frame = CGRectMake(0, self.frame.size.height - self.borderWidth, self.frame.size.width, self.borderWidth);
+    
+    if (_leftLayer) _leftLayer.frame = CGRectMake(0, 0, self.borderWidth, self.frame.size.height);
+    
+    if (_rightLayer) _rightLayer.frame = CGRectMake(self.frame.size.width - self.borderWidth, 0, self.borderWidth, self.frame.size.height);
+}
+
+- (void)addTopBorder{
+    
+    [self.layer addSublayer:self.topLayer];
+}
+
+- (void)addBottomBorder{
+    
+    [self.layer addSublayer:self.bottomLayer];
+}
+
+- (void)addLeftBorder{
+    
+    [self.layer addSublayer:self.leftLayer];
+}
+
+- (void)addRightBorder{
+    
+    [self.layer addSublayer:self.rightLayer];
+}
+
+- (CALayer *)createLayer{
+    
+    CALayer *layer = [CALayer layer];
+    
+    layer.backgroundColor = self.borderColor.CGColor;
+    
+    return layer;
+}
+
+- (CALayer *)topLayer{
+    
+    if (!_topLayer) _topLayer = [self createLayer];
+    
+    return _topLayer;
+}
+
+- (CALayer *)bottomLayer{
+    
+    if (!_bottomLayer) _bottomLayer = [self createLayer];
+    
+    return _bottomLayer;
+}
+
+- (CALayer *)leftLayer{
+    
+    if (!_leftLayer) _leftLayer = [self createLayer];
+    
+    return _leftLayer;
+}
+
+- (CALayer *)rightLayer{
+    
+    if (!_rightLayer) _rightLayer = [self createLayer];
+    
+    return _rightLayer;
+}
+
+@end
+
 @interface LEEAction ()
 
-@property (nonatomic , strong ) UIButton *button;
+@property (nonatomic , strong ) LEEActionButton *button;
 
 @end
 
@@ -625,49 +746,91 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     _title = title;
     
-    if (_button) [_button setTitle:title forState:UIControlStateNormal];
+    [self.button setTitle:title forState:UIControlStateNormal];
 }
 
 - (void)setHighlight:(NSString *)highlight{
     
     _highlight = highlight;
     
-    if (_button) [_button setTitle:highlight forState:UIControlStateHighlighted];
+    [self.button setTitle:highlight forState:UIControlStateHighlighted];
 }
 
 - (void)setFont:(UIFont *)font{
     
     _font = font;
     
-    if (_button) [_button.titleLabel setFont:font];
+    [self.button.titleLabel setFont:font];
 }
 
 - (void)setTitleColor:(UIColor *)titleColor{
     
     _titleColor = titleColor;
     
-    if (_button) [_button setTitleColor:titleColor forState:UIControlStateNormal];
+    [self.button setTitleColor:titleColor forState:UIControlStateNormal];
 }
 
 - (void)setHighlightColor:(UIColor *)highlightColor{
     
     _highlightColor = highlightColor;
     
-    if (_button) [_button setTitleColor:highlightColor forState:UIControlStateHighlighted];
+    [self.button setTitleColor:highlightColor forState:UIControlStateHighlighted];
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor{
     
     _backgroundColor = backgroundColor;
     
-    if (_button) [_button setBackgroundColor:backgroundColor];
+    [self.button setBackgroundImage:[self getImageWithColor:backgroundColor] forState:UIControlStateNormal];
+}
+
+- (void)setBackgroundHighlightColor:(UIColor *)backgroundHighlightColor{
+    
+    _backgroundHighlightColor = backgroundHighlightColor;
+    
+    [self.button setBackgroundImage:[self getImageWithColor:backgroundHighlightColor] forState:UIControlStateHighlighted];
 }
 
 - (void)setBorderColor:(UIColor *)borderColor{
     
     _borderColor = borderColor;
     
+    self.button.borderColor = borderColor;
+}
+
+- (void)setBorderWidth:(CGFloat)borderWidth{
     
+    _borderWidth = borderWidth;
+    
+    self.button.borderWidth = borderWidth;
+}
+
+- (UIImage *)getImageWithColor:(UIColor *)color {
+    
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    
+    UIGraphicsBeginImageContext(rect.size);
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
+#pragma mark LazyLoading
+
+- (LEEActionButton *)button{
+    
+    if (!_button) _button = [LEEActionButton buttonWithType:UIButtonTypeCustom];
+    
+    return _button;
 }
 
 @end
@@ -755,25 +918,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     UIGraphicsBeginImageContext(self.currentKeyWindow.frame.size);
     
     [self.currentKeyWindow.layer renderInContext:UIGraphicsGetCurrentContext()];
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-    
-    return image;
-}
-
-- (UIImage *)getImageWithColor:(UIColor *)color {
-    
-    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
-    
-    UIGraphicsBeginImageContext(rect.size);
-    
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetFillColorWithColor(context, [color CGColor]);
-    
-    CGContextFillRect(context, rect);
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     
@@ -1182,24 +1326,34 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         LEEAction *action = [[LEEAction alloc] init];
         
-        action.button = [UIButton buttonWithType:UIButtonTypeCustom];
-        
         if (block) block(action);
         
-        if (!action.title) [action.button setTitle:@"按钮" forState:UIControlStateNormal];
+        if (!action.font) action.font = [UIFont systemFontOfSize:18.0f];
         
-        if (!action.titleColor) [action.button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        if (!action.title) action.title = @"按钮";
         
-        if (!action.backgroundColor) [action.button setBackgroundColor:[UIColor clearColor]];
+        if (!action.titleColor) action.titleColor = [UIColor blueColor];
+        
+        if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
+        
+        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:230/255.0 green:230/255.0 blue:230/255.0 alpha:1.0f];
+        
+        if (!action.borderColor) action.borderColor = [UIColor lightGrayColor];
+        
+        if (!action.borderWidth) action.borderWidth = 0.3f;
         
         [action.button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
         action.button.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 45.0f);
         
+        [action.button addTopBorder];
+        
         [self.alertView addSubview:action.button];
         
         [self.alertActionArray addObject:action];
     }
+    
+    if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject.button addLeftBorder];
     
     [self updateAlertViewSubViewsLayout]; //更新子视图布局
     
@@ -1674,17 +1828,21 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         LEEAction *action = [[LEEAction alloc] init];
         
-        action.button = [UIButton buttonWithType:UIButtonTypeCustom];
-        
         if (block) block(action);
         
-        if (!action.font) [action.button.titleLabel setFont:[UIFont systemFontOfSize:20.0f]];
+        if (!action.font) action.font = [UIFont systemFontOfSize:20.0f];
         
-        if (!action.title) [action.button setTitle:@"按钮" forState:UIControlStateNormal];
+        if (!action.title) action.title = @"按钮";
         
-        if (!action.titleColor) [action.button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        if (!action.titleColor) action.titleColor = [UIColor blueColor];
         
-        if (!action.backgroundColor) [action.button setBackgroundColor:self.config.modelColor];
+        if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
+        
+        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:230/255.0 green:230/255.0 blue:230/255.0 alpha:1.0f];
+        
+        if (!action.borderColor) action.borderColor = [UIColor lightGrayColor];
+        
+        if (!action.borderWidth) action.borderWidth = 0.3f;
         
         switch (action.type) {
                 
@@ -1706,8 +1864,10 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 
             default:
             {
-                 action.button.frame = CGRectMake(0, actionSheetViewHeight, actionSheetViewWidth, 57.0f);
-             
+                action.button.frame = CGRectMake(0, actionSheetViewHeight, actionSheetViewWidth, 57.0f);
+                
+                [action.button addTopBorder];
+                
                 [action.button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
                 [self.actionSheetScrollView addSubview:action.button];
