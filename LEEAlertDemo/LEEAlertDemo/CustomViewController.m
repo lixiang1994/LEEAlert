@@ -14,6 +14,8 @@
 
 #import "LEEAlert.h"
 
+#import "ViewController.h"
+
 @interface CustomViewController ()<UITextFieldDelegate>
 
 @end
@@ -239,7 +241,7 @@
         [button addTarget:self action:@selector(submitbButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         
     })
-    .LeeCustomButtonClickNotClose()
+//    .LeeCustomButtonClickNotClose()
     .LeeShow();
     
 }
@@ -251,17 +253,20 @@
     if (contentTextFieldString.length > 0) {
         
         NSLog(@"输入的内容: %@" , contentTextFieldString);
-        
-        //关闭自定义Alert
+                //关闭自定义Alert
         
         [LEEAlert closeCustomAlert];
-        
+        [self button2Action];
+
     } else {
         
         //设置内容提示文字
         
         contentLabel.text = @"不能为空";
         
+        ViewController *vc = [[ViewController alloc] init];
+        
+        vc.hidesBottomBarWhenPushed = YES;
     }
     
 }

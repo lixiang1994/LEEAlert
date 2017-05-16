@@ -1084,6 +1084,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 @property (nonatomic , strong ) NSMutableArray *alertButtonArray;
 
+@property (nonatomic , assign ) BOOL isShowing;
+
 @property (nonatomic , assign ) BOOL isClosing;
 
 @property (nonatomic , copy ) void (^closeAction)();
@@ -1454,6 +1456,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
 
 - (void)configAlert{
     
+    if (self.isShowing) return;
+    
+    self.isShowing = YES;
+    
     alertViewHeight = 0.0f;
     
     alertViewWidth = self.config.modelAlertMaxWidth;
@@ -1727,7 +1733,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             weakSelf.alertView.alpha = 1.0f;
             
-        } completion:^(BOOL finished) {}];
+        } completion:^(BOOL finished) {
+        
+            weakSelf.isShowing = NO;
+        }];
         
     } else if (weakSelf.config.modelAlertCustomBackGroundStype == LEEAlertCustomBackGroundStypeBlur) {
         
@@ -1739,7 +1748,10 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             
             weakSelf.alertView.alpha = 1.0f;
             
-        } completion:^(BOOL finished) {}];
+        } completion:^(BOOL finished) {
+        
+            weakSelf.isShowing = NO;
+        }];
         
     }
     
@@ -2031,6 +2043,8 @@ typedef NS_ENUM(NSInteger, LEEAlertCustomSubViewType) {
             if (weakSelf) {
                 
                 [LEEAlert shareAlertManager].alertWindow.rootViewController = nil;
+                
+                [LEEAlert shareAlertManager].alertWindow = nil;
                 
                 weakSelf.alertViewController = nil;
                 
