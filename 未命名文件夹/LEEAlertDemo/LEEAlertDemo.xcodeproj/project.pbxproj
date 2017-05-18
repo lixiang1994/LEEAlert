@@ -9,13 +9,14 @@
 /* Begin PBXBuildFile section */
 		9B0BB22A1E8E28760087D231 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB2291E8E28760087D231 /* main.m */; };
 		9B0BB22D1E8E28760087D231 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB22C1E8E28760087D231 /* AppDelegate.m */; };
-		9B0BB2301E8E28760087D231 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB22F1E8E28760087D231 /* ViewController.m */; };
 		9B0BB2331E8E28760087D231 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B0BB2311E8E28760087D231 /* Main.storyboard */; };
 		9B0BB2351E8E28760087D231 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B0BB2341E8E28760087D231 /* Assets.xcassets */; };
 		9B0BB2381E8E28760087D231 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B0BB2361E8E28760087D231 /* LaunchScreen.storyboard */; };
 		9B0BB2431E8E28760087D231 /* LEEAlertDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB2421E8E28760087D231 /* LEEAlertDemoTests.m */; };
 		9B0BB24E1E8E28760087D231 /* LEEAlertDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB24D1E8E28760087D231 /* LEEAlertDemoUITests.m */; };
 		9B0BB25E1E8E28C00087D231 /* LEEAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B0BB25D1E8E28C00087D231 /* LEEAlert.m */; };
+		9B98146C1ECD695F00014BD3 /* AlertTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */; };
+		9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,8 +41,6 @@
 		9B0BB2291E8E28760087D231 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9B0BB22B1E8E28760087D231 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9B0BB22C1E8E28760087D231 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		9B0BB22E1E8E28760087D231 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9B0BB22F1E8E28760087D231 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		9B0BB2321E8E28760087D231 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9B0BB2341E8E28760087D231 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B0BB2371E8E28760087D231 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -54,6 +53,11 @@
 		9B0BB24F1E8E28760087D231 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B0BB25C1E8E28C00087D231 /* LEEAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEEAlert.h; sourceTree = "<group>"; };
 		9B0BB25D1E8E28C00087D231 /* LEEAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEEAlert.m; sourceTree = "<group>"; };
+		9B98146A1ECD695F00014BD3 /* AlertTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertTableViewController.h; sourceTree = "<group>"; };
+		9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertTableViewController.m; sourceTree = "<group>"; };
+		9B98146D1ECD696E00014BD3 /* ActionSheetTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetTableViewController.h; sourceTree = "<group>"; };
+		9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionSheetTableViewController.m; sourceTree = "<group>"; };
+		9B9814711ECDA16300014BD3 /* LEEAlertHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LEEAlertHelper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,13 +111,15 @@
 				9B0BB25B1E8E28920087D231 /* LEEAlert */,
 				9B0BB22B1E8E28760087D231 /* AppDelegate.h */,
 				9B0BB22C1E8E28760087D231 /* AppDelegate.m */,
-				9B0BB22E1E8E28760087D231 /* ViewController.h */,
-				9B0BB22F1E8E28760087D231 /* ViewController.m */,
 				9B0BB2311E8E28760087D231 /* Main.storyboard */,
 				9B0BB2341E8E28760087D231 /* Assets.xcassets */,
 				9B0BB2361E8E28760087D231 /* LaunchScreen.storyboard */,
 				9B0BB2391E8E28760087D231 /* Info.plist */,
 				9B0BB2281E8E28760087D231 /* Supporting Files */,
+				9B98146A1ECD695F00014BD3 /* AlertTableViewController.h */,
+				9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */,
+				9B98146D1ECD696E00014BD3 /* ActionSheetTableViewController.h */,
+				9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */,
 			);
 			path = LEEAlertDemo;
 			sourceTree = "<group>";
@@ -149,6 +155,7 @@
 			children = (
 				9B0BB25C1E8E28C00087D231 /* LEEAlert.h */,
 				9B0BB25D1E8E28C00087D231 /* LEEAlert.m */,
+				9B9814711ECDA16300014BD3 /* LEEAlertHelper.h */,
 			);
 			path = LEEAlert;
 			sourceTree = "<group>";
@@ -287,10 +294,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B0BB2301E8E28760087D231 /* ViewController.m in Sources */,
 				9B0BB22D1E8E28760087D231 /* AppDelegate.m in Sources */,
 				9B0BB22A1E8E28760087D231 /* main.m in Sources */,
 				9B0BB25E1E8E28C00087D231 /* LEEAlert.m in Sources */,
+				9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */,
+				9B98146C1ECD695F00014BD3 /* AlertTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +453,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -458,6 +467,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

@@ -10,17 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAction;
-
-typedef LEEAlertConfigModel *(^LEEConfig)();
-typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
-typedef LEEAlertConfigModel *(^LEEConfigToString)(NSString *str);
-typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);
-typedef LEEAlertConfigModel *(^LEEConfigToColor)(UIColor *color);
-typedef LEEAlertConfigModel *(^LEEConfigToAction)(void(^)(LEEAction *action));
-typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (^)());
-typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^configLabel)(UILabel *label));
-typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField)(UITextField *textField));
+#import "LEEAlertHelper.h"
 
 @interface LEEAlert : NSObject
 
@@ -42,6 +32,8 @@ typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField
 
 @interface LEEAlertConfigModel : NSObject
 
+/** ✨通用设置 */
+
 /** 设置 标题 -> 格式: .LeeTitle(@@"") */
 @property (nonatomic , copy , readonly ) LEEConfigToString LeeTitle;
 
@@ -49,46 +41,43 @@ typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField
 @property (nonatomic , copy , readonly ) LEEConfigToString LeeContent;
 
 /** 设置 动作 -> 格式: .LeeAction(@"name" , ^{ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock leeAction;
+@property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock LeeAction;
 
-/** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
+/** 设置 取消动作 -> 格式: .LeeCancelAction(@"name" , ^{ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock LeeCancelAction;
 
-/** 设置 添加标题 -> 格式: .LeeAddTitle(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeAddTitle;
+/** 设置 设置标题 -> 格式: .LeeConfigTitle(^(UILabel *label){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeConfigTitle;
 
-/** 设置 添加内容 -> 格式: .LeeAddContent(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeAddContent;
+/** 设置 设置内容 -> 格式: .LeeConfigContent(^(UILabel *label){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeConfigContent;
 
-/** 设置 动作 -> 格式: .LeeAction(^(LEEAction *){ //code.. }) */
+/** 设置 动作 -> 格式: .LeeAddAction(^(LEEAction *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToAction LeeAddAction;
 
 /** 设置 自定义视图 -> 格式: .LeeCustomView(UIView) */
 @property (nonatomic , copy , readonly ) LEEConfigToView LeeCustomView;
 
-/** 设置 圆角半径 -> 格式: .LeeCornerRadius(0.0f) */
+/** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCornerRadius;
 
 /** 设置 子控件间距 -> 格式: .LeeSubViewMargin(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeSubViewMargin;
 
-/** 设置 顶部距离控件的间距 -> 格式: .LeeTopSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeTopSubViewMargin;
+/** 设置 子控件间距 -> 格式: .LeeHeaderInsets(UIEdgeInsetsMake(20, 20, 20, 20)) */
+@property (nonatomic , copy , readonly ) LEEConfigToEdgeInsets LeeHeaderInsets;
 
-/** 设置 底部距离控件的间距 -> 格式: .LeeBottomSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeBottomSubViewMargin;
-
-/** 设置 左侧距离控件的间距 -> 格式: .LeeLeftSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeLeftSubViewMargin;
-
-/** 设置 右侧距离控件的间距 -> 格式: .LeeRightSubViewMargin(0.0f) */
-@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeRightSubViewMargin;
-
-/** 设置 最大宽度 -> 格式: .LeeMaxWidth(0.0f) */
+/** 设置 最大宽度 -> 格式: .LeeMaxWidth(280.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeMaxWidth;
 
-/** 设置 最大高度 -> 格式: .LeeMaxHeight(0.0f) */
+/** 设置 最大高度 -> 格式: .LeeMaxHeight(400.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeMaxHeight;
+
+/** 设置 设置最大宽度 -> 格式: .LeeConfigMaxWidth(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 280.0f; }) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloatBlock LeeConfigMaxWidth;
+
+/** 设置 设置最大高度 -> 格式: .LeeConfigMaxHeight(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 600.0f; }) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloatBlock LeeConfigMaxHeight;
 
 /** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeOpenAnimationDuration;
@@ -123,19 +112,21 @@ typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;
 
+/** ✨alert 专用设置 */
+
+/** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
+
+/** ✨actionSheet 专用设置 */
+
+/** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
+
 @end
 
-
-typedef NS_ENUM(NSInteger, LEEActionType) {
-    
-    LEEActionTypeDefault,
-    
-    LEEActionTypeCancel,
-    
-    LEEActionTypeDestructive
-};
-
 @interface LEEAction : NSObject
+
+@property (nonatomic , assign ) LEEActionType type;
 
 @property (nonatomic , strong ) NSString *title;
 
@@ -153,20 +144,19 @@ typedef NS_ENUM(NSInteger, LEEActionType) {
 
 @property (nonatomic , strong ) UIColor *borderColor;
 
+@property (nonatomic , strong ) UIImage *image;
+
+@property (nonatomic , strong ) UIImage *highlightImage;
+
 @property (nonatomic , assign ) CGFloat borderWidth;
 
-@property (nonatomic , assign ) LEEActionType type;
+@property (nonatomic , assign ) CGFloat height;
+
+@property (nonatomic , assign ) BOOL enabled;
 
 @property (nonatomic , copy ) void (^clickBlock)();
 
 @end
-
-typedef NS_ENUM(NSInteger, LEEAlertType) {
-    
-    LEEAlertTypeAlert,
-    
-    LEEAlertTypeActionSheet
-};
 
 @interface LEEAlertConfig : NSObject
 

@@ -8,6 +8,10 @@
 
 #import "AppDelegate.h"
 
+#import "AlertTableViewController.h"
+
+#import "ActionSheetTableViewController.h"
+
 @interface AppDelegate ()
 
 @end
@@ -17,6 +21,34 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    [self.window makeKeyAndVisible];
+    
+    NSArray *classArray = @[@"AlertTableViewController" , @"ActionSheetTableViewController"];
+    
+    NSArray *titleArray = @[@"Alert" , @"ActionSheet"];
+    
+    NSMutableArray *ncArray = [NSMutableArray array];
+    
+    [classArray enumerateObjectsUsingBlock:^(id  _Nonnull class, NSUInteger idx, BOOL * _Nonnull stop) {
+       
+        UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:[[NSClassFromString(class) alloc] init]];
+        
+        [ncArray addObject:nc];
+        
+        nc.tabBarItem.title = titleArray[idx];
+    }];
+    
+    UITabBarController *tbc = [[UITabBarController alloc] init];
+    
+    tbc.viewControllers = ncArray;
+    
+    self.window.rootViewController = tbc;
+    
     return YES;
 }
 

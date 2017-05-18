@@ -10,6 +10,8 @@
 
 #import <Accelerate/Accelerate.h>
 
+#define IS_IPAD ({ UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 1 : 0; })
+
 @interface LEEAlert ()
 
 @property (nonatomic , strong ) UIWindow *mainWindow;
@@ -55,7 +57,7 @@
     
     LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
     
-    config.type = LEEAlertTypeActionSheet;
+    config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
     
     return config;
 }
@@ -125,9 +127,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @interface LEEAlertConfigModel ()
 
-@property (nonatomic , copy ) NSString *modelTitleStr;
-@property (nonatomic , copy ) NSString *modelContentStr;
-
 @property (nonatomic , strong ) NSMutableArray *modelActionArray;
 @property (nonatomic , strong ) NSMutableArray *modelSubViewsQueue;
 
@@ -135,15 +134,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @property (nonatomic , assign ) CGFloat modelCornerRadius;
 @property (nonatomic , assign ) CGFloat modelSubViewMargin;
-@property (nonatomic , assign ) CGFloat modelTopSubViewMargin;
-@property (nonatomic , assign ) CGFloat modelBottomSubViewMargin;
-@property (nonatomic , assign ) CGFloat modelLeftSubViewMargin;
-@property (nonatomic , assign ) CGFloat modelRightSubViewMargin;
-@property (nonatomic , assign ) CGFloat modelMaxWidth;
-@property (nonatomic , assign ) CGFloat modelMaxHeight;
 @property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
+
+@property (nonatomic , assign ) CGFloat modelActionSheetBottomMargin;
 
 @property (nonatomic , strong ) UIColor *modelColor;
 @property (nonatomic , strong ) UIColor *modelBackgroundColor;
@@ -151,6 +146,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
 @property (nonatomic , assign ) BOOL modelIsClickActionClose;
 @property (nonatomic , assign ) BOOL modelIsAddQueue;
+
+@property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
+
+@property (nonatomic , copy ) CGFloat(^modelMaxWidthBlock)(LEEScreenOrientationType);
+@property (nonatomic , copy ) CGFloat(^modelMaxHeightBlock)(LEEScreenOrientationType);
 
 @property (nonatomic , copy ) void(^modelFinishConfig)();
 
@@ -174,17 +174,14 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         // 初始化默认值
         
-        _modelCornerRadius = 10.0f; //默认警示框圆角半径
+        _modelCornerRadius = 13.0f; //默认警示框圆角半径
         _modelSubViewMargin = 10.0f; //默认警示框内部控件之间间距
-        _modelTopSubViewMargin = 20.0f; //默认警示框顶部距离控件的间距
-        _modelBottomSubViewMargin = 20.0f; //默认警示框底部距离控件的间距
-        _modelLeftSubViewMargin = 20.0f; //默认警示框左侧距离控件的间距
-        _modelRightSubViewMargin = 20.0f; //默认警示框右侧距离控件的间距
-        _modelMaxWidth = 280; //默认最大宽度 设备最小屏幕宽度 320 去除20左右边距
-        _modelMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.8f; //默认最大高度屏幕80%
+        _modelHeaderInsets = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f); //默认间距
         _modelOpenAnimationDuration = 0.3f; //默认警示框打开动画时长
         _modelCloseAnimationDuration = 0.2f; //默认警示框关闭动画时长
-        _modelBackgroundStyleColorAlpha = 0.6f; //自定义背景样式颜色透明度 默认为半透明背景样式 透明度为0.6f
+        _modelBackgroundStyleColorAlpha = 0.45f; //自定义背景样式颜色透明度 默认为半透明背景样式 透明度为0.45f
+        
+        _modelActionSheetBottomMargin = 10.0f; //默认actionsheet距离屏幕底部距离
         
         _modelColor = [UIColor whiteColor]; //默认警示框颜色
         _modelBackgroundColor = [UIColor blackColor]; //默认警示框背景半透明或者模糊颜色
@@ -206,11 +203,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (weakSelf) {
             
-            weakSelf.modelTitleStr = str;
+            weakSelf.LeeConfigTitle(^(UILabel *label) {
+                
+                label.text = str;
+            });
             
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeTitle];
-            
-            if ([weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeTitle)}];
         }
         
         return weakSelf;
@@ -227,11 +224,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (weakSelf) {
             
-            weakSelf.modelContentStr = str;
+            weakSelf.LeeConfigContent(^(UILabel *label) {
+               
+                label.text = str;
+            });
             
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
-            
-            if ([weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeContent)}];
         }
         
         return weakSelf;
@@ -239,25 +236,55 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
-- (LEEConfigToStringAndBlock)leeAction{
+- (LEEConfigToStringAndBlock)LeeAction{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(NSString *title , void(^block)()){
-    
-        weakSelf.LeeAddAction(^(LEEAction *action) {
-           
-            action.title = title;
-            
-            action.clickBlock = block;
-        });
+        
+        if (weakSelf) {
+        
+            weakSelf.LeeAddAction(^(LEEAction *action) {
+                
+                action.title = title;
+                
+                action.clickBlock = block;
+            });
+
+        }
         
         return weakSelf;
     };
     
 }
 
-- (LEEConfigToConfigLabel)LeeAddTitle{
+- (LEEConfigToStringAndBlock)LeeCancelAction{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(NSString *title , void(^block)()){
+        
+        if (weakSelf) {
+            
+            weakSelf.LeeAddAction(^(LEEAction *action) {
+                
+                action.type = LEEActionTypeCancel;
+                
+                action.title = title;
+                
+                action.font = [UIFont boldSystemFontOfSize:18.0f];
+                
+                action.clickBlock = block;
+            });
+            
+        }
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToConfigLabel)LeeConfigTitle{
     
     __weak typeof(self) weakSelf = self;
     
@@ -267,11 +294,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
             
             NSDictionary *info = @{@"type" : @(LEESubViewTypeTitle) , @"block" : block};
             
-            if (weakSelf.modelTitleStr) {
-                
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeTitle];
-                
-                NSArray *result = [weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeTitle];
+            
+            NSArray *result = [weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate];
+            
+            if (result.count) {
                 
                 [weakSelf.modelSubViewsQueue replaceObjectAtIndex:[weakSelf.modelSubViewsQueue indexOfObject:result.firstObject] withObject:info];
                 
@@ -287,7 +314,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
-- (LEEConfigToConfigLabel)LeeAddContent{
+- (LEEConfigToConfigLabel)LeeConfigContent{
     
     __weak typeof(self) weakSelf = self;
     
@@ -297,11 +324,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
             
             NSDictionary *info = @{@"type" : @(LEESubViewTypeContent) , @"block" : block};
             
-            if (weakSelf.modelContentStr) {
-                
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
-                
-                NSArray *result = [weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
+            
+            NSArray *result = [weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate];
+            
+            if (result.count) {
                 
                 [weakSelf.modelSubViewsQueue replaceObjectAtIndex:[weakSelf.modelSubViewsQueue indexOfObject:result.firstObject] withObject:info];
                 
@@ -321,9 +348,9 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     __weak typeof(self) weakSelf = self;
     
-    return ^(void(^block)(LEEAction *action)){
+    return ^(void(^block)(LEEAction *)){
         
-        [weakSelf.modelActionArray addObject:block];
+        if (weakSelf) [weakSelf.modelActionArray addObject:block];
         
         return weakSelf;
     };
@@ -336,10 +363,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(void (^block)(UITextField *)){
         
-        if (weakSelf) {
-            
-            [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeTextField) , @"block" : block}];
-        }
+        if (weakSelf) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeTextField) , @"block" : block}];
         
         return weakSelf;
     };
@@ -354,11 +378,12 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (weakSelf) {
             
+            if (!weakSelf.modelCustomView) {
+                
+                [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeCustomView)}];
+            }
+            
             weakSelf.modelCustomView = view;
-            
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeCustomView];
-            
-            if ([weakSelf.modelSubViewsQueue filteredArrayUsingPredicate:predicate].count == 0) [weakSelf.modelSubViewsQueue addObject:@{@"type" : @(LEESubViewTypeCustomView)}];
         }
         
         return weakSelf;
@@ -392,52 +417,26 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
-- (LEEConfigToFloat)LeeTopSubViewMargin{
+- (LEEConfigToEdgeInsets)LeeHeaderInsets{
     
     __weak typeof(self) weakSelf = self;
     
-    return ^(CGFloat number){
+    return ^(UIEdgeInsets insets){
         
-        if (weakSelf) weakSelf.modelTopSubViewMargin = number;
+        if (weakSelf) weakSelf.modelHeaderInsets = insets;
         
         return weakSelf;
     };
     
 }
 
-- (LEEConfigToFloat)LeeBottomSubViewMargin{
+- (LEEConfigToFloat)LeeActionSheetBottomMargin{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(CGFloat number){
         
-        if (weakSelf) weakSelf.modelBottomSubViewMargin = number;
-        
-        return weakSelf;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeLeftSubViewMargin{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(CGFloat number){
-        
-        if (weakSelf) weakSelf.modelLeftSubViewMargin = number;
-        
-        return weakSelf;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeRightSubViewMargin{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(CGFloat number){
-        
-        if (weakSelf) weakSelf.modelRightSubViewMargin = number;
+        if (weakSelf) weakSelf.modelActionSheetBottomMargin = number;
         
         return weakSelf;
     };
@@ -450,9 +449,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(CGFloat number){
         
-        if (weakSelf) weakSelf.modelMaxWidth = number;
+        return weakSelf.LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            
+            return number;
+        });
         
-        return weakSelf;
     };
     
 }
@@ -463,7 +464,35 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(CGFloat number){
         
-        if (weakSelf) weakSelf.modelMaxHeight = number;
+        return weakSelf.LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+            
+            return number;
+        });
+        
+    };
+    
+}
+
+- (LEEConfigToFloatBlock)LeeConfigMaxWidth{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat(^block)(LEEScreenOrientationType type)){
+        
+        if (weakSelf) weakSelf.modelMaxWidthBlock = block;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToFloatBlock)LeeConfigMaxHeight{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat(^block)(LEEScreenOrientationType type)){
+        
+        if (weakSelf) weakSelf.modelMaxHeightBlock = block;
         
         return weakSelf;
     };
@@ -800,9 +829,43 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 - (void)setBorderWidth:(CGFloat)borderWidth{
     
+    if (borderWidth < 0.35f) borderWidth = 0.35f;
+    
     _borderWidth = borderWidth;
     
     self.button.borderWidth = borderWidth;
+}
+
+- (void)setImage:(UIImage *)image{
+    
+    _image = image;
+    
+    [self.button setImage:image forState:UIControlStateNormal];
+}
+
+- (void)setHighlightImage:(UIImage *)highlightImage{
+    
+    _highlightImage = highlightImage;
+    
+    [self.button setImage:highlightImage forState:UIControlStateHighlighted];
+}
+
+- (void)setHeight:(CGFloat)height{
+    
+    _height = height;
+    
+    CGRect buttonFrame = self.button.frame;
+    
+    buttonFrame.size.height = height;
+    
+    self.button.frame = buttonFrame;
+}
+
+- (void)setEnabled:(BOOL)enabled{
+    
+    _enabled = enabled;
+    
+    self.button.enabled = enabled;
 }
 
 - (UIImage *)getImageWithColor:(UIColor *)color {
@@ -843,6 +906,8 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @property (nonatomic , strong ) UIImageView *backgroundImageView;
 
+@property (nonatomic , assign ) LEEScreenOrientationType orientationType;
+
 @property (nonatomic , assign ) BOOL isShowing;
 
 @property (nonatomic , assign ) BOOL isClosing;
@@ -872,8 +937,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor clearColor];
-    
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.extendedLayoutIncludesOpaqueBars = NO;
@@ -883,6 +946,8 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     self.backgroundImageView.backgroundColor = [UIColor clearColor];
     
     [self.view addSubview:self.backgroundImageView];
+
+    self.view.backgroundColor = [self.config.modelBackgroundColor colorWithAlphaComponent:0.0f];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
@@ -960,6 +1025,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return _backgroundImageView;
 }
 
+- (LEEScreenOrientationType)orientationType{
+    
+    return CGRectGetHeight([[UIScreen mainScreen] bounds]) > CGRectGetWidth([[UIScreen mainScreen] bounds]) ? LEEScreenOrientationTypeVertical : LEEScreenOrientationTypeHorizontal;
+}
+
 @end
 
 #pragma mark - Alert
@@ -976,9 +1046,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @implementation LEEAlertViewController
 {
-    CGFloat alertViewMaxHeight;
     CGFloat alertViewHeight;
-    CGFloat alertViewWidth;
     CGFloat customViewHeight;
     CGRect keyboardFrame;
     BOOL isShowingKeyboard;
@@ -1034,6 +1102,8 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 }
 
 - (void)keyboardDidChangeFrame:(NSNotification *)notify{
+    
+    CGFloat alertViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
     
     double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
@@ -1101,11 +1171,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 - (void)updateOrientationLayout{
     
-    alertViewMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) >  CGRectGetWidth([[UIScreen mainScreen] bounds]) ? self.config.modelMaxHeight : CGRectGetHeight([[UIScreen mainScreen] bounds]) - 20.0f;
+    CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
+    
+    CGFloat alertViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
     
     if (!isShowingKeyboard) {
         
         CGRect alertViewFrame = self.alertView.frame;
+        
+        alertViewFrame.size.width = alertViewMaxWidth;
         
         alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;
         
@@ -1123,19 +1197,19 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     alertViewHeight = 0.0f;
     
-    alertViewWidth = self.config.modelMaxWidth;
+    CGFloat alertViewWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
-    if (self.alertSubViewArray.count > 0) alertViewHeight += self.config.modelTopSubViewMargin;
+    if (self.alertSubViewArray.count > 0) alertViewHeight += self.config.modelHeaderInsets.top;
     
     for (UIView *subView in self.alertSubViewArray) {
         
         CGRect subViewFrame = subView.frame;
         
-        subViewFrame.origin.x = self.config.modelLeftSubViewMargin;
+        subViewFrame.origin.x = self.config.modelHeaderInsets.left;
         
         subViewFrame.origin.y = alertViewHeight;
         
-        subViewFrame.size.width = alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin;
+        subViewFrame.size.width = alertViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right;
         
         if (subView == self.config.modelCustomView) customViewHeight = subViewFrame.size.height;
         
@@ -1150,7 +1224,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         alertViewHeight -= self.config.modelSubViewMargin;
         
-        alertViewHeight += self.config.modelBottomSubViewMargin;
+        alertViewHeight += self.config.modelHeaderInsets.bottom;
     }
     
     for (LEEAction *action in self.alertActionArray) {
@@ -1198,9 +1272,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     alertViewHeight = 0.0f;
     
-    alertViewWidth = self.config.modelMaxWidth;
+    CGFloat alertViewWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
     [self.view addSubview: self.alertView];
+    
+    self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
     for (NSDictionary *item in self.config.modelSubViewsQueue) {
         
@@ -1208,69 +1284,61 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 
             case LEESubViewTypeTitle:
             {
-                NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : @" ";
+                void(^block)(UILabel *label) = item[@"block"];
                 
-                UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
+                UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(self.config.modelHeaderInsets.left, alertViewHeight, alertViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right, 0)];
                 
-                [self.alertView addSubview:titleLabel];
+                [self.alertView addSubview:label];
                 
-                [self.alertSubViewArray addObject:titleLabel];
+                [self.alertSubViewArray addObject:label];
                 
-                titleLabel.textAlignment = NSTextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentCenter;
                 
-                titleLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+                label.font = [UIFont boldSystemFontOfSize:18.0f];
                 
-                titleLabel.textColor = [UIColor blackColor];
+                label.textColor = [UIColor blackColor];
                 
-                titleLabel.text = title;
+                label.numberOfLines = 0;
                 
-                titleLabel.numberOfLines = 0;
+                if (block) block(label);
                 
-                void(^addLabel)(UILabel *label) = item[@"block"];
+                CGRect labelRect = [self getLabelTextHeight:label];
                 
-                if (addLabel) addLabel(titleLabel);
+                CGRect labelFrame = label.frame;
                 
-                CGRect titleLabelRect = [self getLabelTextHeight:titleLabel];
+                labelFrame.size.height = labelRect.size.height;
                 
-                CGRect titleLabelFrame = titleLabel.frame;
-                
-                titleLabelFrame.size.height = titleLabelRect.size.height;
-                
-                titleLabel.frame = titleLabelFrame;
+                label.frame = labelFrame;
             }
                 break;
             
             case LEESubViewTypeContent:
             {
-                NSString *content = self.config.modelContentStr ? self.config.modelContentStr : @" ";
+                void(^block)(UILabel *label) = item[@"block"];
                 
-                UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
+                UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelHeaderInsets.left, alertViewHeight, alertViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right, 0)];
                 
-                [self.alertView addSubview:contentLabel];
+                [self.alertView addSubview:label];
                 
-                [self.alertSubViewArray addObject:contentLabel];
+                [self.alertSubViewArray addObject:label];
                 
-                contentLabel.textAlignment = NSTextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentCenter;
                 
-                contentLabel.font = [UIFont systemFontOfSize:14.0f];
+                label.font = [UIFont systemFontOfSize:14.0f];
                 
-                contentLabel.textColor = [UIColor blackColor];
+                label.textColor = [UIColor blackColor];
                 
-                contentLabel.text = content;
+                label.numberOfLines = 0;
                 
-                contentLabel.numberOfLines = 0;
+                if (block) block(label);
                 
-                void(^addLabel)(UILabel *label) = item[@"block"];
+                CGRect labelRect = [self getLabelTextHeight:label];
                 
-                if (addLabel) addLabel(contentLabel);
+                CGRect labelFrame = label.frame;
                 
-                CGRect contentLabelRect = [self getLabelTextHeight:contentLabel];
+                labelFrame.size.height = labelRect.size.height;
                 
-                CGRect contentLabelFrame = contentLabel.frame;
-                
-                contentLabelFrame.size.height = contentLabelRect.size.height;
-                
-                contentLabel.frame = contentLabelFrame;
+                label.frame = labelFrame;
             }
                 break;
             
@@ -1278,13 +1346,13 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
             {
                 if (self.config.modelCustomView) {
                     
-                    CGRect customContentViewFrame = self.config.modelCustomView.frame;
+                    CGRect customViewFrame = self.config.modelCustomView.frame;
                     
-                    customContentViewFrame.origin.y = alertViewHeight;
+                    customViewFrame.origin.y = alertViewHeight;
                     
-                    customViewHeight = customContentViewFrame.size.height;
+                    customViewHeight = customViewFrame.size.height;
                     
-                    self.config.modelCustomView.frame = customContentViewFrame;
+                    self.config.modelCustomView.frame = customViewFrame;
                     
                     [self.alertView addSubview:self.config.modelCustomView];
                     
@@ -1300,17 +1368,17 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
            
             case LEESubViewTypeTextField:
             {
-                UITextField *textField = [[UITextField alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, alertViewHeight, alertViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin , 40.0f)];
-                
-                textField.borderStyle = UITextBorderStyleRoundedRect;
+                UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(self.config.modelHeaderInsets.left, alertViewHeight, alertViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right , 40.0f)];
                 
                 [self.alertView addSubview:textField];
                 
                 [self.alertSubViewArray addObject:textField];
                 
-                void(^addTextField)(UITextField *textField) = item[@"block"];
+                textField.borderStyle = UITextBorderStyleRoundedRect;
                 
-                if (addTextField) addTextField(textField);
+                void(^block)(UITextField *textField) = item[@"block"];
+                
+                if (block) block(textField);
             }
                 break;
                 
@@ -1332,19 +1400,21 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (!action.title) action.title = @"按钮";
         
-        if (!action.titleColor) action.titleColor = [UIColor blueColor];
+        if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
         
         if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
         
-        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:230/255.0 green:230/255.0 blue:230/255.0 alpha:1.0f];
+        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:232/255.0 green:232/255.0 blue:232/255.0 alpha:1.0f];
         
         if (!action.borderColor) action.borderColor = [UIColor lightGrayColor];
         
-        if (!action.borderWidth) action.borderWidth = 0.3f;
+        if (!action.borderWidth) action.borderWidth = 0.35f;
+        
+        if (!action.height) action.height = 45.0f;
         
         [action.button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
-        action.button.frame = CGRectMake(0, alertViewHeight, alertViewWidth, 45.0f);
+        action.button.frame = CGRectMake(0, alertViewHeight, alertViewWidth, action.height);
         
         [action.button addTopBorder];
         
@@ -1355,9 +1425,9 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject.button addLeftBorder];
     
-    [self updateAlertViewSubViewsLayout]; //更新子视图布局
+    // 更新子视图布局
     
-    self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
+    [self updateAlertViewSubViewsLayout];
     
     // 开启显示警示框动画
     
@@ -1530,7 +1600,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     if (!_alertView) {
         
-        _alertView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.config.modelMaxWidth, 0)];
+        _alertView = [[UIScrollView alloc] init];
         
         _alertView.backgroundColor = self.config.modelColor;
         
@@ -1576,9 +1646,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @implementation LEEActionSheetViewController
 {
-    CGFloat actionSheetViewMaxWidth;
-    CGFloat actionSheetViewMaxHeight;
-    CGFloat actionSheetViewWidth;
     CGFloat actionSheetViewHeight;
     CGFloat customViewHeight;
     BOOL isShowed;
@@ -1623,15 +1690,19 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 - (void)updateOrientationLayout{
     
-    actionSheetViewMaxHeight = CGRectGetHeight([[UIScreen mainScreen] bounds]) >  CGRectGetWidth([[UIScreen mainScreen] bounds]) ? self.config.modelMaxHeight : CGRectGetHeight([[UIScreen mainScreen] bounds]) - 20.0f; //更新最大高度 (iOS 8 以上处理)
+    CGFloat actionSheetViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
+    
+    CGFloat actionSheetViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
     
     CGRect actionSheetViewFrame = self.actionSheetView.frame;
+    
+    actionSheetViewFrame.size.width = actionSheetViewMaxWidth;
     
     actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight ? actionSheetViewMaxHeight : actionSheetViewHeight;
     
     actionSheetViewFrame.origin.y = CGRectGetHeight(self.view.frame);
     
-    if (isShowed) actionSheetViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - actionSheetViewFrame.size.height) - self.config.modelBottomSubViewMargin;
+    if (isShowed) actionSheetViewFrame.origin.y = (CGRectGetHeight(self.view.frame) - actionSheetViewFrame.size.height) - self.config.modelActionSheetBottomMargin;
     
     self.actionSheetView.frame = actionSheetViewFrame;
     
@@ -1645,6 +1716,8 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 - (void)updateActionSheetViewSubViewsLayout{
     
     CGRect actionSheetScrollViewFrame = self.actionSheetScrollView.frame;
+    
+    actionSheetScrollViewFrame.size.width = CGRectGetWidth(self.actionSheetView.frame);
     
     actionSheetScrollViewFrame.size.height = self.actionSheetCancelAction ? CGRectGetHeight(self.actionSheetView.frame) - CGRectGetHeight(self.actionSheetCancelAction.button.frame) - 10 : CGRectGetHeight(self.actionSheetView.frame);
     
@@ -1665,9 +1738,9 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     actionSheetViewHeight = 0.0f;
     
-    actionSheetViewWidth = self.config.modelMaxWidth;
+    CGFloat actionSheetViewWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
-    if (self.actionSheetSubViewArray.count > 0) actionSheetViewHeight += self.config.modelTopSubViewMargin;
+    if (self.actionSheetSubViewArray.count > 0) actionSheetViewHeight += self.config.modelHeaderInsets.top;
     
     for (UIView *subView in self.actionSheetSubViewArray) {
         
@@ -1688,7 +1761,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         actionSheetViewHeight -= self.config.modelSubViewMargin;
         
-        actionSheetViewHeight += self.config.modelBottomSubViewMargin;
+        actionSheetViewHeight += self.config.modelHeaderInsets.bottom;
     }
     
     for (LEEAction *action in self.actionSheetActionArray) {
@@ -1713,7 +1786,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     actionSheetViewHeight = 0.0f;
     
-    actionSheetViewWidth = self.config.modelMaxWidth;
+    CGFloat actionSheetViewWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
     self.actionSheetScrollView.layer.cornerRadius = self.config.modelCornerRadius;
     
@@ -1727,69 +1800,61 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 
             case LEESubViewTypeTitle:
             {
-                NSString *title = self.config.modelTitleStr ? self.config.modelTitleStr : @" ";
+                void(^block)(UILabel *label) = item[@"block"];
                 
-                UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, actionSheetViewHeight, actionSheetViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
+                UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(self.config.modelHeaderInsets.left, actionSheetViewHeight, actionSheetViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right, 0)];
                 
-                [self.actionSheetScrollView addSubview:titleLabel];
+                [self.actionSheetScrollView addSubview:label];
                 
-                [self.actionSheetSubViewArray addObject:titleLabel];
+                [self.actionSheetSubViewArray addObject:label];
                 
-                titleLabel.textAlignment = NSTextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentCenter;
                 
-                titleLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+                label.font = [UIFont boldSystemFontOfSize:16.0f];
                 
-                titleLabel.textColor = [UIColor blackColor];
+                label.textColor = [UIColor darkGrayColor];
                 
-                titleLabel.text = title;
+                label.numberOfLines = 0;
                 
-                titleLabel.numberOfLines = 0;
+                if (block) block(label);
                 
-                void(^addLabel)(UILabel *label) = item[@"block"];
+                CGRect labelRect = [self getLabelTextHeight:label];
                 
-                if (addLabel) addLabel(titleLabel);
+                CGRect labelFrame = label.frame;
                 
-                CGRect titleLabelRect = [self getLabelTextHeight:titleLabel];
+                labelFrame.size.height = labelRect.size.height;
                 
-                CGRect titleLabelFrame = titleLabel.frame;
-                
-                titleLabelFrame.size.height = titleLabelRect.size.height;
-                
-                titleLabel.frame = titleLabelFrame;
+                label.frame = labelFrame;
             }
                 break;
                 
             case LEESubViewTypeContent:
             {
-                NSString *content = self.config.modelContentStr ? self.config.modelContentStr : @" ";
+                void(^block)(UILabel *label) = item[@"block"];
                 
-                UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.config.modelLeftSubViewMargin, actionSheetViewHeight, actionSheetViewWidth - self.config.modelLeftSubViewMargin - self.config.modelRightSubViewMargin, 0)];
+                UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(self.config.modelHeaderInsets.left, actionSheetViewHeight, actionSheetViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right, 0)];
                 
-                [self.actionSheetScrollView addSubview:contentLabel];
+                [self.actionSheetScrollView addSubview:label];
                 
-                [self.actionSheetSubViewArray addObject:contentLabel];
+                [self.actionSheetSubViewArray addObject:label];
                 
-                contentLabel.textAlignment = NSTextAlignmentCenter;
+                label.textAlignment = NSTextAlignmentCenter;
                 
-                contentLabel.font = [UIFont systemFontOfSize:14.0f];
+                label.font = [UIFont systemFontOfSize:14.0f];
                 
-                contentLabel.textColor = [UIColor blackColor];
+                label.textColor = [UIColor grayColor];
                 
-                contentLabel.text = content;
+                label.numberOfLines = 0;
                 
-                contentLabel.numberOfLines = 0;
+                if (block) block(label);
                 
-                void(^addLabel)(UILabel *label) = item[@"block"];
+                CGRect labelRect = [self getLabelTextHeight:label];
                 
-                if (addLabel) addLabel(contentLabel);
+                CGRect labelFrame = label.frame;
                 
-                CGRect contentLabelRect = [self getLabelTextHeight:contentLabel];
+                labelFrame.size.height = labelRect.size.height;
                 
-                CGRect contentLabelFrame = contentLabel.frame;
-                
-                contentLabelFrame.size.height = contentLabelRect.size.height;
-                
-                contentLabel.frame = contentLabelFrame;
+                label.frame = labelFrame;
             }
                 break;
                 
@@ -1834,21 +1899,23 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (!action.title) action.title = @"按钮";
         
-        if (!action.titleColor) action.titleColor = [UIColor blueColor];
+        if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
         
         if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
         
-        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:230/255.0 green:230/255.0 blue:230/255.0 alpha:1.0f];
+        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithRed:232/255.0 green:232/255.0 blue:232/255.0 alpha:1.0f];
         
         if (!action.borderColor) action.borderColor = [UIColor lightGrayColor];
         
-        if (!action.borderWidth) action.borderWidth = 0.3f;
+        if (!action.borderWidth) action.borderWidth = 0.35f;
+        
+        if (!action.height) action.height = 57.0f;
         
         switch (action.type) {
                 
             case LEEActionTypeCancel:
             {
-                action.button.frame = CGRectMake(0, 10.0f, actionSheetViewWidth, 57.0f);
+                action.button.frame = CGRectMake(0, 10.0f, actionSheetViewWidth, action.height);
                 
                 [action.button addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
@@ -1864,7 +1931,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 
             default:
             {
-                action.button.frame = CGRectMake(0, actionSheetViewHeight, actionSheetViewWidth, 57.0f);
+                action.button.frame = CGRectMake(0, actionSheetViewHeight, actionSheetViewWidth, action.height);
                 
                 [action.button addTopBorder];
                 
@@ -2063,7 +2130,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     if (!_actionSheetView) {
         
-        _actionSheetView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.config.modelMaxWidth, 0)];
+        _actionSheetView = [[UIScrollView alloc] init];
         
         _actionSheetView.backgroundColor = [UIColor clearColor];
     }
@@ -2143,6 +2210,48 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return self;
 }
 
+- (void)setType:(LEEAlertType)type{
+    
+    _type = type;
+    
+    // 处理默认值
+    
+    switch (type) {
+            
+        case LEEAlertTypeAlert:
+            
+            self.config
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+               
+                return 280.0f;
+            })
+            .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+                
+                return CGRectGetHeight([[UIScreen mainScreen] bounds]) - 40.0f;
+            });
+            
+            break;
+            
+        case LEEAlertTypeActionSheet:
+            
+            self.config
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                return type == LEEScreenOrientationTypeHorizontal ? CGRectGetHeight([[UIScreen mainScreen] bounds]) - 20.0f : CGRectGetWidth([[UIScreen mainScreen] bounds]) - 20.0f;
+            })
+            .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+                
+                return CGRectGetHeight([[UIScreen mainScreen] bounds]) - 40.0f;
+            });
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
 - (void)show{
     
     switch (self.type) {
@@ -2167,8 +2276,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     [LEEAlert shareManager].viewController.config = self.config;
     
-    [LEEAlert shareManager].leeWindow.backgroundColor = [self.config.modelBackgroundColor colorWithAlphaComponent:0.0f];
-    
     [LEEAlert shareManager].leeWindow.rootViewController = [LEEAlert shareManager].viewController;
     
     [LEEAlert shareManager].leeWindow.hidden = NO;
@@ -2176,6 +2283,10 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
     
     __weak typeof(self) weakSelf = self;
+    
+    [LEEAlert shareManager].viewController.openFinishBlock = ^{
+        
+    };
     
     [LEEAlert shareManager].viewController.closeFinishBlock = ^{
         
