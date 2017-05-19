@@ -46,17 +46,23 @@
 /** 设置 取消动作 -> 格式: .LeeCancelAction(@"name" , ^{ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock LeeCancelAction;
 
+/** 设置 取消动作 -> 格式: .LeeDestructiveAction(@"name" , ^{ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToStringAndBlock LeeDestructiveAction;
+
 /** 设置 设置标题 -> 格式: .LeeConfigTitle(^(UILabel *label){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeConfigTitle;
 
 /** 设置 设置内容 -> 格式: .LeeConfigContent(^(UILabel *label){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeConfigContent;
 
-/** 设置 动作 -> 格式: .LeeAddAction(^(LEEAction *){ //code.. }) */
+/** 设置 添加动作 -> 格式: .LeeAddAction(^(LEEAction *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToAction LeeAddAction;
 
 /** 设置 自定义视图 -> 格式: .LeeCustomView(UIView) */
 @property (nonatomic , copy , readonly ) LEEConfigToView LeeCustomView;
+
+/** 设置 设置自定义视图 -> 格式: .LeeConfigCustomView(^(LEECustomView *){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToCustomView LeeConfigCustomView;
 
 /** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCornerRadius;
@@ -92,18 +98,14 @@
 /** 设置 背景颜色 -> 格式: .LeeBackGroundColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeBackGroundColor;
 
-
 /** 设置 半透明背景样式及透明度 [默认] -> 格式: .LeeBackgroundStyleTranslucent(0.6f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeBackgroundStyleTranslucent;
 
-/** 设置 模糊背景样式及透明度 -> 格式: .LeeViewBackgroundStyleBlur(0.6f) */
-@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeViewBackgroundStyleBlur;
+/** 设置 模糊背景样式及类型 -> 格式: .LeeBackgroundStyleBlur(UIBlurEffectStyleDark) */
+@property (nonatomic , copy , readonly ) LEEConfigToBlurEffectStyle LeeBackgroundStyleBlur;
 
 /** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeClickBackgroundClose;
-
-/** 设置 点击按钮关闭 -> 格式: .LeeClickActionClose() */
-@property (nonatomic , copy , readonly ) LEEConfig LeeClickActionClose;
 
 /** 设置 是否加入到队列 -> 格式: .LeeAddQueue() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeAddQueue;
@@ -118,6 +120,12 @@
 @property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
 
 /** ✨actionSheet 专用设置 */
+
+/** 设置 取消动作的间隔宽度 -> 格式: .LeeActionSheetCancelActionSpaceWidth(10.0f) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetCancelActionSpaceWidth;
+
+/** 设置 取消动作的间隔颜色 -> 格式: .LeeActionSheetCancelActionSpaceColor(UIColor) */
+@property (nonatomic , copy , readonly ) LEEConfigToColor LeeActionSheetCancelActionSpaceColor;
 
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
@@ -152,11 +160,24 @@
 
 @property (nonatomic , assign ) CGFloat height;
 
+@property (nonatomic , assign ) BOOL isClickNotClose;
+
 @property (nonatomic , assign ) BOOL enabled;
 
 @property (nonatomic , copy ) void (^clickBlock)();
 
 @end
+
+@interface LEECustomView : NSObject
+
+@property (nonatomic , strong ) UIView *view;
+
+@property (nonatomic , assign ) UIEdgeInsets insets;
+
+@property (nonatomic , assign ) LEECustomViewPositionType positionType;
+
+@end
+
 
 @interface LEEAlertConfig : NSObject
 
@@ -166,23 +187,9 @@
 
 @end
 
+
 @interface LEEBaseViewController : UIViewController @end
 
 @interface LEEAlertViewController : LEEBaseViewController @end
 
 @interface LEEActionSheetViewController : LEEBaseViewController @end
-
-
-@interface UIImage (LEEImageEffects)
-
-- (UIImage*)Lee_ApplyLightEffect;
-
-- (UIImage*)Lee_ApplyExtraLightEffect;
-
-- (UIImage*)Lee_ApplyDarkEffect;
-
-- (UIImage*)Lee_ApplyTintEffectWithColor:(UIColor*)tintColor;
-
-- (UIImage*)Lee_ApplyBlurWithRadius:(CGFloat)blurRadius TintColor:(UIColor*)tintColor SaturationDeltaFactor:(CGFloat)saturationDeltaFactor MaskImage:(UIImage*)maskImage;
-
-@end
