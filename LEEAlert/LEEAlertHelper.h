@@ -19,7 +19,7 @@
 #ifndef LEEAlertHelper_h
 #define LEEAlertHelper_h
 
-@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAction , LEECustomView;
+@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAction , LEEItem , LEECustomView;
 
 typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
     /** 屏幕方向类型 横屏 */
@@ -55,7 +55,16 @@ typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
     LEECustomViewPositionTypeRight
 };
 
-
+typedef NS_ENUM(NSInteger, LEEItemType) {
+    /** 标题 */
+    LEEItemTypeTitle,
+    /** 内容 */
+    LEEItemTypeContent,
+    /** 输入框 */
+    LEEItemTypeTextField,
+    /** 自定义视图 */
+    LEEItemTypeCustomView,
+};
 
 typedef LEEAlertConfigModel *(^LEEConfig)();
 typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
@@ -68,7 +77,8 @@ typedef LEEAlertConfigModel *(^LEEConfigToFloatBlock)(CGFloat(^)(LEEScreenOrient
 typedef LEEAlertConfigModel *(^LEEConfigToAction)(void(^)(LEEAction *action));
 typedef LEEAlertConfigModel *(^LEEConfigToCustomView)(void(^)(LEECustomView *custom));
 typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (^)());
-typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^configLabel)(UILabel *label));
-typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^configTextField)(UITextField *textField));
+typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^)(UILabel *label));
+typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^)(UITextField *textField));
+typedef LEEAlertConfigModel *(^LEEConfigToItem)(void(^)(LEEItem *item));
 
 #endif /* LEEAlertHelper_h */

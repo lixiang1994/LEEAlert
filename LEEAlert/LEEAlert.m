@@ -71,6 +71,8 @@
     
     config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
     
+    config.config.LeeClickBackgroundClose();
+    
     return config;
 }
 
@@ -126,24 +128,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     LEEBackgroundStyleTranslucent,
 };
 
-typedef NS_ENUM(NSInteger, LEESubViewType) {
-    /** 子视图类型 标题 */
-    LEESubViewTypeTitle,
-    /** 子视图类型 内容 */
-    LEESubViewTypeContent,
-    /** 子视图类型 输入框 */
-    LEESubViewTypeTextField,
-    /** 子视图类型 自定义视图 */
-    LEESubViewTypeCustomView,
-};
-
 @interface LEEAlertConfigModel ()
 
 @property (nonatomic , strong ) NSMutableArray *modelActionArray;
-@property (nonatomic , strong ) NSMutableArray *modelItemsQueue;
+@property (nonatomic , strong ) NSMutableArray *modelItemArray;
+@property (nonatomic , strong ) NSMutableDictionary *modelItemInsetsInfo;
 
 @property (nonatomic , assign ) CGFloat modelCornerRadius;
-@property (nonatomic , assign ) CGFloat modelSubViewMargin;
 @property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
@@ -156,10 +147,10 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
 
-@property (nonatomic , copy ) CGFloat(^modelMaxWidthBlock)(LEEScreenOrientationType);
-@property (nonatomic , copy ) CGFloat(^modelMaxHeightBlock)(LEEScreenOrientationType);
+@property (nonatomic , copy ) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType);
+@property (nonatomic , copy ) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType);
 
-@property (nonatomic , copy ) void(^modelFinishConfig)();
+@property (nonatomic , copy ) void (^modelFinishConfig)();
 
 @property (nonatomic , assign ) LEEBackgroundStyle modelBackgroundStyle;
 
@@ -176,7 +167,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 - (void)dealloc{
     
     _modelActionArray = nil;
-    _modelItemsQueue = nil;
+    _modelItemArray = nil;
 }
 
 - (instancetype)init
@@ -187,7 +178,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         // 初始化默认值
         
         _modelCornerRadius = 13.0f; //默认圆角半径
-        _modelSubViewMargin = 10.0f; //默认内部控件之间间距
         _modelHeaderInsets = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f); //默认间距
         _modelOpenAnimationDuration = 0.3f; //默认打开动画时长
         _modelCloseAnimationDuration = 0.2f; //默认关闭动画时长
@@ -206,7 +196,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
         
         _modelBackgroundBlurEffectStyle = UIBlurEffectStyleDark; //默认模糊效果类型Dark
-        
     }
     return self;
 }
@@ -217,7 +206,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(NSString *str){
         
-        return weakSelf.LeeConfigTitle(^(UILabel *label) {
+        return weakSelf.LeeAddTitle(^(UILabel *label) {
             
             label.text = str;
         });
@@ -233,11 +222,28 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(NSString *str){
         
-        return  weakSelf.LeeConfigContent(^(UILabel *label) {
+        return  weakSelf.LeeAddContent(^(UILabel *label) {
             
             label.text = str;
         });
 
+    };
+    
+}
+
+- (LEEConfigToView)LeeCustomView{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(UIView *view){
+        
+        return weakSelf.LeeAddCustomView(^(LEECustomView *custom) {
+            
+            custom.view = view;
+            
+            custom.positionType = LEECustomViewPositionTypeCenter;
+        });
+        
     };
     
 }
@@ -303,60 +309,70 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
 }
 
-- (LEEConfigToConfigLabel)LeeConfigTitle{
+- (LEEConfigToConfigLabel)LeeAddTitle{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^block)(UILabel *)){
         
-        if (weakSelf) {
+        return weakSelf.LeeAddItem(^(LEEItem *item) {
             
-            NSDictionary *info = @{@"type" : @(LEESubViewTypeTitle) , @"block" : block};
+            item.type = LEEItemTypeTitle;
             
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeTitle];
+            item.insets = UIEdgeInsetsMake(5, 0, 5, 0);
             
-            NSArray *result = [weakSelf.modelItemsQueue filteredArrayUsingPredicate:predicate];
-            
-            if (result.count) {
-                
-                [weakSelf.modelItemsQueue replaceObjectAtIndex:[weakSelf.modelItemsQueue indexOfObject:result.firstObject] withObject:info];
-                
-            } else {
-                
-                [weakSelf.modelItemsQueue addObject:info];
-            }
-            
-        }
-        
-        return weakSelf;
+            item.block = block;
+        });
+        ;
     };
     
 }
 
-- (LEEConfigToConfigLabel)LeeConfigContent{
+- (LEEConfigToConfigLabel)LeeAddContent{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(void(^block)(UILabel *)){
         
-        if (weakSelf) {
+        return weakSelf.LeeAddItem(^(LEEItem *item) {
             
-            NSDictionary *info = @{@"type" : @(LEESubViewTypeContent) , @"block" : block};
+            item.type = LEEItemTypeContent;
             
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"type == %ld" , LEESubViewTypeContent];
+            item.insets = UIEdgeInsetsMake(5, 0, 5, 0);
             
-            NSArray *result = [weakSelf.modelItemsQueue filteredArrayUsingPredicate:predicate];
+            item.block = block;
+        });
+        
+    };
+    
+}
+
+- (LEEConfigToCustomView)LeeAddCustomView{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(void(^block)(LEECustomView *custom)){
+        
+        return weakSelf.LeeAddItem(^(LEEItem *item) {
             
-            if (result.count) {
-                
-                [weakSelf.modelItemsQueue replaceObjectAtIndex:[weakSelf.modelItemsQueue indexOfObject:result.firstObject] withObject:info];
-                
-            } else {
-                
-                [weakSelf.modelItemsQueue addObject:info];
-            }
+            item.type = LEEItemTypeCustomView;
             
-        }
+            item.insets = UIEdgeInsetsMake(5, 0, 5, 0);
+            
+            item.block = block;
+        });
+        
+    };
+    
+}
+
+- (LEEConfigToItem)LeeAddItem{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(void(^block)(LEEItem *)){
+        
+        if (weakSelf) [weakSelf.modelItemArray addObject:block];
         
         return weakSelf;
     };
@@ -373,64 +389,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         return weakSelf;
     };
-
-}
-
-- (LEEConfigToView)LeeCustomView{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(UIView *view){
-        
-        return weakSelf.LeeConfigCustomView(^(LEECustomView *custom) {
-        
-            custom.view = view;
-            
-            custom.insets = UIEdgeInsetsZero;
-            
-            custom.positionType = LEECustomViewPositionTypeCenter;
-        });
-        
-    };
-    
-}
-
-- (LEEConfigToCustomView)LeeConfigCustomView{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(void(^block)(LEECustomView *custom)){
-        
-        if (weakSelf) [weakSelf.modelItemsQueue addObject:@{@"type" : @(LEESubViewTypeCustomView) , @"block" : block}];
-        
-        return weakSelf;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeCornerRadius{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(CGFloat number){
-        
-        if (weakSelf) weakSelf.modelCornerRadius = number;
-        
-        return weakSelf;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeSubViewMargin{
-    
-    __weak typeof(self) weakSelf = self;
-    
-    return ^(CGFloat number){
-        
-        if (weakSelf) weakSelf.modelSubViewMargin = number;
-        
-        return weakSelf;
-    };
     
 }
 
@@ -440,7 +398,50 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(UIEdgeInsets insets){
         
-        if (weakSelf) weakSelf.modelHeaderInsets = insets;
+        if (weakSelf) {
+            
+            if (insets.top < 0) insets.top = 0;
+            
+            if (insets.left < 0) insets.left = 0;
+            
+            if (insets.bottom < 0) insets.bottom = 0;
+            
+            if (insets.right < 0) insets.right = 0;
+            
+            weakSelf.modelHeaderInsets = insets;
+        }
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToEdgeInsets)LeeItemInsets{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(UIEdgeInsets insets){
+        
+        if (weakSelf) {
+            
+            if (weakSelf.modelItemArray.count) {
+                
+                if (insets.top < 0) insets.top = 0;
+                
+                if (insets.left < 0) insets.left = 0;
+                
+                if (insets.bottom < 0) insets.bottom = 0;
+                
+                if (insets.right < 0) insets.right = 0;
+                
+                [weakSelf.modelItemInsetsInfo setObject:[NSValue valueWithUIEdgeInsets:insets] forKey:@(weakSelf.modelItemArray.count - 1)];
+                
+            } else {
+                
+                NSAssert(YES, @"请在添加的某一项后面设置间距");
+            }
+            
+        }
         
         return weakSelf;
     };
@@ -497,6 +498,19 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return ^(CGFloat(^block)(LEEScreenOrientationType type)){
         
         if (weakSelf) weakSelf.modelMaxHeightBlock = block;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToFloat)LeeCornerRadius{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat number){
+        
+        if (weakSelf) weakSelf.modelCornerRadius = number;
         
         return weakSelf;
     };
@@ -641,9 +655,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     return ^(void (^block)(UITextField *)){
         
-        if (weakSelf) [weakSelf.modelItemsQueue addObject:@{@"type" : @(LEESubViewTypeTextField) , @"block" : block}];
+        return weakSelf.LeeAddItem(^(LEEItem *item) {
+            
+            item.type = LEEItemTypeTextField;
+            
+            item.insets = UIEdgeInsetsMake(10, 0, 10, 0);
+            
+            item.block = block;
+        });
         
-        return weakSelf;
     };
     
 }
@@ -699,21 +719,110 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return _modelActionArray;
 }
 
-- (NSMutableArray *)modelItemsQueue{
+- (NSMutableArray *)modelItemArray{
     
-    if (!_modelItemsQueue) _modelItemsQueue = [NSMutableArray array];
+    if (!_modelItemArray) _modelItemArray = [NSMutableArray array];
     
-    return _modelItemsQueue;
+    return _modelItemArray;
+}
+
+- (NSMutableDictionary *)modelItemInsetsInfo{
+    
+    if (!_modelItemInsetsInfo) _modelItemInsetsInfo = [NSMutableDictionary dictionary];
+    
+    return _modelItemInsetsInfo;
 }
 
 @end
 
+@interface LEEItem ()
+
+@property (nonatomic , copy ) void (^updateBlock)(LEEItem *);
+
+@end
+
+@implementation LEEItem
+
+- (void)update{
+    
+    if (self.updateBlock) self.updateBlock(self);
+}
+
+@end
+
+@interface LEEAction ()
+
+@property (nonatomic , copy ) void (^updateBlock)(LEEAction *);
+
+@end
+
+@implementation LEEAction
+
+- (void)update{
+    
+    if (self.updateBlock) self.updateBlock(self);
+}
+
+@end
+
+@interface LEEItemView : UIView
+
+@property (nonatomic , strong ) LEEItem *item;
+
++ (LEEItemView *)view;
+
+@end
+
+@implementation LEEItemView
+
++ (LEEItemView *)view{
+    
+    return [[LEEItemView alloc] init];;
+}
+
+@end
+
+@interface LEEItemLabel : UILabel
+
+@property (nonatomic , strong ) LEEItem *item;
+
++ (LEEItemLabel *)label;
+
+@end
+
+@implementation LEEItemLabel
+
++ (LEEItemLabel *)label{
+    
+    return [[LEEItemLabel alloc] init];
+}
+
+@end
+
+@interface LEEItemTextField : UITextField
+
+@property (nonatomic , strong ) LEEItem *item;
+
++ (LEEItemTextField *)textField;
+
+@end
+
+@implementation LEEItemTextField
+
++ (LEEItemTextField *)textField{
+    
+    return [[LEEItemTextField alloc] init];
+}
+
+@end
 
 @interface LEEActionButton : UIButton
 
-@property (nonatomic , strong ) UIColor *borderColor;
+@property (nonatomic , strong ) LEEAction *action;
 
-@property (nonatomic , assign ) CGFloat borderWidth;
+@property (nonatomic , copy ) void (^heightChangeBlock)();
+
++ (LEEActionButton *)button;
 
 - (void)addTopBorder;
 
@@ -727,6 +836,10 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @interface LEEActionButton ()
 
+@property (nonatomic , strong ) UIColor *borderColor;
+
+@property (nonatomic , assign ) CGFloat borderWidth;
+
 @property (nonatomic , strong ) CALayer *topLayer;
 
 @property (nonatomic , strong ) CALayer *bottomLayer;
@@ -738,6 +851,70 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 @end
 
 @implementation LEEActionButton
+
++ (LEEActionButton *)button{
+    
+    return [LEEActionButton buttonWithType:UIButtonTypeCustom];;
+}
+
+- (void)setAction:(LEEAction *)action{
+    
+    _action = action;
+    
+    if (action.title) [self setTitle:action.title forState:UIControlStateNormal];
+ 
+    if (action.highlight) [self setTitle:action.highlight forState:UIControlStateHighlighted];
+    
+    if (action.font) [self.titleLabel setFont:action.font];
+    
+    if (action.titleColor) [self setTitleColor:action.titleColor forState:UIControlStateNormal];
+    
+    if (action.highlightColor) [self setTitleColor:action.highlightColor forState:UIControlStateHighlighted];
+    
+    if (action.backgroundColor) [self setBackgroundImage:[self getImageWithColor:action.backgroundColor] forState:UIControlStateNormal];
+    
+    if (action.backgroundHighlightColor) [self setBackgroundImage:[self getImageWithColor:action.backgroundHighlightColor] forState:UIControlStateHighlighted];
+    
+    if (action.borderColor) [self setBorderColor:action.borderColor];
+    
+    if (action.borderWidth) [self setBorderWidth:action.borderWidth < 0.35f ? 0.35f : action.borderWidth];
+    
+    if (action.image) [self setImage:action.image forState:UIControlStateNormal];
+    
+    if (action.highlightImage) [self setImage:action.highlightImage forState:UIControlStateHighlighted];
+    
+    if (action.height) [self setHeight:action.height];
+    
+    __weak typeof(self) weakSelf = self;
+    
+    action.updateBlock = ^(LEEAction *act) {
+        
+        if (weakSelf) weakSelf.action = act;
+    };
+    
+}
+
+- (CGFloat)height{
+    
+    return self.frame.size.height;
+}
+
+- (void)setHeight:(CGFloat)height{
+    
+    BOOL isChange = [self height] == height ? NO : YES;
+    
+    CGRect buttonFrame = self.frame;
+    
+    buttonFrame.size.height = height;
+    
+    self.frame = buttonFrame;
+    
+    if (isChange) {
+        
+        if (self.heightChangeBlock) self.heightChangeBlock();
+    }
+    
+}
 
 - (void)layoutSubviews{
     
@@ -809,116 +986,6 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return _rightLayer;
 }
 
-@end
-
-@interface LEEAction ()
-
-@property (nonatomic , strong ) LEEActionButton *button;
-
-@end
-
-@implementation LEEAction
-
-- (void)setTitle:(NSString *)title{
-    
-    _title = title;
-    
-    [self.button setTitle:title forState:UIControlStateNormal];
-}
-
-- (void)setHighlight:(NSString *)highlight{
-    
-    _highlight = highlight;
-    
-    [self.button setTitle:highlight forState:UIControlStateHighlighted];
-}
-
-- (void)setFont:(UIFont *)font{
-    
-    _font = font;
-    
-    [self.button.titleLabel setFont:font];
-}
-
-- (void)setTitleColor:(UIColor *)titleColor{
-    
-    _titleColor = titleColor;
-    
-    [self.button setTitleColor:titleColor forState:UIControlStateNormal];
-}
-
-- (void)setHighlightColor:(UIColor *)highlightColor{
-    
-    _highlightColor = highlightColor;
-    
-    [self.button setTitleColor:highlightColor forState:UIControlStateHighlighted];
-}
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor{
-    
-    _backgroundColor = backgroundColor;
-    
-    [self.button setBackgroundImage:[self getImageWithColor:backgroundColor] forState:UIControlStateNormal];
-}
-
-- (void)setBackgroundHighlightColor:(UIColor *)backgroundHighlightColor{
-    
-    _backgroundHighlightColor = backgroundHighlightColor;
-    
-    [self.button setBackgroundImage:[self getImageWithColor:backgroundHighlightColor] forState:UIControlStateHighlighted];
-}
-
-- (void)setBorderColor:(UIColor *)borderColor{
-    
-    _borderColor = borderColor;
-    
-    self.button.borderColor = borderColor;
-}
-
-- (void)setBorderWidth:(CGFloat)borderWidth{
-    
-    if (borderWidth < 0.35f) borderWidth = 0.35f;
-    
-    _borderWidth = borderWidth;
-    
-    self.button.borderWidth = borderWidth;
-}
-
-- (void)setImage:(UIImage *)image{
-    
-    _image = image;
-    
-    [self.button setImage:image forState:UIControlStateNormal];
-}
-
-- (void)setHighlightImage:(UIImage *)highlightImage{
-    
-    _highlightImage = highlightImage;
-    
-    [self.button setImage:highlightImage forState:UIControlStateHighlighted];
-}
-
-- (CGFloat)height{
-    
-    return self.button.frame.size.height;
-}
-
-- (void)setHeight:(CGFloat)height{
-    
-    CGRect buttonFrame = self.button.frame;
-    
-    buttonFrame.size.height = height;
-    
-    self.button.frame = buttonFrame;
-}
-
-- (void)setEnabled:(BOOL)enabled{
-    
-    _enabled = enabled;
-    
-    self.button.enabled = enabled;
-}
-
 - (UIImage *)getImageWithColor:(UIColor *)color {
     
     CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
@@ -938,18 +1005,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return image;
 }
 
-#pragma mark LazyLoading
-
-- (LEEActionButton *)button{
-    
-    if (!_button) _button = [LEEActionButton buttonWithType:UIButtonTypeCustom];
-    
-    return _button;
-}
-
 @end
 
 @interface LEECustomView ()
+
+@property (nonatomic , strong ) LEEItem *item;
 
 @property (nonatomic , assign ) CGSize size;
 
@@ -972,7 +1032,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         [_view layoutSubviews];
         
-        self.size = _view.frame.size;
+        _size = _view.frame.size;
         
         [_view addObserver: self forKeyPath: @"frame" options: NSKeyValueObservingOptionNew context: nil];
     }
@@ -1118,7 +1178,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @property (nonatomic , strong ) NSMutableArray <id>*alertItemArray;
 
-@property (nonatomic , strong ) NSMutableArray <LEEAction *>*alertActionArray;
+@property (nonatomic , strong ) NSMutableArray <LEEActionButton *>*alertActionArray;
 
 @end
 
@@ -1262,15 +1322,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if ([item isKindOfClass:UIView.class]) {
             
-            UIView *view = (UIView *)item;
+            LEEItemView *view = (LEEItemView *)item;
             
             CGRect viewFrame = view.frame;
             
-            viewFrame.origin.x = self.config.modelHeaderInsets.left;
+            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left;
             
-            viewFrame.origin.y = alertViewHeight;
+            viewFrame.origin.y = alertViewHeight + view.item.insets.top;
             
-            viewFrame.size.width = alertViewWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right;
+            viewFrame.size.width = alertViewWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
             if ([item isKindOfClass:UILabel.class]) {
                 
@@ -1279,9 +1339,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
             
             view.frame = viewFrame;
             
-            alertViewHeight += viewFrame.size.height;
-            
-            if (item != self.alertItemArray.lastObject) alertViewHeight += self.config.modelSubViewMargin;
+            alertViewHeight += viewFrame.size.height + view.item.insets.top + view.item.insets.bottom;
             
         } else if ([item isKindOfClass:LEECustomView.class]) {
             
@@ -1299,13 +1357,13 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     
                 case LEECustomViewPositionTypeLeft:
                     
-                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.insets.left;
+                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
                     
                     break;
                     
                 case LEECustomViewPositionTypeRight:
                     
-                    viewFrame.origin.x = alertViewWidth - self.config.modelHeaderInsets.right - custom.insets.right - viewFrame.size.width;
+                    viewFrame.origin.x = alertViewWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
                     
                     break;
                     
@@ -1313,36 +1371,34 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     break;
             }
             
-            viewFrame.origin.y = alertViewHeight + custom.insets.top;
+            viewFrame.origin.y = alertViewHeight + custom.item.insets.top;
             
             custom.view.frame = viewFrame;
             
-            alertViewHeight += viewFrame.size.height + custom.insets.top;
-            
-            alertViewHeight += custom.insets.bottom;
+            alertViewHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
         }
         
         if (item == self.alertItemArray.lastObject) alertViewHeight += self.config.modelHeaderInsets.bottom;
     }];
     
-    for (LEEAction *action in self.alertActionArray) {
+    for (LEEActionButton *button in self.alertActionArray) {
         
-        CGRect buttonFrame = action.button.frame;
+        CGRect buttonFrame = button.frame;
         
         buttonFrame.origin.y = alertViewHeight;
         
         buttonFrame.size.width = alertViewWidth;
         
-        action.button.frame = buttonFrame;
+        button.frame = buttonFrame;
         
         alertViewHeight += buttonFrame.size.height;
     }
     
     if (self.alertActionArray.count == 2) {
         
-        UIButton *buttonA = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.firstObject.button : self.alertActionArray.lastObject.button;
+        LEEActionButton *buttonA = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.firstObject : self.alertActionArray.lastObject;
         
-        UIButton *buttonB = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.lastObject.button : self.alertActionArray.firstObject.button;
+        LEEActionButton *buttonB = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.lastObject : self.alertActionArray.firstObject;
         
         CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame);
         
@@ -1372,15 +1428,25 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
     
-    for (NSDictionary *item in self.config.modelItemsQueue) {
+    [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+       
+        void (^itemBlock)(LEEItem *) = obj;
         
-        switch ([item[@"type"] integerValue]) {
+        LEEItem *item = [[LEEItem alloc] init];
+        
+        if (itemBlock) itemBlock(item);
+        
+        NSValue *insetValue = [self.config.modelItemInsetsInfo objectForKey:@(idx)];
+        
+        if (insetValue) item.insets = insetValue.UIEdgeInsetsValue;
+        
+        switch (item.type) {
                 
-            case LEESubViewTypeTitle:
+            case LEEItemTypeTitle:
             {
-                void(^block)(UILabel *label) = item[@"block"];
+                void(^block)(UILabel *label) = item.block;
                 
-                UILabel *label = [[UILabel alloc] init];
+                LEEItemLabel *label = [LEEItemLabel label];
                 
                 [self.alertView addSubview:label];
                 
@@ -1395,14 +1461,16 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 label.numberOfLines = 0;
                 
                 if (block) block(label);
+                
+                label.item = item;
             }
                 break;
-            
-            case LEESubViewTypeContent:
-            {
-                void(^block)(UILabel *label) = item[@"block"];
                 
-                UILabel *label = [[UILabel alloc]init];
+            case LEEItemTypeContent:
+            {
+                void(^block)(UILabel *label) = item.block;
+                
+                LEEItemLabel *label = [LEEItemLabel label];
                 
                 [self.alertView addSubview:label];
                 
@@ -1417,36 +1485,38 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 label.numberOfLines = 0;
                 
                 if (block) block(label);
+                
+                label.item = item;
             }
                 break;
-            
-            case LEESubViewTypeCustomView:
-            {
-                void(^block)(LEECustomView *) = item[@"block"];
                 
-                if (block) {
+            case LEEItemTypeCustomView:
+            {
+                void(^block)(LEECustomView *) = item.block;
+                
+                LEECustomView *custom = [[LEECustomView alloc] init];
+                
+                block(custom);
+                
+                [self.alertView addSubview:custom.view];
+                
+                [self.alertItemArray addObject:custom];
+                
+                custom.item = item;
+                
+                custom.sizeChangeBlock = ^{
                     
-                    LEECustomView *custom = [[LEECustomView alloc] init];
-                    
-                    block(custom);
-                    
-                    [self.alertView addSubview:custom.view];
-                    
-                    [self.alertItemArray addObject:custom];
-                    
-                    custom.sizeChangeBlock = ^{
-                      
-                        if (weakSelf) [weakSelf updateOrientationLayout];
-                    };
-                    
-                }
+                    if (weakSelf) [weakSelf updateOrientationLayout];
+                };
                 
             }
                 break;
-           
-            case LEESubViewTypeTextField:
+                
+            case LEEItemTypeTextField:
             {
-                UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0 , 0, 0, 40.0f)];
+                LEEItemTextField *textField = [LEEItemTextField textField];
+                
+                textField.frame = CGRectMake(0, 0, 0, 40.0f);
                 
                 [self.alertView addSubview:textField];
                 
@@ -1454,9 +1524,11 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 
                 textField.borderStyle = UITextBorderStyleRoundedRect;
                 
-                void(^block)(UITextField *textField) = item[@"block"];
+                void(^block)(UITextField *textField) = item.block;
                 
                 if (block) block(textField);
+                
+                textField.item = item;
             }
                 break;
                 
@@ -1464,7 +1536,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 break;
         }
         
-    }
+    }];
     
     for (id item in self.config.modelActionArray) {
         
@@ -1490,16 +1562,26 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (!action.height) action.height = 45.0f;
         
-        [action.button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+        LEEActionButton *button = [LEEActionButton button];
         
-        [action.button addTopBorder];
+        button.action = action;
         
-        [self.alertView addSubview:action.button];
+        [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
-        [self.alertActionArray addObject:action];
+        [button addTopBorder];
+        
+        [self.alertView addSubview:button];
+        
+        [self.alertActionArray addObject:button];
+        
+        button.heightChangeBlock = ^{
+          
+            if (weakSelf) [weakSelf updateOrientationLayout];
+        };
+        
     }
     
-    if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject.button addLeftBorder];
+    if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject addLeftBorder];
     
     // 更新布局
     
@@ -1518,15 +1600,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     void (^clickBlock)() = nil;
     
-    for (LEEAction *action in self.alertActionArray) {
+    for (LEEActionButton *button in self.alertActionArray) {
         
-        if (action.button == sender) {
+        if (button == sender) {
         
-            switch (action.type) {
+            switch (button.action.type) {
                 
                 case LEEActionTypeDefault:
                     
-                    isClose = action.isClickNotClose ? NO : YES;
+                    isClose = button.action.isClickNotClose ? NO : YES;
                     
                     break;
                 
@@ -1546,7 +1628,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     break;
             }
             
-            clickBlock = action.clickBlock;
+            clickBlock = button.action.clickBlock;
             
             break;
         }
@@ -1690,7 +1772,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return _alertItemArray;
 }
 
-- (NSMutableArray <LEEAction *>*)alertActionArray{
+- (NSMutableArray <LEEActionButton *>*)alertActionArray{
     
     if (!_alertActionArray) _alertActionArray = [NSMutableArray array];
     
@@ -1709,16 +1791,14 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 @property (nonatomic , strong ) NSMutableArray <id>*actionSheetItemArray;
 
-@property (nonatomic , strong ) NSMutableArray <LEEAction *>*actionSheetActionArray;
+@property (nonatomic , strong ) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
 
-@property (nonatomic , strong ) LEEAction *actionSheetCancelAction;
+@property (nonatomic , strong ) LEEActionButton *actionSheetCancelAction;
 
 @end
 
 @implementation LEEActionSheetViewController
 {
-    
-    CGFloat customViewHeight;
     BOOL isShowed;
 }
 
@@ -1747,10 +1827,10 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 - (void)changeOrientationNotification:(NSNotification *)notify{
     
-    [self updateLayout];
+    [self updateActionSheetLayout];
 }
 
-- (void)updateLayout{
+- (void)updateActionSheetLayout{
     
     CGFloat actionSheetViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
@@ -1765,15 +1845,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if ([item isKindOfClass:UIView.class]) {
             
-            UIView *view = (UIView *)item;
+            LEEItemView *view = (LEEItemView *)item;
             
             CGRect viewFrame = view.frame;
             
-            viewFrame.origin.x = self.config.modelHeaderInsets.left;
+            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left;
             
-            viewFrame.origin.y = actionSheetViewHeight;
+            viewFrame.origin.y = actionSheetViewHeight + view.item.insets.top;
             
-            viewFrame.size.width = actionSheetViewMaxWidth - self.config.modelHeaderInsets.left - self.config.modelHeaderInsets.right;
+            viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
             if ([item isKindOfClass:UILabel.class]) {
                 
@@ -1782,9 +1862,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
             
             view.frame = viewFrame;
             
-            actionSheetViewHeight += viewFrame.size.height;
-            
-            if (item != self.actionSheetItemArray.lastObject) actionSheetViewHeight += self.config.modelSubViewMargin;
+            actionSheetViewHeight += viewFrame.size.height + view.item.insets.top + view.item.insets.bottom;
             
         } else if ([item isKindOfClass:LEECustomView.class]) {
             
@@ -1802,13 +1880,13 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     
                 case LEECustomViewPositionTypeLeft:
                     
-                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.insets.left;
+                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
                     
                     break;
                     
                 case LEECustomViewPositionTypeRight:
                     
-                    viewFrame.origin.x = actionSheetViewMaxWidth - self.config.modelHeaderInsets.right - custom.insets.right - viewFrame.size.width;
+                    viewFrame.origin.x = actionSheetViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
                     
                     break;
                     
@@ -1816,27 +1894,25 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     break;
             }
             
-            viewFrame.origin.y = actionSheetViewHeight + custom.insets.top;
+            viewFrame.origin.y = actionSheetViewHeight + custom.item.insets.top;
             
             custom.view.frame = viewFrame;
             
-            actionSheetViewHeight += viewFrame.size.height + custom.insets.top;
-            
-            actionSheetViewHeight += custom.insets.bottom;
+            actionSheetViewHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
         }
         
         if (item == self.actionSheetItemArray.lastObject) actionSheetViewHeight += self.config.modelHeaderInsets.bottom;
     }];
     
-    for (LEEAction *action in self.actionSheetActionArray) {
+    for (LEEActionButton *button in self.actionSheetActionArray) {
         
-        CGRect buttonFrame = action.button.frame;
+        CGRect buttonFrame = button.frame;
         
         buttonFrame.origin.y = actionSheetViewHeight;
         
         buttonFrame.size.width = actionSheetViewMaxWidth;
         
-        action.button.frame = buttonFrame;
+        button.frame = buttonFrame;
         
         actionSheetViewHeight += buttonFrame.size.height;
     }
@@ -1876,13 +1952,13 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     if (self.actionSheetCancelAction) {
         
-        CGRect buttonFrame = self.actionSheetCancelAction.button.frame;
+        CGRect buttonFrame = self.actionSheetCancelAction.frame;
         
         buttonFrame.origin.y = CGRectGetHeight(self.actionSheetScrollView.frame) + self.config.modelActionSheetCancelActionSpaceWidth;
         
         buttonFrame.size.width = actionSheetViewFrame.size.width;
         
-        self.actionSheetCancelAction.button.frame = buttonFrame;
+        self.actionSheetCancelAction.frame = buttonFrame;
     }
     
     
@@ -1901,15 +1977,26 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     [self.view addSubview: self.actionSheetView];
     
-    for (NSDictionary *item in self.config.modelItemsQueue) {
+    
+    [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+       
+        void (^itemBlock)(LEEItem *) = obj;
         
-        switch ([item[@"type"] integerValue]) {
+        LEEItem *item = [[LEEItem alloc] init];
+        
+        if (itemBlock) itemBlock(item);
+        
+        NSValue *insetValue = [self.config.modelItemInsetsInfo objectForKey:@(idx)];
+        
+        if (insetValue) item.insets = insetValue.UIEdgeInsetsValue;
+        
+        switch (item.type) {
                 
-            case LEESubViewTypeTitle:
+            case LEEItemTypeTitle:
             {
-                void(^block)(UILabel *label) = item[@"block"];
+                void(^block)(UILabel *label) = item.block;
                 
-                UILabel *label = [[UILabel alloc] init];
+                LEEItemLabel *label = [LEEItemLabel label];
                 
                 [self.actionSheetScrollView addSubview:label];
                 
@@ -1924,14 +2011,16 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 label.numberOfLines = 0;
                 
                 if (block) block(label);
+                
+                label.item = item;
             }
                 break;
                 
-            case LEESubViewTypeContent:
+            case LEEItemTypeContent:
             {
-                void(^block)(UILabel *label) = item[@"block"];
+                void(^block)(UILabel *label) = item.block;
                 
-                UILabel *label = [[UILabel alloc] init];
+                LEEItemLabel *label = [LEEItemLabel label];
                 
                 [self.actionSheetScrollView addSubview:label];
                 
@@ -1946,30 +2035,29 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 label.numberOfLines = 0;
                 
                 if (block) block(label);
+                
+                label.item = item;
             }
                 break;
                 
-            case LEESubViewTypeCustomView:
+            case LEEItemTypeCustomView:
             {
+                void(^block)(LEECustomView *) = item.block;
                 
-                void(^block)(LEECustomView *) = item[@"block"];
+                LEECustomView *custom = [[LEECustomView alloc] init];
                 
-                if (block) {
+                block(custom);
+                
+                [self.actionSheetScrollView addSubview:custom.view];
+                
+                [self.actionSheetItemArray addObject:custom];
+                
+                custom.item = item;
+                
+                custom.sizeChangeBlock = ^{
                     
-                    LEECustomView *custom = [[LEECustomView alloc] init];
-                    
-                    block(custom);
-                    
-                    [self.actionSheetScrollView addSubview:custom.view];
-                    
-                    [self.actionSheetItemArray addObject:custom];
-                    
-                    custom.sizeChangeBlock = ^{
-                        
-                        if (weakSelf) [weakSelf updateLayout];
-                    };
-                    
-                }
+                    if (weakSelf) [weakSelf updateActionSheetLayout];
+                };
                 
             }
                 break;
@@ -1977,7 +2065,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                 break;
         }
         
-    }
+    }];
     
     for (id item in self.config.modelActionArray) {
         
@@ -2003,40 +2091,49 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         if (!action.height) action.height = 57.0f;
         
+        LEEActionButton *button = [LEEActionButton button];
+        
+        button.action = action;
+        
         switch (action.type) {
                 
             case LEEActionTypeCancel:
             {
-                [action.button addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+                [button addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
-                action.button.clipsToBounds = YES;
+                button.clipsToBounds = YES;
                 
-                action.button.layer.cornerRadius = self.config.modelCornerRadius;
+                button.layer.cornerRadius = self.config.modelCornerRadius;
                 
-                [self.actionSheetView addSubview:action.button];
+                [self.actionSheetView addSubview:button];
                 
-                self.actionSheetCancelAction = action;
+                self.actionSheetCancelAction = button;
             }
                 break;
                 
             default:
             {
-                [action.button addTopBorder];
+                [button addTopBorder];
                 
-                [action.button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+                [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
-                [self.actionSheetScrollView addSubview:action.button];
+                [self.actionSheetScrollView addSubview:button];
                 
-                [self.actionSheetActionArray addObject:action];
+                [self.actionSheetActionArray addObject:button];
             }
                 break;
         }
+        
+        button.heightChangeBlock = ^{
+          
+            if (weakSelf) [weakSelf updateActionSheetLayout];
+        };
         
     }
     
     // 更新布局
     
-    [self updateLayout];
+    [self updateActionSheetLayout];
     
     [self showAnimationsWithCompletionBlock:^{
         
@@ -2051,15 +2148,15 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     
     void (^clickBlock)() = nil;
     
-    for (LEEAction *action in self.actionSheetActionArray) {
+    for (LEEActionButton *button in self.actionSheetActionArray) {
         
-        if (action.button == sender) {
+        if (button == sender) {
             
-            switch (action.type) {
+            switch (button.action.type) {
                     
                 case LEEActionTypeDefault:
                     
-                    isClose = action.isClickNotClose ? NO : YES;
+                    isClose = button.action.isClickNotClose ? NO : YES;
                     
                     break;
                     
@@ -2079,7 +2176,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                     break;
             }
             
-            clickBlock = action.clickBlock;
+            clickBlock = button.action.clickBlock;
             
             break;
         }
@@ -2102,7 +2199,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
 
 - (void)cancelButtonAction:(UIButton *)sender{
     
-    void (^clickBlock)() = self.actionSheetCancelAction.clickBlock;
+    void (^clickBlock)() = self.actionSheetCancelAction.action.clickBlock;
     
     [self closeAnimationsWithCompletionBlock:^{
         
@@ -2145,7 +2242,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
                  break;
          }
          
-         [weakSelf updateLayout];
+         [weakSelf updateActionSheetLayout];
       
      } completion:^(BOOL finished) {
     
@@ -2194,7 +2291,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
         
         // 更新布局
         
-        [self updateLayout];
+        [self updateActionSheetLayout];
         
     } completion:^(BOOL finished) {
         
@@ -2243,7 +2340,7 @@ typedef NS_ENUM(NSInteger, LEESubViewType) {
     return _actionSheetItemArray;
 }
 
-- (NSMutableArray <LEEAction *>*)actionSheetActionArray{
+- (NSMutableArray <LEEActionButton *>*)actionSheetActionArray{
     
     if (!_actionSheetActionArray) _actionSheetActionArray = [NSMutableArray array];
     

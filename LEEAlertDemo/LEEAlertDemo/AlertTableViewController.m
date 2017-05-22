@@ -41,7 +41,7 @@
     
     [baseArray addObject:@{@"title" : @"显示一个带自定义视图的 alert 弹框" , @"content" : @""}];
     
-    [baseArray addObject:@{@"title" : @"" , @"content" : @""}];
+    [baseArray addObject:@{@"title" : @"显示一个带" , @"content" : @""}];
     
     [baseArray addObject:@{@"title" : @"" , @"content" : @""}];
     
@@ -81,7 +81,9 @@
         {
             [LEEAlert alert].config
             .LeeTitle(@"标题")
+            .LeeItemInsets(UIEdgeInsetsMake(40, 0, 40, 10))
             .LeeContent(@"内容")
+            .LeeItemInsets(UIEdgeInsetsMake(40, 30, 40, 10))
             .LeeCancelAction(@"取消", ^{
                 
             })
@@ -159,11 +161,9 @@
             view.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
             [LEEAlert alert].config
             .LeeContent(@"内容")
-            .LeeConfigCustomView(^(LEECustomView *custom) {
+            .LeeAddCustomView(^(LEECustomView *custom) {
                 
                 custom.view = view;
-                
-                custom.insets = UIEdgeInsetsMake(20, 20, 20, 20);
                 
                 custom.positionType = LEECustomViewPositionTypeRight;
             })
@@ -185,7 +185,42 @@
             
         case 4:
         {
+            __block LEEAction *act = nil;
             
+            [LEEAlert alert].config
+            .LeeAddTextField(^(UITextField *textField) {
+                
+                textField.placeholder = @"输入框";
+            })
+            .LeeContent(@"内容")
+            .LeeTitle(@"标题")
+            .LeeAddAction(^(LEEAction *action) {
+              
+                action.title = @"没变";
+                
+                act = action;
+            })
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"确认";
+                
+                action.isClickNotClose = YES;
+                
+                action.clickBlock = ^{
+                    
+                    act.height = 100;
+                    
+                    act.title = @"变了";
+                    
+                    act.titleColor = [UIColor redColor];
+                    
+                    [act update];
+                };
+            })
+            .LeeCancelAction(@"取消", ^{
+                
+            })
+            .LeeShow();
         }
             break;
             
