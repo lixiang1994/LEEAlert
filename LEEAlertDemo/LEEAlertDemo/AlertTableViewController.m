@@ -53,6 +53,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个可动态改变标题和内容的 alert 弹框" , @"content" : @"已经显示后 可再次对其进行调整"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个模糊背景样式的 alert 弹框" , @"content" : @"传入UIBlurEffectStyle枚举类型 默认为Dark"}];
+    
     [baseArray addObject:@{@"title" : @"显示两个加入队列的 alert 弹框" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
@@ -404,6 +406,18 @@
             break;
             
         case 10:
+        {
+            [LEEAlert alert].config
+            .LeeTitle(@"这是一个毛玻璃背景样式的alert")
+            .LeeContent(@"通过UIBlurEffectStyle枚举设置效果样式")
+            .LeeAction(@"确认", nil)
+            .LeeCancelAction(@"取消", nil)
+            .LeeBackgroundStyleBlur(UIBlurEffectStyleLight)
+            .LeeShow();
+        }
+            break;
+            
+        case 11:
         {
             // 第一个显示时 第二个也显示了 这时会隐藏第一个 ,在第二个显示结束后再将第一个显示出来
             

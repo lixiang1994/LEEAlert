@@ -20,6 +20,8 @@
 
 #import <Accelerate/Accelerate.h>
 
+#import <objc/runtime.h>
+
 #define IS_IPAD ({ UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 1 : 0; })
 #define SCREEN_WIDTH CGRectGetWidth([[UIScreen mainScreen] bounds])
 #define SCREEN_HEIGHT CGRectGetHeight([[UIScreen mainScreen] bounds])
@@ -135,6 +137,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , strong ) NSMutableDictionary *modelItemInsetsInfo;
 
 @property (nonatomic , assign ) CGFloat modelCornerRadius;
+@property (nonatomic , assign ) CGFloat modelShadowOpacity;
 @property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
@@ -178,6 +181,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         // 初始化默认值
         
         _modelCornerRadius = 13.0f; //默认圆角半径
+        _modelShadowOpacity = 0.3f; //默认阴影不透明度
         _modelHeaderInsets = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f); //默认间距
         _modelOpenAnimationDuration = 0.3f; //默认打开动画时长
         _modelCloseAnimationDuration = 0.2f; //默认关闭动画时长
@@ -511,6 +515,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(CGFloat number){
         
         if (weakSelf) weakSelf.modelCornerRadius = number;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToFloat)LeeShadowOpacity{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat number){
+        
+        if (weakSelf) weakSelf.modelShadowOpacity = number;
         
         return weakSelf;
     };
@@ -1088,6 +1105,163 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @end
 
+@interface UIView (LEEShadowViewHandle)
+
+@end
+
+@implementation UIView (LEEShadowViewHandle)
+
++ (void)load{
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSArray *selStringsArray = @[@"dealloc" , @"layoutSubviews" , @"removeFromSuperview" , @"setFrame:" , @"setCenter:" , @"setHidden:" , @"setAlpha:" , @"setTransform:" , @"setBackgroundColor:"];
+        
+        [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
+            
+            NSString *leeSelString = [@"lee_" stringByAppendingString:selString];
+            
+            Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
+            
+            Method leeMethod = class_getInstanceMethod(self, NSSelectorFromString(leeSelString));
+            
+            method_exchangeImplementations(originalMethod, leeMethod);
+        }];
+        
+    });
+    
+}
+
+- (void)lee_dealloc{
+    
+    if ([self isAddShadow]) {
+        
+        [self removeShadow];
+        
+        
+    }objc_removeAssociatedObjects(self);
+    
+    [self lee_dealloc];
+}
+
+- (void)lee_layoutSubviews{
+    
+    [self lee_layoutSubviews];
+    
+    if ([self isAddShadow]) [[self shadowView] layoutSubviews];
+}
+
+- (void)lee_removeFromSuperview{
+    
+    [self lee_removeFromSuperview];
+    
+    [self removeShadow];
+}
+
+- (void)lee_setFrame:(CGRect)frame{
+    
+    [self lee_setFrame:frame];
+    
+    if ([self isAddShadow]) [self shadowView].frame = self.frame;
+}
+
+- (void)lee_setCenter:(CGPoint)center{
+    
+    [self lee_setCenter:center];
+    
+    if ([self isAddShadow]) [self shadowView].center = center;
+}
+
+- (void)lee_setHidden:(BOOL)hidden{
+    
+    [self lee_setHidden:hidden];
+    
+    if ([self isAddShadow]) [self shadowView].hidden = hidden;
+}
+
+- (void)lee_setAlpha:(CGFloat)alpha{
+    
+    [self lee_setAlpha:alpha];
+    
+    if ([self isAddShadow]) [self shadowView].alpha = alpha;
+}
+
+- (void)lee_setTransform:(CGAffineTransform)transform{
+    
+    [self lee_setTransform:transform];
+    
+    if ([self isAddShadow]) [self shadowView].transform = transform;
+}
+
+- (void)lee_setBackgroundColor:(UIColor *)backgroundColor{
+    
+    [self lee_setBackgroundColor:backgroundColor];
+    
+    if ([self isAddShadow]) [self shadowView].backgroundColor = backgroundColor;
+}
+
+- (void)cornerRadius:(CGFloat)cornerRadius{
+    
+    self.layer.cornerRadius = cornerRadius;
+
+    if ([self isAddShadow]) [self shadowView].layer.cornerRadius = cornerRadius;
+}
+
+- (void)addShadowWithShadowOpacity:(CGFloat)shadowOpacity{
+    
+    if (self.superview) {
+        
+        if (![self shadowView]) {
+            
+            UIView *shadowView = [[UIView alloc] initWithFrame:self.frame];
+            
+            shadowView.backgroundColor = self.backgroundColor;
+            
+            shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
+            
+            shadowView.layer.shadowRadius = 5;
+            
+            shadowView.layer.shadowOffset = CGSizeMake(0, 2);
+            
+            shadowView.layer.shadowOpacity = shadowOpacity;
+         
+            [self.superview insertSubview:shadowView belowSubview:self];
+            
+            objc_setAssociatedObject(self, @selector(shadowView), shadowView , OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+        
+        [self setIsAddShadow:YES];
+    }
+    
+}
+
+- (void)removeShadow{
+    
+    if ([self isAddShadow]) {
+    
+        [[self shadowView] removeFromSuperview];
+    }
+    
+}
+
+- (UIView *)shadowView{
+    
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (BOOL)isAddShadow{
+    
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setIsAddShadow:(BOOL)isAddShadow{
+    
+    objc_setAssociatedObject(self, @selector(isAddShadow), @(isAddShadow) , OBJC_ASSOCIATION_ASSIGN);
+}
+
+@end
+
 @interface LEEBaseViewController ()
 
 @property (nonatomic , strong ) LEEAlertConfigModel *config;
@@ -1168,13 +1342,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 - (void)closeAnimationsWithCompletionBlock:(void (^)())completionBlock{
     
     [[LEEAlert shareManager].leeWindow endEditing:YES];
-}
-
-#pragma mark Tool
-
-- (CGSize)getLabelTextHeight:(UILabel *)label MaxWidth:(CGFloat)maxWidth{
-    
-    return [label.text boundingRectWithSize:CGSizeMake(maxWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName : label.font} context:nil].size;
 }
 
 #pragma mark LazyLoading
@@ -1348,7 +1515,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     alertViewHeight = 0.0f;
     
-    CGFloat alertViewWidth = self.config.modelMaxWidthBlock(self.orientationType);
+    CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
     [self.alertItemArray enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
        
@@ -1364,16 +1531,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             viewFrame.origin.y = alertViewHeight + view.item.insets.top;
             
-            viewFrame.size.width = alertViewWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
-            
-            if ([item isKindOfClass:UILabel.class]) {
-                
-                viewFrame.size.height = [self getLabelTextHeight:(UILabel *)view MaxWidth:viewFrame.size.width].height;
-            }
+            viewFrame.size.width = alertViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
             view.frame = viewFrame;
             
-            alertViewHeight += viewFrame.size.height + view.item.insets.top + view.item.insets.bottom;
+            if ([item isKindOfClass:UILabel.class]) [item sizeToFit];
+            
+            alertViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
             
         } else if ([item isKindOfClass:LEECustomView.class]) {
             
@@ -1385,7 +1549,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 case LEECustomViewPositionTypeCenter:
                    
-                    viewFrame.origin.x = (alertViewWidth - viewFrame.size.width) * 0.5f;
+                    viewFrame.origin.x = (alertViewMaxWidth - viewFrame.size.width) * 0.5f;
                 
                     break;
                     
@@ -1397,7 +1561,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                 case LEECustomViewPositionTypeRight:
                     
-                    viewFrame.origin.x = alertViewWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
+                    viewFrame.origin.x = alertViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
                     
                     break;
                     
@@ -1421,7 +1585,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         buttonFrame.origin.y = alertViewHeight;
         
-        buttonFrame.size.width = alertViewWidth;
+        buttonFrame.size.width = alertViewMaxWidth;
         
         button.frame = buttonFrame;
         
@@ -1444,14 +1608,14 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         CGFloat minY = buttonA.frame.origin.y > buttonB.frame.origin.y ? buttonB.frame.origin.y : buttonA.frame.origin.y;
         
-        buttonA.frame = CGRectMake(0, minY, alertViewWidth / 2, maxHeight);
+        buttonA.frame = CGRectMake(0, minY, alertViewMaxWidth / 2, maxHeight);
         
-        buttonB.frame = CGRectMake(alertViewWidth / 2, minY, alertViewWidth / 2, maxHeight);
+        buttonB.frame = CGRectMake(alertViewMaxWidth / 2, minY, alertViewMaxWidth / 2, maxHeight);
         
         alertViewHeight -= minHeight;
     }
     
-    self.alertView.contentSize = CGSizeMake(alertViewWidth, alertViewHeight);
+    self.alertView.contentSize = CGSizeMake(alertViewMaxWidth, alertViewHeight);
 }
 
 - (void)configAlert{
@@ -1460,7 +1624,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [self.view addSubview: self.alertView];
     
-    self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
+    [self.alertView addShadowWithShadowOpacity:self.config.modelShadowOpacity];
+    
+    [self.alertView cornerRadius:self.config.modelCornerRadius];
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
        
@@ -1502,7 +1668,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                     if (weakSelf) [weakSelf updateOrientationLayout];
                 };
-                
             }
                 break;
                 
@@ -1532,7 +1697,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                   
                     if (weakSelf) [weakSelf updateOrientationLayout];
                 };
-            
             }
                 break;
                 
@@ -1554,7 +1718,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                     if (weakSelf) [weakSelf updateOrientationLayout];
                 };
-                
             }
                 break;
                 
@@ -1624,7 +1787,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
           
             if (weakSelf) [weakSelf updateOrientationLayout];
         };
-        
     }
     
     if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject addLeftBorder];
@@ -1831,13 +1993,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface LEEActionSheetViewController ()
 
-@property (nonatomic , strong ) UIView *actionSheetView;
-
-@property (nonatomic , strong ) UIScrollView *actionSheetScrollView;
+@property (nonatomic , strong ) UIScrollView *actionSheetView;
 
 @property (nonatomic , strong ) NSMutableArray <id>*actionSheetItemArray;
 
 @property (nonatomic , strong ) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
+
+@property (nonatomic , strong ) UIView *actionSheetCancelActionSpaceView;
 
 @property (nonatomic , strong ) LEEActionButton *actionSheetCancelAction;
 
@@ -1851,8 +2013,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 - (void)dealloc{
     
     _actionSheetView = nil;
-    
-    _actionSheetScrollView = nil;
     
     _actionSheetCancelAction = nil;
     
@@ -1901,14 +2061,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
-            if ([item isKindOfClass:UILabel.class]) {
-                
-                viewFrame.size.height = [self getLabelTextHeight:(UILabel *)view MaxWidth:viewFrame.size.width].height;
-            }
-            
             view.frame = viewFrame;
             
-            actionSheetViewHeight += viewFrame.size.height + view.item.insets.top + view.item.insets.bottom;
+            if ([item isKindOfClass:UILabel.class]) [item sizeToFit];
+            
+            actionSheetViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
             
         } else if ([item isKindOfClass:LEECustomView.class]) {
             
@@ -1963,22 +2120,23 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         actionSheetViewHeight += buttonFrame.size.height;
     }
     
-    self.actionSheetScrollView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
+    self.actionSheetView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
     
-    if (self.actionSheetCancelAction) actionSheetViewHeight += self.actionSheetCancelAction.height + self.config.modelActionSheetCancelActionSpaceWidth;
-    
+    CGFloat cancelActionTotalHeight = self.actionSheetCancelAction ? self.actionSheetCancelAction.height + self.config.modelActionSheetCancelActionSpaceWidth : 0.0f;
     
     CGRect actionSheetViewFrame = self.actionSheetView.frame;
     
     actionSheetViewFrame.size.width = actionSheetViewMaxWidth;
     
-    actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight ? actionSheetViewMaxHeight : actionSheetViewHeight;
+    actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight - cancelActionTotalHeight ? actionSheetViewMaxHeight - cancelActionTotalHeight : actionSheetViewHeight;
     
     actionSheetViewFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
     
     if (isShowed) {
         
-        actionSheetViewFrame.origin.y = (SCREEN_HEIGHT - actionSheetViewFrame.size.height) - self.config.modelActionSheetBottomMargin;
+        CGFloat actionSheetTotalHeight = actionSheetViewFrame.size.height + cancelActionTotalHeight;
+        
+        actionSheetViewFrame.origin.y = (SCREEN_HEIGHT - actionSheetTotalHeight) - self.config.modelActionSheetBottomMargin;
         
     } else {
         
@@ -1987,26 +2145,30 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     self.actionSheetView.frame = actionSheetViewFrame;
     
-    
-    CGRect actionSheetScrollViewFrame = self.actionSheetScrollView.frame;
-    
-    actionSheetScrollViewFrame.size.width = CGRectGetWidth(self.actionSheetView.frame);
-    
-    actionSheetScrollViewFrame.size.height = self.actionSheetCancelAction ? CGRectGetHeight(self.actionSheetView.frame) - self.actionSheetCancelAction.height - self.config.modelActionSheetCancelActionSpaceWidth : CGRectGetHeight(self.actionSheetView.frame);
-    
-    self.actionSheetScrollView.frame = actionSheetScrollViewFrame;
-    
     if (self.actionSheetCancelAction) {
+        
+        CGRect spaceFrame = self.actionSheetCancelActionSpaceView.frame;
+        
+        spaceFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
+        
+        spaceFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height;
+        
+        spaceFrame.size.width = actionSheetViewMaxWidth;
+        
+        spaceFrame.size.height = self.config.modelActionSheetCancelActionSpaceWidth;
+        
+        self.actionSheetCancelActionSpaceView.frame = spaceFrame;
         
         CGRect buttonFrame = self.actionSheetCancelAction.frame;
         
-        buttonFrame.origin.y = CGRectGetHeight(self.actionSheetScrollView.frame) + self.config.modelActionSheetCancelActionSpaceWidth;
+        buttonFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
         
-        buttonFrame.size.width = actionSheetViewFrame.size.width;
+        buttonFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height + spaceFrame.size.height;
+        
+        buttonFrame.size.width = actionSheetViewMaxWidth;
         
         self.actionSheetCancelAction.frame = buttonFrame;
     }
-    
     
     self.backgroundVisualEffectView.frame = self.view.frame;
 }
@@ -2015,13 +2177,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     __weak typeof(self) weakSelf = self;
     
-    self.actionSheetScrollView.layer.cornerRadius = self.config.modelCornerRadius;
-    
-    self.actionSheetView.backgroundColor = self.config.modelActionSheetCancelActionSpaceColor;
-    
-    [self.actionSheetView addSubview:self.actionSheetScrollView];
-    
     [self.view addSubview: self.actionSheetView];
+    
+    [self.actionSheetView addShadowWithShadowOpacity:self.config.modelShadowOpacity];
+    
+    [self.actionSheetView cornerRadius:self.config.modelCornerRadius];
     
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -2044,7 +2204,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.actionSheetScrollView addSubview:label];
+                [self.actionSheetView addSubview:label];
                 
                 [self.actionSheetItemArray addObject:label];
                 
@@ -2064,7 +2224,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                     if (weakSelf) [weakSelf updateActionSheetLayout];
                 };
-                
             }
                 break;
                 
@@ -2074,7 +2233,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.actionSheetScrollView addSubview:label];
+                [self.actionSheetView addSubview:label];
                 
                 [self.actionSheetItemArray addObject:label];
                 
@@ -2094,7 +2253,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                     if (weakSelf) [weakSelf updateActionSheetLayout];
                 };
-                
             }
                 break;
                 
@@ -2106,7 +2264,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 block(custom);
                 
-                [self.actionSheetScrollView addSubview:custom.view];
+                [self.actionSheetView addSubview:custom.view];
                 
                 [self.actionSheetItemArray addObject:custom];
                 
@@ -2116,7 +2274,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                     
                     if (weakSelf) [weakSelf updateActionSheetLayout];
                 };
-                
             }
                 break;
             default:
@@ -2161,11 +2318,21 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 button.clipsToBounds = YES;
                 
-                button.layer.cornerRadius = self.config.modelCornerRadius;
+                button.backgroundColor = action.backgroundColor;
                 
-                [self.actionSheetView addSubview:button];
+                [self.view addSubview:button];
+                
+                [button addShadowWithShadowOpacity:self.config.modelShadowOpacity];
+                
+                [button cornerRadius:self.config.modelCornerRadius];
                 
                 self.actionSheetCancelAction = button;
+                
+                self.actionSheetCancelActionSpaceView = [[UIView alloc] init];
+                
+                self.actionSheetCancelActionSpaceView.backgroundColor = self.config.modelActionSheetCancelActionSpaceColor;
+                
+                [self.view addSubview:self.actionSheetCancelActionSpaceView];
             }
                 break;
                 
@@ -2175,7 +2342,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
-                [self.actionSheetScrollView addSubview:button];
+                [self.actionSheetView addSubview:button];
                 
                 [self.actionSheetActionArray addObject:button];
             }
@@ -2186,7 +2353,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
           
             if (weakSelf) [weakSelf updateActionSheetLayout];
         };
-        
     }
     
     // 更新布局
@@ -2370,25 +2536,18 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (UIView *)actionSheetView{
     
-    if (!_actionSheetView) _actionSheetView = [[UIScrollView alloc] init];
-    
-    return _actionSheetView;
-}
-
-- (UIScrollView *)actionSheetScrollView{
-    
-    if (!_actionSheetScrollView) {
+    if (!_actionSheetView) {
         
-        _actionSheetScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.actionSheetView.frame), 0)];
+        _actionSheetView = [[UIScrollView alloc] init];
         
-        _actionSheetScrollView.backgroundColor = self.config.modelHeaderColor;
+        _actionSheetView.backgroundColor = self.config.modelHeaderColor;
         
-        _actionSheetScrollView.directionalLockEnabled = YES;
+        _actionSheetView.directionalLockEnabled = YES;
         
-        _actionSheetScrollView.bounces = NO;
+        _actionSheetView.bounces = NO;
     }
     
-    return _actionSheetScrollView;
+    return _actionSheetView;
 }
 
 - (NSMutableArray <id>*)actionSheetItemArray{

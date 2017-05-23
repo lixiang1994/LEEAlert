@@ -133,6 +133,9 @@
 /** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCornerRadius;
 
+/** 设置 阴影不透明 -> 格式: .LeeShadowOpacity(0.3f) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeShadowOpacity;
+
 /** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeOpenAnimationDuration;
 

@@ -55,6 +55,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个可动态改变标题和内容的 actionSheet 菜单" , @"content" : @"已经显示后 可再次对其进行调整"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个模糊背景样式的 actionSheet 菜单" , @"content" : @"传入UIBlurEffectStyle枚举类型 默认为Dark"}];
+    
     [baseArray addObject:@{@"title" : @"显示两个加入队列的 actionSheet 菜单" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 actionSheet 菜单" , @"content" : @"菜单背景等颜色均可以自定义"}];
@@ -378,6 +380,18 @@
             
         case 10:
         {
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"这是一个毛玻璃背景样式的actionSheet")
+            .LeeContent(@"通过UIBlurEffectStyle枚举设置效果样式")
+            .LeeAction(@"确认", nil)
+            .LeeCancelAction(@"取消", nil)
+            .LeeBackgroundStyleBlur(UIBlurEffectStyleLight)
+            .LeeShow();
+        }
+            break;
+            
+        case 11:
+        {
             // 第一个显示时 第二个也显示了 这时会隐藏第一个 ,在第二个显示结束后再将第一个显示出来
             
             [LEEAlert actionsheet].config
@@ -478,12 +492,13 @@
                 action.titleColor = [UIColor blackColor];
                 
                 action.font = [UIFont systemFontOfSize:18.0f];
-                
             })
-            .LeeActionSheetCancelActionSpaceColor([UIColor colorWithWhite:0.92 alpha:1.0f])
-            .LeeActionSheetBottomMargin(0.0f)
-            .LeeCornerRadius(0.0f)
+            .LeeActionSheetCancelActionSpaceColor([UIColor colorWithWhite:0.92 alpha:1.0f]) // 设置取消按钮间隔的颜色
+            .LeeActionSheetBottomMargin(0.0f) // 设置底部距离屏幕的边距为0
+            .LeeCornerRadius(0.0f) // 设置圆角曲率为0
             .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
