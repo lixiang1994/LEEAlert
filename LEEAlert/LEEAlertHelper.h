@@ -46,14 +46,6 @@ typedef NS_ENUM(NSInteger, LEEActionType) {
     LEEActionTypeDestructive
 };
 
-typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
-    
-    LEECustomViewPositionTypeCenter,
-    
-    LEECustomViewPositionTypeLeft,
-    
-    LEECustomViewPositionTypeRight
-};
 
 typedef NS_ENUM(NSInteger, LEEItemType) {
     /** 标题 */
@@ -64,6 +56,15 @@ typedef NS_ENUM(NSInteger, LEEItemType) {
     LEEItemTypeTextField,
     /** 自定义视图 */
     LEEItemTypeCustomView,
+};
+
+typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
+    /** 居中 */
+    LEECustomViewPositionTypeCenter,
+    /** 靠左 */
+    LEECustomViewPositionTypeLeft,
+    /** 靠右 */
+    LEECustomViewPositionTypeRight
 };
 
 typedef LEEAlertConfigModel *(^LEEConfig)();

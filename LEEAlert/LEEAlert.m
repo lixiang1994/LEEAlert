@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
 
-@property (nonatomic , strong ) UIColor *modelColor;
+@property (nonatomic , strong ) UIColor *modelHeaderColor;
 @property (nonatomic , strong ) UIColor *modelBackgroundColor;
 
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
@@ -187,7 +187,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelActionSheetCancelActionSpaceWidth = 10.0f; //默认actionsheet取消按钮间隔宽度
         _modelActionSheetBottomMargin = 10.0f; //默认actionsheet距离屏幕底部距离
         
-        _modelColor = [UIColor whiteColor]; //默认颜色
+        _modelHeaderColor = [UIColor whiteColor]; //默认颜色
         _modelBackgroundColor = [UIColor blackColor]; //默认背景半透明颜色
         
         _modelIsClickBackgroundClose = NO; //默认点击背景不关闭
@@ -543,13 +543,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (LEEConfigToColor)LeeColor{
+- (LEEConfigToColor)LeeHeaderColor{
     
     __weak typeof(self) weakSelf = self;
     
     return ^(UIColor *color){
         
-        if (weakSelf) weakSelf.modelColor = color;
+        if (weakSelf) weakSelf.modelHeaderColor = color;
         
         return weakSelf;
     };
@@ -786,6 +786,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @property (nonatomic , strong ) LEEItem *item;
 
+@property (nonatomic , copy ) void (^textChangedBlock)();
+
 + (LEEItemLabel *)label;
 
 @end
@@ -795,6 +797,34 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 + (LEEItemLabel *)label{
     
     return [[LEEItemLabel alloc] init];
+}
+
+- (void)setText:(NSString *)text{
+    
+    [super setText:text];
+    
+    if (self.textChangedBlock) self.textChangedBlock();
+}
+
+- (void)setAttributedText:(NSAttributedString *)attributedText{
+    
+    [super setAttributedText:attributedText];
+    
+    if (self.textChangedBlock) self.textChangedBlock();
+}
+
+- (void)setFont:(UIFont *)font{
+    
+    [super setFont:font];
+    
+    if (self.textChangedBlock) self.textChangedBlock();
+}
+
+- (void)setNumberOfLines:(NSInteger)numberOfLines{
+    
+    [super setNumberOfLines:numberOfLines];
+    
+    if (self.textChangedBlock) self.textChangedBlock();
 }
 
 @end
@@ -820,7 +850,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @property (nonatomic , strong ) LEEAction *action;
 
-@property (nonatomic , copy ) void (^heightChangeBlock)();
+@property (nonatomic , copy ) void (^heightChangedBlock)();
 
 + (LEEActionButton *)button;
 
@@ -885,6 +915,10 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (action.height) [self setHeight:action.height];
     
+    [self setImageEdgeInsets:action.imageEdgeInsets];
+    
+    [self setTitleEdgeInsets:action.titleEdgeInsets];
+    
     __weak typeof(self) weakSelf = self;
     
     action.updateBlock = ^(LEEAction *act) {
@@ -911,7 +945,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (isChange) {
         
-        if (self.heightChangeBlock) self.heightChangeBlock();
+        if (self.heightChangedBlock) self.heightChangedBlock();
     }
     
 }
@@ -1013,7 +1047,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @property (nonatomic , assign ) CGSize size;
 
-@property (nonatomic , copy ) void (^sizeChangeBlock)();
+@property (nonatomic , copy ) void (^sizeChangedBlock)();
 
 @end
 
@@ -1024,9 +1058,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (_view) [_view removeObserver:self forKeyPath:@"frame"];
 }
 
-- (void)setSizeChangeBlock:(void (^)())sizeChangeBlock{
+- (void)setSizeChangedBlock:(void (^)())sizeChangedBlock{
     
-    _sizeChangeBlock = sizeChangeBlock;
+    _sizeChangedBlock = sizeChangedBlock;
     
     if (_view) {
         
@@ -1047,7 +1081,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         self.size = view.frame.size;
         
-        if (self.sizeChangeBlock) self.sizeChangeBlock();
+        if (self.sizeChangedBlock) self.sizeChangedBlock();
     }
     
 }
@@ -1463,6 +1497,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 if (block) block(label);
                 
                 label.item = item;
+                
+                label.textChangedBlock = ^{
+                    
+                    if (weakSelf) [weakSelf updateOrientationLayout];
+                };
+                
             }
                 break;
                 
@@ -1487,6 +1527,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 if (block) block(label);
                 
                 label.item = item;
+                
+                label.textChangedBlock = ^{
+                  
+                    if (weakSelf) [weakSelf updateOrientationLayout];
+                };
+            
             }
                 break;
                 
@@ -1504,7 +1550,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 custom.item = item;
                 
-                custom.sizeChangeBlock = ^{
+                custom.sizeChangedBlock = ^{
                     
                     if (weakSelf) [weakSelf updateOrientationLayout];
                 };
@@ -1552,7 +1598,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
         
-        if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
+        if (!action.backgroundColor) action.backgroundColor = self.config.modelHeaderColor;
         
         if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
         
@@ -1574,7 +1620,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         [self.alertActionArray addObject:button];
         
-        button.heightChangeBlock = ^{
+        button.heightChangedBlock = ^{
           
             if (weakSelf) [weakSelf updateOrientationLayout];
         };
@@ -1755,7 +1801,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         _alertView = [[UIScrollView alloc] init];
         
-        _alertView.backgroundColor = self.config.modelColor;
+        _alertView.backgroundColor = self.config.modelHeaderColor;
         
         _alertView.directionalLockEnabled = YES;
         
@@ -2013,6 +2059,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 if (block) block(label);
                 
                 label.item = item;
+                
+                label.textChangedBlock = ^{
+                    
+                    if (weakSelf) [weakSelf updateActionSheetLayout];
+                };
+                
             }
                 break;
                 
@@ -2037,6 +2089,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 if (block) block(label);
                 
                 label.item = item;
+                
+                label.textChangedBlock = ^{
+                    
+                    if (weakSelf) [weakSelf updateActionSheetLayout];
+                };
+                
             }
                 break;
                 
@@ -2054,7 +2112,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 custom.item = item;
                 
-                custom.sizeChangeBlock = ^{
+                custom.sizeChangedBlock = ^{
                     
                     if (weakSelf) [weakSelf updateActionSheetLayout];
                 };
@@ -2081,7 +2139,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
         
-        if (!action.backgroundColor) action.backgroundColor = self.config.modelColor;
+        if (!action.backgroundColor) action.backgroundColor = self.config.modelHeaderColor;
         
         if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
         
@@ -2124,7 +2182,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 break;
         }
         
-        button.heightChangeBlock = ^{
+        button.heightChangedBlock = ^{
           
             if (weakSelf) [weakSelf updateActionSheetLayout];
         };
@@ -2323,7 +2381,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         _actionSheetScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.actionSheetView.frame), 0)];
         
-        _actionSheetScrollView.backgroundColor = self.config.modelColor;
+        _actionSheetScrollView.backgroundColor = self.config.modelHeaderColor;
         
         _actionSheetScrollView.directionalLockEnabled = YES;
         

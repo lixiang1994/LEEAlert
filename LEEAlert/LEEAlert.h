@@ -22,6 +22,41 @@
 
 #import "LEEAlertHelper.h"
 
+
+
+/*
+ *************************简要说明************************
+ 
+ Alert 使用方法
+ 
+ [LEEAlert alert].cofing.XXXXX.XXXXX.LeeShow();
+ 
+ ActionSheet 使用方法
+ 
+ [LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
+ 
+ 特性:
+ - 默认样式为Apple风格 可自定义每个控件样式
+ - 支持自定义视图添加 自定义视图size改变时会自动适应.
+ - 支持屏幕旋转适应 同时可自定义横竖屏最大宽度和高度
+ - 支持队列显示 多个同时显示时根据先后顺序排队弹出.
+ - 支持两种背景样式 1.半透明 (支持自定义透明度比例和颜色) 2.毛玻璃 (支持效果类型)
+ - 打开和关闭的动画时长均可自定义
+ - 支持弹框圆角自定义
+ - 更多特性请查看Demo.
+ 
+ 设置方法结束后在最后请不要忘记使用.LeeShow()方法来显示.
+ 
+ 最低支持iOS8及以上
+ 
+ *****************************************************
+ */
+
+
+
+
+
+
 @interface LEEAlert : NSObject
 
 /** 初始化 */
@@ -105,7 +140,7 @@
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCloseAnimationDuration;
 
 /** 设置 颜色 -> 格式: .LeeColor(UIColor) */
-@property (nonatomic , copy , readonly ) LEEConfigToColor LeeColor;
+@property (nonatomic , copy , readonly ) LEEConfigToColor LeeHeaderColor;
 
 /** 设置 背景颜色 -> 格式: .LeeBackGroundColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeBackGroundColor;
@@ -180,6 +215,10 @@
 @property (nonatomic , strong ) UIImage *image;
 
 @property (nonatomic , strong ) UIImage *highlightImage;
+
+@property (nonatomic , assign ) UIEdgeInsets imageEdgeInsets;
+
+@property (nonatomic , assign ) UIEdgeInsets titleEdgeInsets;
 
 @property (nonatomic , assign ) CGFloat borderWidth;
 
