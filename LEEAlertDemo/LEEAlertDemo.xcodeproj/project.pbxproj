@@ -448,6 +448,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-3";
 				DEVELOPMENT_TEAM = QCC328325S;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -462,6 +463,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "LaunchImage-3";
 				DEVELOPMENT_TEAM = QCC328325S;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

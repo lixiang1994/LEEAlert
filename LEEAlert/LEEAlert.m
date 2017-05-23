@@ -1533,9 +1533,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             viewFrame.size.width = alertViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
-            view.frame = viewFrame;
+            if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
             
-            if ([item isKindOfClass:UILabel.class]) [item sizeToFit];
+            view.frame = viewFrame;
             
             alertViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
             
@@ -1797,7 +1797,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [self showAnimationsWithCompletionBlock:^{
     
-        if (weakSelf) [weakSelf configNotification];
+        if (weakSelf) {
+            
+            [weakSelf configNotification];
+            
+            [weakSelf updateOrientationLayout];
+        }
+        
     }];
     
 }
@@ -2061,9 +2067,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
             
-            view.frame = viewFrame;
+            if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
             
-            if ([item isKindOfClass:UILabel.class]) [item sizeToFit];
+            view.frame = viewFrame;
             
             actionSheetViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
             
@@ -2361,7 +2367,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [self showAnimationsWithCompletionBlock:^{
         
-        if (weakSelf) [weakSelf configNotification];
+        if (weakSelf) {
+            
+            [weakSelf configNotification];
+            
+            [weakSelf updateActionSheetLayout];
+        }
+        
     }];
     
 }
