@@ -23,7 +23,6 @@
 #import "LEEAlertHelper.h"
 
 
-
 /*
  *************************简要说明************************
  
@@ -51,10 +50,6 @@
  
  *****************************************************
  */
-
-
-
-
 
 
 @interface LEEAlert : NSObject
@@ -240,6 +235,8 @@
 @property (nonatomic , strong ) UIView *view;
 
 @property (nonatomic , assign ) LEECustomViewPositionType positionType;
+
+@property (nonatomic , assign ) BOOL isAutoWidth;
 
 @end
 

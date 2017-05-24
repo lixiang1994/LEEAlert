@@ -10,6 +10,8 @@
 
 #import "LEEAlert.h"
 
+#import "ShareView.h"
+
 @interface AlertTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -58,6 +60,8 @@
     [baseArray addObject:@{@"title" : @"显示两个加入队列的 alert 弹框" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -504,7 +508,38 @@
             
         case 1:
         {
-           
+            // 初始化分享视图
+            
+            ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, 280, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
+            
+            shareView.OpenShareBlock = ^(ShareType type){
+                
+                // 关闭
+                
+                [LEEAlert closeWithCompletionBlock:^{
+                    
+                    NSLog(@"%d" , type);
+                }];
+                
+            };
+            
+            [LEEAlert alert].config
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = shareView;
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.type = LEEActionTypeCancel;
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor grayColor];
+            })
+            .LeeShow();
         }
             break;
             

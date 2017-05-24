@@ -10,6 +10,8 @@
 
 #import "LEEAlert.h"
 
+#import "ShareView.h"
+
 @interface ActionSheetTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -63,7 +65,7 @@
     
     [demoArray addObject:@{@"title" : @"显示一个类似微信布局的 actionSheet 菜单" , @"content" : @"只需要调整最大宽度,取消action的间隔颜色和底部间距即可"}];
     
-    [demoArray addObject:@{@"title" : @"" , @"content" : @""}];
+    [demoArray addObject:@{@"title" : @"显示一个分享登录的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -509,7 +511,40 @@
             
         case 2:
         {
+            // 初始化分享视图
             
+            ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, 300, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
+            
+            shareView.OpenShareBlock = ^(ShareType type){
+                
+                // 关闭
+                
+                [LEEAlert closeWithCompletionBlock:^{
+                    
+                    NSLog(@"%d" , type);
+                }];
+                
+            };
+            
+            [LEEAlert actionsheet].config
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = shareView;
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+                
+                custom.isAutoWidth = YES; // 设置自动宽度后 会根据insets和最大的宽度自动计算自定义视图的宽度 并修改其frame属性
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.type = LEEActionTypeDefault;
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor grayColor];
+            })
+            .LeeShow();
         }
             break;
             

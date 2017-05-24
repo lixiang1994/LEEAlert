@@ -8,9 +8,15 @@
 
 #import "AppDelegate.h"
 
+#import "TabBarViewController.h"
+
+#import "NavigationViewController.h"
+
 #import "AlertTableViewController.h"
 
 #import "ActionSheetTableViewController.h"
+
+#import "LEEAlert.h"
 
 @interface AppDelegate ()
 
@@ -36,18 +42,22 @@
     
     [classArray enumerateObjectsUsingBlock:^(id  _Nonnull class, NSUInteger idx, BOOL * _Nonnull stop) {
        
-        UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:[[NSClassFromString(class) alloc] init]];
+        NavigationViewController *nc = [[NavigationViewController alloc] initWithRootViewController:[[NSClassFromString(class) alloc] init]];
         
         [ncArray addObject:nc];
         
         nc.tabBarItem.title = titleArray[idx];
     }];
     
-    UITabBarController *tbc = [[UITabBarController alloc] init];
+    TabBarViewController *tbc = [[TabBarViewController alloc] init];
     
     tbc.viewControllers = ncArray;
     
     self.window.rootViewController = tbc;
+    
+    // 设置主window
+    
+    [LEEAlert configMainWindow:self.window];
     
     return YES;
 }
@@ -78,6 +88,5 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-
 
 @end

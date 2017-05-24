@@ -25,6 +25,8 @@
 #define IS_IPAD ({ UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 1 : 0; })
 #define SCREEN_WIDTH CGRectGetWidth([[UIScreen mainScreen] bounds])
 #define SCREEN_HEIGHT CGRectGetHeight([[UIScreen mainScreen] bounds])
+#define VIEW_WIDTH CGRectGetWidth(self.view.frame)
+#define VIEW_HEIGHT CGRectGetHeight(self.view.frame)
 
 @interface LEEAlert ()
 
@@ -1139,24 +1141,24 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         [self removeShadow];
         
-        
-    }objc_removeAssociatedObjects(self);
+        objc_removeAssociatedObjects(self);
+    }
     
     [self lee_dealloc];
 }
 
 - (void)lee_layoutSubviews{
     
-    [self lee_layoutSubviews];
-    
     if ([self isAddShadow]) [[self shadowView] layoutSubviews];
+    
+    [self lee_layoutSubviews];
 }
 
 - (void)lee_removeFromSuperview{
     
-    [self lee_removeFromSuperview];
-    
     [self removeShadow];
+    
+    [self lee_removeFromSuperview];
 }
 
 - (void)lee_setFrame:(CGRect)frame{
@@ -1323,6 +1325,22 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     }
 
     self.view.backgroundColor = [self.config.modelBackgroundColor colorWithAlphaComponent:0.0f];
+    
+    self.orientationType = VIEW_HEIGHT > VIEW_WIDTH ? LEEScreenOrientationTypeVertical : LEEScreenOrientationTypeHorizontal;
+}
+
+- (void)viewWillLayoutSubviews{
+    
+    [super viewWillLayoutSubviews];
+    
+    if (self.backgroundVisualEffectView) self.backgroundVisualEffectView.frame = self.view.frame;
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    self.orientationType = size.height > size.width ? LEEScreenOrientationTypeVertical : LEEScreenOrientationTypeHorizontal;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
@@ -1362,11 +1380,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (_currentKeyWindow) if (![LEEAlert shareManager].mainWindow) [LEEAlert shareManager].mainWindow = _currentKeyWindow;
     
     return _currentKeyWindow;
-}
-
-- (LEEScreenOrientationType)orientationType{
-    
-    return SCREEN_HEIGHT > SCREEN_WIDTH ? LEEScreenOrientationTypeVertical : LEEScreenOrientationTypeHorizontal;
 }
 
 @end
@@ -1415,8 +1428,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:) name:UIKeyboardDidChangeFrameNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientationNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)keyboardWillShown:(NSNotification *)notify{
@@ -1447,19 +1458,24 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [UIView setAnimationDuration:duration];
     
-    [self updateOrientationLayout];
+    [self updateAlertLayout];
     
     [UIView commitAnimations];
 }
 
-- (void)changeOrientationNotification:(NSNotification *)notify{
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
     
-    self.backgroundVisualEffectView.frame = self.view.frame;
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
-    [self updateOrientationLayout];
+    [self updateAlertLayoutWithViewWidth:size.width ViewHeight:size.height];
 }
 
-- (void)updateOrientationLayout{
+- (void)updateAlertLayout{
+    
+    [self updateAlertLayoutWithViewWidth:VIEW_WIDTH ViewHeight:VIEW_HEIGHT];
+}
+
+- (void)updateAlertLayoutWithViewWidth:(CGFloat)viewWidth ViewHeight:(CGFloat)viewHeight{
     
     CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
@@ -1481,7 +1497,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             alertViewFrame.size.width = alertViewMaxWidth;
             
-            alertViewFrame.origin.x = (SCREEN_WIDTH - alertViewFrame.size.width) * 0.5f;
+            alertViewFrame.origin.x = (viewWidth - alertViewFrame.size.width) * 0.5f;
             
             alertViewFrame.origin.y = keyboardY - alertViewFrame.size.height - 10;
             
@@ -1502,9 +1518,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;
         
-        alertViewFrame.origin.x = (SCREEN_WIDTH - alertViewMaxWidth) * 0.5f;
+        alertViewFrame.origin.x = (viewWidth - alertViewMaxWidth) * 0.5f;
         
-        alertViewFrame.origin.y = (SCREEN_HEIGHT - alertViewFrame.size.height) / 2;
+        alertViewFrame.origin.y = (viewHeight - alertViewFrame.size.height) / 2;
         
         self.alertView.frame = alertViewFrame;
     }
@@ -1545,12 +1561,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             CGRect viewFrame = custom.view.frame;
             
+            if (custom.isAutoWidth) {
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+                
+                viewFrame.size.width = alertViewMaxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
+            }
+            
             switch (custom.positionType) {
                 
                 case LEECustomViewPositionTypeCenter:
                    
                     viewFrame.origin.x = (alertViewMaxWidth - viewFrame.size.width) * 0.5f;
-                
+                    
                     break;
                     
                 case LEECustomViewPositionTypeLeft:
@@ -1666,7 +1689,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 label.textChangedBlock = ^{
                     
-                    if (weakSelf) [weakSelf updateOrientationLayout];
+                    if (weakSelf) [weakSelf updateAlertLayout];
                 };
             }
                 break;
@@ -1695,7 +1718,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 label.textChangedBlock = ^{
                   
-                    if (weakSelf) [weakSelf updateOrientationLayout];
+                    if (weakSelf) [weakSelf updateAlertLayout];
                 };
             }
                 break;
@@ -1716,7 +1739,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 custom.sizeChangedBlock = ^{
                     
-                    if (weakSelf) [weakSelf updateOrientationLayout];
+                    if (weakSelf) [weakSelf updateAlertLayout];
                 };
             }
                 break;
@@ -1785,7 +1808,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         button.heightChangedBlock = ^{
           
-            if (weakSelf) [weakSelf updateOrientationLayout];
+            if (weakSelf) [weakSelf updateAlertLayout];
         };
     }
     
@@ -1793,7 +1816,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     // 更新布局
     
-    [self updateOrientationLayout];
+    [self updateAlertLayout];
     
     [self showAnimationsWithCompletionBlock:^{
     
@@ -1801,7 +1824,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             [weakSelf configNotification];
             
-            [weakSelf updateOrientationLayout];
+            [weakSelf updateAlertLayout];
         }
         
     }];
@@ -2034,15 +2057,21 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (void)configNotification{
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientationNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
-- (void)changeOrientationNotification:(NSNotification *)notify{
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
     
-    [self updateActionSheetLayout];
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [self updateActionSheetLayoutWithViewWidth:size.width ViewHeight:size.height];
 }
 
 - (void)updateActionSheetLayout{
+    
+    [self updateActionSheetLayoutWithViewWidth:VIEW_WIDTH ViewHeight:VIEW_HEIGHT];
+}
+
+- (void)updateActionSheetLayoutWithViewWidth:(CGFloat)viewWidth ViewHeight:(CGFloat)viewHeight{
     
     CGFloat actionSheetViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
@@ -2078,6 +2107,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             LEECustomView *custom = (LEECustomView *)item;
             
             CGRect viewFrame = custom.view.frame;
+            
+            if (custom.isAutoWidth) {
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+                
+                viewFrame.size.width = actionSheetViewMaxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
+            }
             
             switch (custom.positionType) {
                     
@@ -2136,17 +2172,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight - cancelActionTotalHeight ? actionSheetViewMaxHeight - cancelActionTotalHeight : actionSheetViewHeight;
     
-    actionSheetViewFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
+    actionSheetViewFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
     
     if (isShowed) {
         
         CGFloat actionSheetTotalHeight = actionSheetViewFrame.size.height + cancelActionTotalHeight;
         
-        actionSheetViewFrame.origin.y = (SCREEN_HEIGHT - actionSheetTotalHeight) - self.config.modelActionSheetBottomMargin;
+        actionSheetViewFrame.origin.y = (viewHeight - actionSheetTotalHeight) - self.config.modelActionSheetBottomMargin;
         
     } else {
         
-        actionSheetViewFrame.origin.y = SCREEN_HEIGHT;
+        actionSheetViewFrame.origin.y = viewHeight;
     }
     
     self.actionSheetView.frame = actionSheetViewFrame;
@@ -2155,7 +2191,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         CGRect spaceFrame = self.actionSheetCancelActionSpaceView.frame;
         
-        spaceFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
+        spaceFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
         
         spaceFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height;
         
@@ -2167,7 +2203,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         CGRect buttonFrame = self.actionSheetCancelAction.frame;
         
-        buttonFrame.origin.x = (SCREEN_WIDTH - actionSheetViewMaxWidth) * 0.5f;
+        buttonFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
         
         buttonFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height + spaceFrame.size.height;
         
@@ -2176,7 +2212,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         self.actionSheetCancelAction.frame = buttonFrame;
     }
     
-    self.backgroundVisualEffectView.frame = self.view.frame;
 }
 
 - (void)configActionSheet{
