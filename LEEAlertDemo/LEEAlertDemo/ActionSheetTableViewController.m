@@ -149,7 +149,13 @@
             [LEEAlert actionsheet].config
             .LeeTitle(@"标题")
             .LeeContent(@"内容")
-            .LeeCustomView(view)
+//            .LeeCustomView(view)
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+//                custom.isAutoWidth = YES; // 设置自动宽度后 会根据insets和最大的宽度自动计算自定义视图的宽度 并修改其frame属性
+            })
             .LeeAction(@"确认", ^{
                 
             })
@@ -513,7 +519,9 @@
         {
             // 初始化分享视图
             
-            ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, 300, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
+            CGFloat width = CGRectGetHeight([[UIScreen mainScreen] bounds]) > CGRectGetWidth([[UIScreen mainScreen] bounds]) ? CGRectGetWidth([[UIScreen mainScreen] bounds]) - 20 : CGRectGetHeight([[UIScreen mainScreen] bounds]) - 20;
+            
+            ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, width, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
             
             shareView.OpenShareBlock = ^(ShareType type){
                 
@@ -532,8 +540,6 @@
                 custom.view = shareView;
                 
                 custom.positionType = LEECustomViewPositionTypeCenter;
-                
-                custom.isAutoWidth = YES; // 设置自动宽度后 会根据insets和最大的宽度自动计算自定义视图的宽度 并修改其frame属性
             })
             .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeAddAction(^(LEEAction *action) {
