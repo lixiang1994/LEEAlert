@@ -1,0 +1,8 @@
+language: objective-c #语言种类
+
+xcode_project: Framework/LEEAlert/LEEAlert.xcodeproj # 项目文件相对于.travis.yml文件的路径
+    
+xcode_scheme: LEEAlert #你需要集成测试的scheme
+
+script:
+- xctool -project Framework/LEEAlert/LEEAlert.xcodeproj -scheme LEEAlert build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
