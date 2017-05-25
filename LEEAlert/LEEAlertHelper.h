@@ -71,6 +71,7 @@ typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
 };
 
 typedef LEEAlertConfigModel *(^LEEConfig)();
+typedef LEEAlertConfigModel *(^LEEConfigToBool)(BOOL is);
 typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
 typedef LEEAlertConfigModel *(^LEEConfigToString)(NSString *str);
 typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);

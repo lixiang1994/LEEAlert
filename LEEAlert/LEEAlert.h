@@ -103,14 +103,14 @@
 /** 设置 添加内容 -> 格式: .LeeConfigContent(^(UILabel *label){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigLabel LeeAddContent;
 
+/** 设置 添加自定义视图 -> 格式: .LeeAddCustomView(^(LEECustomView *){ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToCustomView LeeAddCustomView;
+
 /** 设置 添加一项 -> 格式: .LeeAddItem(^(LEEItem *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToItem LeeAddItem;
 
 /** 设置 添加动作 -> 格式: .LeeAddAction(^(LEEAction *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToAction LeeAddAction;
-
-/** 设置 添加自定义视图 -> 格式: .LeeAddCustomView(^(LEECustomView *){ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToCustomView LeeAddCustomView;
 
 /** 设置 头部内的间距 -> 格式: .LeeHeaderInsets(UIEdgeInsetsMake(20, 20, 20, 20)) */
 @property (nonatomic , copy , readonly ) LEEConfigToEdgeInsets LeeHeaderInsets;
@@ -136,13 +136,13 @@
 /** 设置 阴影不透明 -> 格式: .LeeShadowOpacity(0.3f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeShadowOpacity;
 
-/** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.0f) */
+/** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.3f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeOpenAnimationDuration;
 
-/** 设置 关闭动画时长 -> 格式: .LeeCloseAnimationDuration(0.0f) */
+/** 设置 关闭动画时长 -> 格式: .LeeCloseAnimationDuration(0.2f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCloseAnimationDuration;
 
-/** 设置 颜色 -> 格式: .LeeColor(UIColor) */
+/** 设置 颜色 -> 格式: .LeeHeaderColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeHeaderColor;
 
 /** 设置 背景颜色 -> 格式: .LeeBackGroundColor(UIColor) */
@@ -154,8 +154,8 @@
 /** 设置 模糊背景样式及类型 -> 格式: .LeeBackgroundStyleBlur(UIBlurEffectStyleDark) */
 @property (nonatomic , copy , readonly ) LEEConfigToBlurEffectStyle LeeBackgroundStyleBlur;
 
-/** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose() */
-@property (nonatomic , copy , readonly ) LEEConfig LeeClickBackgroundClose;
+/** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickBackgroundClose;
 
 /** 设置 是否加入到队列 -> 格式: .LeeAddQueue() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeAddQueue;

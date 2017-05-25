@@ -75,7 +75,7 @@
     
     config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
     
-    config.config.LeeClickBackgroundClose();
+    config.config.LeeClickBackgroundClose(YES);
     
     return config;
 }
@@ -378,7 +378,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(void(^block)(LEEItem *)){
         
-        if (weakSelf) [weakSelf.modelItemArray addObject:block];
+        if (weakSelf) if (block) [weakSelf.modelItemArray addObject:block];
         
         return weakSelf;
     };
@@ -391,7 +391,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(void(^block)(LEEAction *)){
         
-        if (weakSelf) [weakSelf.modelActionArray addObject:block];
+        if (weakSelf) if (block) [weakSelf.modelActionArray addObject:block];
         
         return weakSelf;
     };
@@ -490,7 +490,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(CGFloat(^block)(LEEScreenOrientationType type)){
         
-        if (weakSelf) weakSelf.modelMaxWidthBlock = block;
+        if (weakSelf) if (block) weakSelf.modelMaxWidthBlock = block;
         
         return weakSelf;
     };
@@ -503,7 +503,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(CGFloat(^block)(LEEScreenOrientationType type)){
         
-        if (weakSelf) weakSelf.modelMaxHeightBlock = block;
+        if (weakSelf) if (block) weakSelf.modelMaxHeightBlock = block;
         
         return weakSelf;
     };
@@ -624,13 +624,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (LEEConfig)LeeClickBackgroundClose{
+- (LEEConfigToBool)LeeClickBackgroundClose{
     
     __weak typeof(self) weakSelf = self;
     
-    return ^(){
+    return ^(BOOL is){
         
-        if (weakSelf) weakSelf.modelIsClickBackgroundClose = YES;
+        if (weakSelf) weakSelf.modelIsClickBackgroundClose = is;
         
         return weakSelf;
     };
