@@ -11,11 +11,11 @@
 
 演示
 ==============
-![新日间Demo演示](https://github.com/lixiang1994/LEETheme/blob/master/Resources/社区日间.gif)
-![新夜间Demo演示](https://github.com/lixiang1994/LEETheme/blob/master/Resources/社区夜间.gif)
+![新日间Demo演示]()
+![新夜间Demo演示]()
 
-![新日间Demo演示](https://github.com/lixiang1994/LEETheme/blob/master/Resources/微博日间.gif)
-![新夜间Demo演示](https://github.com/lixiang1994/LEETheme/blob/master/Resources/微博夜间.gif)
+![新日间Demo演示]()
+![新夜间Demo演示]()
 
 
 特性
