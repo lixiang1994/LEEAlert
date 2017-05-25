@@ -19,6 +19,9 @@
 #ifndef LEEAlertHelper_h
 #define LEEAlertHelper_h
 
+FOUNDATION_EXPORT double LEEAlertVersionNumber;
+FOUNDATION_EXPORT const unsigned char LEEAlertVersionString[];
+
 @class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAction , LEEItem , LEECustomView;
 
 typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
