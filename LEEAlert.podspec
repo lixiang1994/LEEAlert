@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 s.name         = "LEEAlert"
 s.version      = "1.0.0"
-s.summary      = "最好用的轻量级Alert ActionSheet"
+s.summary      = "优雅的Alert ActionSheet"
 
 s.homepage     = "https://github.com/lixiang1994/LEEAlert"
 
