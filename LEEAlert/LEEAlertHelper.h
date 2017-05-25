@@ -38,11 +38,11 @@ typedef NS_ENUM(NSInteger, LEEAlertType) {
 
 
 typedef NS_ENUM(NSInteger, LEEActionType) {
-    
+    /** 默认 */
     LEEActionTypeDefault,
-    
+    /** 取消 */
     LEEActionTypeCancel,
-    
+    /** 销毁 */
     LEEActionTypeDestructive
 };
 

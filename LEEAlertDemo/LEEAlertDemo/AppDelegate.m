@@ -59,6 +59,14 @@
     
     [LEEAlert configMainWindow:self.window];
     
+    
+    
+    
+    
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
+    
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    
     return YES;
 }
 

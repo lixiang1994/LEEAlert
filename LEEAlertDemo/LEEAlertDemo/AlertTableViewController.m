@@ -12,6 +12,10 @@
 
 #import "ShareView.h"
 
+#import "OpenPushView.h"
+
+#import "SignFinishView.h"
+
 @interface AlertTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -62,6 +66,11 @@
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个提示打开推送的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个提示签到成功的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -545,13 +554,34 @@
             
         case 2:
         {
-           
+            OpenPushView *view = [[OpenPushView alloc] initWithFrame:CGRectMake(0, 0, 280, 0)];
+            
+            view.closeBlock = ^{
+              
+                [LEEAlert closeWithCompletionBlock:nil];
+            };
+            
+            [LEEAlert alert].config
+            .LeeCustomView(view)
+            .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeShow();
         }
             break;
             
         case 3:
         {
+            SignFinishView *view = [[SignFinishView alloc] initWithFrame:CGRectMake(0, 0, 280, 0)];
             
+            view.closeBlock = ^{
+                
+                [LEEAlert closeWithCompletionBlock:nil];
+            };
+            
+            [LEEAlert alert].config
+            .LeeCustomView(view)
+            .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeHeaderColor([UIColor clearColor])
+            .LeeShow();
         }
             break;
             
