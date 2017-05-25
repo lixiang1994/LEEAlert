@@ -126,7 +126,18 @@
     .LeeShow();
 ```
 
+### 自定义相关样式
 
+```
+    [LEEAlert alert].config
+    .LeeCornerRadius(10.0f) 	//弹框圆角曲率
+    .LeeShadowOpacity(0.35f) 	//弹框阴影的不透明度 0.0 -- 1.0
+    .LeeHeaderColor([UIColor whiteColor]) 	//弹框背景颜色
+    .LeeBackGroundColor([UIColor whiteColor])	 //屏幕背景颜色
+    .LeeBackgroundStyleTranslucent(0.5f) 	//屏幕背景半透明样式 参数为透明度
+    .LeeBackgroundStyleBlur(UIBlurEffectStyleDark)	 //屏幕背景毛玻璃样式 参数为模糊处理样式类型 `UIBlurEffectStyle`
+    .LeeShow();
+```
 
 
 ```
