@@ -38,15 +38,22 @@
 ### 概念
 
 无论是Alert还是ActionSheet 这里我把它们内部的控件分为两类 一: 功能项类型 (Item) 二: 动作类型 (Action).
+
 按照apple的风格 弹框分为上下两个部分 其中功能项的位置为 Header 既 头部, 而Action则在下部分.
+
 功能项一般分为4种类型  1. 标题 2. 内容(也叫Message) 3.输入框 4.自定义的视图 
+
 Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取消类型(Cancel)
+
 所以说 能添加的东西归根结底为两种 1. Item 2.Action  其余的都是一些设置等.
+
 
 根据上面的概念 我来简单介绍一下API的结构:
 
 所有添加的方法都是以 `LeeAddItem` 和 `LeeAddAction` 两个方法为基础进行的扩展.
+
 查看源码 可以发现 无论是 `LeeAddTitle` 还是 `LeeAddTextField` 最终都是通过 `LeeAddItem` 来实现的.
+
 也就是说整个添加的结构是以他们两个展开的 , 这个仅作为了解即可.
 
 ### Alert
