@@ -53,7 +53,7 @@
 ### 默认基础功能添加
 
 ```
-	[LEEAlert alert].config
+[LEEAlert alert].config
     	.LeeTitle(@"标题") 				// 添加一个标题 (默认样式)
     	.LeeContent(@"")				// 添加一个标题 (默认样式)
     	.LeeAddTextField(^(UITextField *textField) {	// 添加一个输入框 (自定义设置)
@@ -74,8 +74,8 @@
 	
 ### 自定义基础功能添加
 
-```	
-	[LEEAlert alert].config
+```
+    [LEEAlert alert].config
     .LeeAddTitle(^(UILabel *label) {
         
         // 自定义设置Block
@@ -124,13 +124,13 @@
         action.titleColor = [UIColor blueColor];
     })
     .LeeShow();
+```
 
-
-
-	// 关闭当前显示的Alert或ActionSheet
-	[LEEAlert closeWithCompletionBlock:^{
+```
+// 关闭当前显示的Alert或ActionSheet
+[LEEAlert closeWithCompletionBlock:^{
 		
-	}];
+}];
 
 ```
 
