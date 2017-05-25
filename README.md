@@ -139,6 +139,41 @@
     .LeeShow();
 ```
 
+### 自定义最大宽高范围及相关间距
+
+```
+    [LEEAlert alert].config
+    .LeeHeaderInsets(UIEdgeInsetsMake(10, 10, 10, 10)) 		// 头部内间距设置 等于内部项的范围
+    .LeeMaxWidth(280.0f) // 设置最大宽度 (固定数值 横竖屏相同)
+    .LeeMaxHeight(400.0f) // 设置最大高度 (固定数值 横竖屏相同)
+    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) { 	// 设置最大宽度 (根据横竖屏类型进行设置 最大高度同理)
+        
+        if (type == LEEScreenOrientationTypeVertical) {
+            
+            // 竖屏类型
+            
+            return 280.0f;
+        }
+        
+        if (type == LEEScreenOrientationTypeHorizontal) {
+            
+            // 横屏类型
+            
+            return 400.0f;
+        }
+        
+        return 0.0f;
+    })
+    .LeeShow();
+    
+    
+    [LEEAlert alert].config
+    .LeeTitle(@"标题")
+    .LeeItemInsets(UIEdgeInsetsMake(10, 0, 0, 0)) 	// 设置某一项的外边距范围 在哪一项后面 就是对哪一项进行设置
+    .LeeContent(@"内容")
+    .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0)) 	// 例如在设置标题后 紧接着添加一个LeeItemInsets() 就等于为这个标题设置了外边距范围  以此类推
+    .LeeShow();
+```
 
 ```
     // 关闭当前显示的Alert或ActionSheet
