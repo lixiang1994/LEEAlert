@@ -50,7 +50,7 @@
 	[LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
 
 
-### 基础功能添加
+### 默认基础功能添加
 
 	[LEEAlert alert].config
     	.LeeTitle(@"标题") 				// 添加一个标题 (默认样式)
@@ -71,9 +71,57 @@
     	.LeeShow(); // 最后调用Show开始显示
 	
 	
-### 自定义功能添加
+### 自定义基础功能添加
 
-
+	[LEEAlert alert].config
+    	.LeeAddTitle(^(UILabel *label) {
+        
+        	// 自定义设置Block
+        
+        	// 关于UILabel的设置这里不多说了
+        
+        	label.text = @"标题";
+        
+        	label.textColor = [UIColor redColor];
+    	})
+    	.LeeAddContent(^(UILabel *label) {
+        
+        	// 自定义设置Block
+        
+        	// 同标题一样
+    	})
+    	.LeeAddTextField(^(UITextField *textField) {
+        
+        	// 自定义设置Block
+        
+        	// 关于UITextField的设置你们都懂的 这里textField默认高度为40.0f 如果需要调整可直接设置frame 当然frame只有高度是有效的 其他的均无效
+        
+        	textField.textColor = [UIColor redColor];
+    	})
+    	.LeeAddCustomView(^(LEECustomView *custom) {
+        
+        	// 自定义设置Block
+        
+        	// 设置视图对象
+        	custom.view = nil;
+        
+        	// 设置自定义视图的位置类型 (包括靠左 靠右 居中 , 默认为居中)
+        	custom.positionType = LEECustomViewPositionTypeLeft;
+        
+        	// 设置是否自动适应宽度 (自适应宽度后 位置类型为居中)
+        	custom.isAutoWidth = YES;
+    	})
+    	.LeeAddAction(^(LEEAction *action) {
+        
+        	// 自定义设置Block
+        
+        	// 关于更多属性的设置 请查看'LEEAction'类 这里不过多演示了
+        
+        	action.title = @"确认";
+        
+        	action.titleColor = [UIColor blueColor];
+    	})
+    	.LeeShow();
 
 
 
