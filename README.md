@@ -53,23 +53,23 @@
 ### 默认基础功能添加
 
 ```
-[LEEAlert alert].config
-    	.LeeTitle(@"标题") 				// 添加一个标题 (默认样式)
-    	.LeeContent(@"")				// 添加一个标题 (默认样式)
-    	.LeeAddTextField(^(UITextField *textField) {	// 添加一个输入框 (自定义设置)
-        	// textfield设置Block
-    	})
-    	.LeeCustomView(view)			// 添加自定义的视图
-    	.LeeAction(@"默认Action", ^{		//添加一个默认类型的Action (默认样式 字体颜色为蓝色)
-		// 点击事件Block
-    	})
-    	.LeeDestructiveAction(@"销毁Action", ^{	// 添加一个销毁类型的Action (默认样式 字体颜色为红色)
-		// 点击事件Block
-    	})
-    	.LeeCancelAction(@"取消Action", ^{	// 添加一个取消类型的Action (默认样式 alert中为粗体 actionsheet中为最下方独立)
-		// 点击事件Block
-    	})
-    	.LeeShow(); // 最后调用Show开始显示
+    [LEEAlert alert].config
+    .LeeTitle(@"标题") 				// 添加一个标题 (默认样式)
+    .LeeContent(@"内容")				// 添加一个标题 (默认样式)
+    .LeeAddTextField(^(UITextField *textField) {	// 添加一个输入框 (自定义设置)
+    	// textfield设置Block
+    })
+    .LeeCustomView(view)			// 添加自定义的视图
+    .LeeAction(@"默认Action", ^{		//添加一个默认类型的Action (默认样式 字体颜色为蓝色)
+    	// 点击事件Block
+    })
+    .LeeDestructiveAction(@"销毁Action", ^{	// 添加一个销毁类型的Action (默认样式 字体颜色为红色)
+    	// 点击事件Block
+    })
+    .LeeCancelAction(@"取消Action", ^{	// 添加一个取消类型的Action (默认样式 alert中为粗体 actionsheet中为最下方独立)
+    	// 点击事件Block
+    })
+    .LeeShow(); // 最后调用Show开始显示
 ```	
 	
 ### 自定义基础功能添加
