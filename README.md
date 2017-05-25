@@ -116,7 +116,7 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
         // 自定义设置Block
         
         // 设置视图对象
-        custom.view = nil;
+        custom.view = view;
         
         // 设置自定义视图的位置类型 (包括靠左 靠右 居中 , 默认为居中)
         custom.positionType = LEECustomViewPositionTypeLeft;
