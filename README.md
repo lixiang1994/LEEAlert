@@ -1,5 +1,5 @@
 
-# LEEAlert - 最好用的轻量级Alert ActionSheet
+# LEEAlert - 优雅的轻量级Alert ActionSheet
 
 [![](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)](https://github.com/lixiang1994/LEEAlert/blob/master/LICENSE)&nbsp;
 [![](http://img.shields.io/cocoapods/v/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
@@ -40,28 +40,30 @@
 
 ### Alert
 
-	// 结构
-	
+	// 组成结构
 	[LEEAlert alert].cofing.XXXXX.XXXXX.LeeShow();
 
 
 ### ActionSheet
 	
-	// 结构
-	
+	// 组成结构
 	[LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
 
 
-##### 添加新主题的JSON配置
+### 基础设置
+	
+	// 关闭当前显示的Alert或ActionSheet
+	[LEEAlert closeWithCompletionBlock:^{
+		
+	}];
 
-	// 添加json , 设置所属主题标签 , 设置资源路径  所添加过的Json配置会自动存储 无需每次都添加
-	[LEETheme addThemeConfigWithJson:json Tag:@"red" ResourcesPath:nil];
+
 
 
 ### 注意事项
 
-- 默认模式与JSON模式可以同时使用.
-- 当一个对象同时使用了2种设置模式 那么同主题情况下会优先使用后设置的.
+- 添加的控件设置的顺序会决定显示的排列顺序.
+- ActionSheet中 取消类型的Action 显示的位置与原生位置相同.
 - JSON中的标识符(identifier)要确保在当前JSON中是唯一的.
 - 每个主题对应的JSON中 标识符(identifier)要相同.
 - 不要忘记设置默认主题, 应用中应该最少会有一个默认的主题.
