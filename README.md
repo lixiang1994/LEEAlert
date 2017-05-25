@@ -39,16 +39,16 @@
 ==============
 
 ### Alert
-
-	// 组成结构
-	[LEEAlert alert].cofing.XXXXX.XXXXX.LeeShow();
-
+```
+    // 组成结构
+    [LEEAlert alert].cofing.XXXXX.XXXXX.LeeShow();
+```
 
 ### ActionSheet
-	
-	// 组成结构
-	[LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
-
+```
+    // 组成结构
+    [LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
+```
 
 ### 默认基础功能添加
 
@@ -126,12 +126,14 @@
     .LeeShow();
 ```
 
-```
-// 关闭当前显示的Alert或ActionSheet
-[LEEAlert closeWithCompletionBlock:^{
-		
-}];
 
+
+
+```
+    // 关闭当前显示的Alert或ActionSheet
+    [LEEAlert closeWithCompletionBlock:^{
+    		
+    }];
 ```
 
 
@@ -139,9 +141,7 @@
 
 - 添加的控件设置的顺序会决定显示的排列顺序.
 - ActionSheet中 取消类型的Action 显示的位置与原生位置相同.
-- JSON中的标识符(identifier)要确保在当前JSON中是唯一的.
-- 每个主题对应的JSON中 标识符(identifier)要相同.
-- 不要忘记设置默认主题, 应用中应该最少会有一个默认的主题.
+
 
 安装
 ==============
