@@ -27,7 +27,7 @@
  - 支持输入框添加 自动处理键盘相关的细节
  - 支持屏幕旋转适应 同时可自定义横竖屏最大宽度和高度
  - 支持自定义action添加 可动态调整其样式
- - 支持内部添加的控件的间距设置等
+ - 支持内部添加的功能项的间距范围设置等
  - 支持圆角设置 支持阴影效果设置
  - 支持队列显示 多个同时显示时根据先后顺序排队弹出.
  - 支持两种背景样式 1.半透明 (支持自定义透明度比例和颜色) 2.毛玻璃 (支持效果类型)
@@ -38,15 +38,29 @@
 用法
 ==============
 
+###概念
+
+无论是Alert还是ActionSheet 这里我把它们内部的控件分为两类 一: 功能项类型 (Item) 二: 动作类型 (Action).
+按照apple的风格 弹框分为上下两个部分 其中功能项的位置为 Header 既 头部, 而Action则在下部分.
+功能项一般分为4种类型  1. 标题 2. 内容(也叫Message) 3.输入框 4.自定义的视图 
+Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取消类型(Cancel)
+所以说 能添加的东西归根结底为两种 1. Item 2.Action  其余的都是一些设置等.
+
+根据上面的概念 我来简单介绍一下API的结构:
+
+所有添加的方法都是以 `LeeAddItem` 和 `LeeAddAction` 两个方法为基础进行的扩展.
+查看源码 可以发现 无论是 `LeeAddTitle` 还是 `LeeAddTextField` 最终都是通过 `LeeAddItem` 来实现的.
+也就是说整个添加的结构是以他们两个展开的 , 这个仅作为了解即可.
+
 ### Alert
 ```
-    // 组成结构
+    // 完整结构
     [LEEAlert alert].cofing.XXXXX.XXXXX.LeeShow();
 ```
 
 ### ActionSheet
 ```
-    // 组成结构
+    // 完整结构
     [LEEAlert actionSheet].cofing.XXXXX.XXXXX.LeeShow();
 ```
 
@@ -165,28 +179,56 @@
         return 0.0f;
     })
     .LeeShow();
-    
-    
-    [LEEAlert alert].config
+    
+
+    [LEEAlert alert].config
     .LeeTitle(@"标题")
     .LeeItemInsets(UIEdgeInsetsMake(10, 0, 0, 0)) 	// 设置某一项的外边距范围 在哪一项后面 就是对哪一项进行设置
     .LeeContent(@"内容")
     .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0)) 	// 例如在设置标题后 紧接着添加一个LeeItemInsets() 就等于为这个标题设置了外边距范围  以此类推
     .LeeShow();
+    
+    
+    /**
+   	 LeeHeaderInsets 与 LeeItemInsets 决定了所添加的功能项的布局 可根据需求添加调整.
+    */
 ```
+
+### 自定义动画时长
+
+```
+    [LEEAlert alert].config
+    .LeeOpenAnimationDuration(0.3f) // 设置打开动画时长 默认为0.3秒
+    .LeeCloseAnimationDuration(0.2f) // 设置关闭动画时长 默认为0.2秒
+    .LeeShow();
+```
+
+### 其他设置
+
+```
+    [LEEAlert alert].config
+    .LeeClickBackgroundClose(YES) 	// 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
+    .LeeAddQueue() 	// 设置添加到显示队列 默认不添加 (添加后 处于显示状态时 如果有新的弹框显示 会将它暂时隐藏 等在它之后的弹框显示结束 再将其显示出来 , 队列属于先进后出)
+    .LeeShow();
+```
+
+### 关闭当前显示
 
 ```
     // 关闭当前显示的Alert或ActionSheet
     [LEEAlert closeWithCompletionBlock:^{
-    		
+    	
+    	//如果在关闭后需要做一些其他操作 建议在该Block中进行
     }];
 ```
 
 
 ### 注意事项
 
-- 添加的控件设置的顺序会决定显示的排列顺序.
-- ActionSheet中 取消类型的Action 显示的位置与原生位置相同.
+- 添加的功能项顺序会决定显示的排列顺序.
+- 当需要很复杂的样式时 如果默认提供的这些功能项无法满足, 建议将其封装成一个UIView对象 添加自定义视图来显示.
+- ActionSheet中 取消类型的Action 显示的位置与原生位置相同 处于底部独立的位置.
+- 设置最大宽度高度时如果使用`CGRectGetWidth([[UIScreen mainScreen] bounds])`这类方法 请考虑iOS8以后屏幕旋转 width和height会变化的特性.
 
 
 安装
