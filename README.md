@@ -52,6 +52,7 @@
 
 ### 默认基础功能添加
 
+```
 	[LEEAlert alert].config
     	.LeeTitle(@"标题") 				// 添加一个标题 (默认样式)
     	.LeeContent(@"")				// 添加一个标题 (默认样式)
@@ -69,11 +70,11 @@
 		// 点击事件Block
     	})
     	.LeeShow(); // 最后调用Show开始显示
-	
+```	
 	
 ### 自定义基础功能添加
 
-	
+```	
 	[LEEAlert alert].config
     .LeeAddTitle(^(UILabel *label) {
         
@@ -131,7 +132,7 @@
 		
 	}];
 
-
+```
 
 
 ### 注意事项
