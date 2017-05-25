@@ -11,11 +11,8 @@
 
 演示
 ==============
-![新日间Demo演示]()
-![新夜间Demo演示]()
-
-![新日间Demo演示]()
-![新夜间Demo演示]()
+![AlertDemo演示](https://github.com/lixiang1994/LEEAlert/blob/master/Resources/alertDemo.gif)
+![ActionSheetDemo演示](https://github.com/lixiang1994/LEEAlert/blob/master/Resources/actionSheetDemo.gif)
 
 
 特性
