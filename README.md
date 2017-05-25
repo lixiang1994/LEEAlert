@@ -2,8 +2,8 @@
 # LEEAlert - 最好用的轻量级Alert ActionSheet
 
 [![](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)](https://github.com/lixiang1994/LEEAlert/blob/master/LICENSE)&nbsp;
-[![](http://img.shields.io/cocoapods/v/LEETheme.svg?style=flat)](http://cocoapods.org/?q=LEETheme)&nbsp;
-[![](http://img.shields.io/cocoapods/p/LEETheme.svg?style=flat)](http://cocoapods.org/?q=LEETheme)&nbsp;
+[![](http://img.shields.io/cocoapods/v/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
+[![](http://img.shields.io/cocoapods/p/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
 [![](https://img.shields.io/badge/support-iOS8%2B-blue.svg?style=flat)](https://www.apple.com/nl/ios/)&nbsp;
 ![Build Status](https://travis-ci.org/lixiang1994/LEETheme.svg?branch=master)&nbsp;
 
