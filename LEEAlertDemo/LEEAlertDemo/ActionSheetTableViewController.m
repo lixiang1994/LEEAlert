@@ -12,6 +12,8 @@
 
 #import "ShareView.h"
 
+#import "FontSizeView.h"
+
 @interface ActionSheetTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -66,6 +68,8 @@
     [demoArray addObject:@{@"title" : @"显示一个类似微信布局的 actionSheet 菜单" , @"content" : @"只需要调整最大宽度,取消action的间隔颜色和底部间距即可"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个设置字体大小等级的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -510,7 +514,6 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
-            .LeeClickBackgroundClose()
             .LeeShow();
         }
             break;
@@ -555,8 +558,38 @@
             break;
             
         case 3:
-        {
+        {   
+            FontSizeView *view = [[FontSizeView alloc] init];
             
+            view.changeBlock = ^(NSInteger level){
+              
+                
+            };
+            
+            [LEEAlert actionsheet].config
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.isAutoWidth = YES;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor grayColor];
+            })
+            .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeActionSheetBottomMargin(0.0f)
+            .LeeCornerRadius(0.0f)
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
+                
+                return type == LEEScreenOrientationTypeHorizontal ? CGRectGetHeight([[UIScreen mainScreen] bounds]) : CGRectGetWidth([[UIScreen mainScreen] bounds]);
+            })
+            .LeeShow();
         }
             break;
             
