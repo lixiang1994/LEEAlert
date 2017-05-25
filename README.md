@@ -1,5 +1,5 @@
 
-# LEEAlert - 优雅的轻量级Alert ActionSheet
+# LEEAlert - 优雅的Alert ActionSheet
 
 [![](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)](https://github.com/lixiang1994/LEEAlert/blob/master/LICENSE)&nbsp;
 [![](http://img.shields.io/cocoapods/v/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
