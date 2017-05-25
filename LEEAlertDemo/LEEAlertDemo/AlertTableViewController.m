@@ -70,48 +70,6 @@
     [demoArray addObject:@{@"title" : @"显示一个提示打开推送的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个提示签到成功的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
-    
-    [LEEAlert alert].config
-    .LeeHeaderInsets(UIEdgeInsetsMake(10, 10, 10, 10)) // 头部内间距设置 等于内部项的范围
-    .LeeMaxWidth(280.0f) // 设置最大宽度 (固定数值 横竖屏相同)
-    .LeeMaxHeight(400.0f) // 设置最大高度 (固定数值 横竖屏相同)
-    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) { // 设置最大宽度 (根据横竖屏类型进行设置 最大高度同理)
-        
-        if (type == LEEScreenOrientationTypeVertical) {
-            
-            // 竖屏类型
-            
-            return 280.0f;
-        }
-        
-        if (type == LEEScreenOrientationTypeHorizontal) {
-            
-            // 横屏类型
-            
-            return 400.0f;
-        }
-        
-        return 0.0f;
-    })
-    .LeeShow();
-    
-    
-    [LEEAlert alert].config
-    .LeeTitle(@"标题")
-    .LeeItemInsets(UIEdgeInsetsMake(10, 0, 0, 0)) // 设置某一项的外边距范围 在哪一项后面 就是对哪一项进行设置
-    .LeeContent(@"内容")
-    .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0)) // 例如在设置标题后 紧接着添加一个LeeItemInsets() 就等于为这个标题设置了外边距范围  以此类推
-    .LeeShow();
-    
-    [LEEAlert alert].config
-    .LeeOpenAnimationDuration(0.3f) // 设置打开动画时长 默认为0.3秒
-    .LeeCloseAnimationDuration(0.2f) // 设置关闭动画时长 默认为0.2秒
-    .LeeShow();
-    
-    [LEEAlert alert].config
-    .LeeClickBackgroundClose(YES) // 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
-    .LeeAddQueue() // 设置添加到显示队列 默认不添加 (添加后 处于显示状态时 如果有新的弹框显示 会将它暂时隐藏 等在它之后的弹框显示结束 再将其显示出来 , 队列属于先进后出)
-    .LeeShow();
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
