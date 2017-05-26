@@ -1122,7 +1122,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
             
-            NSString *leeSelString = [@"lee_" stringByAppendingString:selString];
+            NSString *leeSelString = [@"lee_alert_" stringByAppendingString:selString];
             
             Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
             
@@ -1135,7 +1135,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (void)lee_dealloc{
+- (void)lee_alert_dealloc{
     
     if ([self isAddShadow]) {
         
@@ -1144,61 +1144,61 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         objc_removeAssociatedObjects(self);
     }
     
-    [self lee_dealloc];
+    [self lee_alert_dealloc];
 }
 
-- (void)lee_layoutSubviews{
+- (void)lee_alert_layoutSubviews{
     
     if ([self isAddShadow]) [[self shadowView] layoutSubviews];
     
-    [self lee_layoutSubviews];
+    [self lee_alert_layoutSubviews];
 }
 
-- (void)lee_removeFromSuperview{
+- (void)lee_alert_removeFromSuperview{
     
     [self removeShadow];
     
-    [self lee_removeFromSuperview];
+    [self lee_alert_removeFromSuperview];
 }
 
-- (void)lee_setFrame:(CGRect)frame{
+- (void)lee_alert_setFrame:(CGRect)frame{
     
-    [self lee_setFrame:frame];
+    [self lee_alert_setFrame:frame];
     
     if ([self isAddShadow]) [self shadowView].frame = self.frame;
 }
 
-- (void)lee_setCenter:(CGPoint)center{
+- (void)lee_alert_setCenter:(CGPoint)center{
     
-    [self lee_setCenter:center];
+    [self lee_alert_setCenter:center];
     
     if ([self isAddShadow]) [self shadowView].center = center;
 }
 
-- (void)lee_setHidden:(BOOL)hidden{
+- (void)lee_alert_setHidden:(BOOL)hidden{
     
-    [self lee_setHidden:hidden];
+    [self lee_alert_setHidden:hidden];
     
     if ([self isAddShadow]) [self shadowView].hidden = hidden;
 }
 
-- (void)lee_setAlpha:(CGFloat)alpha{
+- (void)lee_alert_setAlpha:(CGFloat)alpha{
     
-    [self lee_setAlpha:alpha];
+    [self lee_alert_setAlpha:alpha];
     
     if ([self isAddShadow]) [self shadowView].alpha = alpha;
 }
 
-- (void)lee_setTransform:(CGAffineTransform)transform{
+- (void)lee_alert_setTransform:(CGAffineTransform)transform{
     
-    [self lee_setTransform:transform];
+    [self lee_alert_setTransform:transform];
     
     if ([self isAddShadow]) [self shadowView].transform = transform;
 }
 
-- (void)lee_setBackgroundColor:(UIColor *)backgroundColor{
+- (void)lee_alert_setBackgroundColor:(UIColor *)backgroundColor{
     
-    [self lee_setBackgroundColor:backgroundColor];
+    [self lee_alert_setBackgroundColor:backgroundColor];
     
     if ([self isAddShadow]) [self shadowView].backgroundColor = backgroundColor;
 }
