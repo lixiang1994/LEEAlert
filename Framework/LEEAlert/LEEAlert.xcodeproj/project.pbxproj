@@ -321,6 +321,7 @@
 				9B1414DB1ED6A60500173BB9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
