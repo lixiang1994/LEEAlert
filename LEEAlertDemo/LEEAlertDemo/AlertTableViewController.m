@@ -119,6 +119,8 @@
             __block UITextField *tf = nil;
             
             [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"内容")
             .LeeAddTextField(^(UITextField *textField) {
                 
                 // 这里可以进行自定义的设置
@@ -129,8 +131,6 @@
                 
                 tf = textField; //赋值
             })
-            .LeeTitle(@"标题")
-            .LeeContent(@"内容")
             .LeeAction(@"好的", ^{
               
                 [tf resignFirstResponder];
