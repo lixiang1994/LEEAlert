@@ -14,6 +14,8 @@
 
 #import "FontSizeView.h"
 
+#import "SelectedListView.h"
+
 @interface ActionSheetTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -70,6 +72,10 @@
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个设置字体大小等级的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个单选举报的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个多选举报的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -579,6 +585,8 @@
                 action.title = @"取消";
                 
                 action.titleColor = [UIColor grayColor];
+                
+                action.height = 45.0f;
             })
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeActionSheetBottomMargin(0.0f)
@@ -595,13 +603,138 @@
             
         case 4:
         {
+            SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] bounds]), 0) style:UITableViewStylePlain];
             
+            view.isSingle = YES;
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
+            
+            view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
+                
+                [LEEAlert closeWithCompletionBlock:^{
+                    
+                    NSLog(@"选中的%@" , array);
+                }];
+                
+            };
+            
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"举报内容问题")
+            .LeeItemInsets(UIEdgeInsetsMake(20, 0, 20, 0))
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.isAutoWidth = YES;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor blackColor];
+                
+                action.backgroundColor = [UIColor whiteColor];
+            })
+            .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
+            .LeeHeaderColor([UIColor colorWithRed:243/255.0f green:243/255.0f blue:243/255.0f alpha:1.0f])
+            .LeeActionSheetBottomMargin(0.0f) // 设置底部距离屏幕的边距为0
+            .LeeCornerRadius(0.0f) // 设置圆角曲率为0
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
+                
+                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+            })
+            .LeeShow();
         }
             break;
             
         case 5:
         {
+            __block LEEAction *tempAction = nil;
             
+            SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] bounds]), 0) style:UITableViewStylePlain];
+            
+            view.isSingle = NO;
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
+            
+            view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
+                
+                NSLog(@"选中的%@" , array);
+            };
+            
+            __block SelectedListView *blockView = view; //解决循环引用
+            
+            view.changedBlock = ^(NSArray<SelectedListModel *> *array) {
+                
+                // 当选择改变时 判断当前选中的数量 改变action的样式
+                
+                if (array.count) {
+                    
+                    tempAction.title = @"举报";
+                    
+                    tempAction.titleColor = [UIColor redColor];
+                    
+                    tempAction.clickBlock = ^{
+                        
+                        [blockView finish];
+                        
+                        blockView = nil;
+                    };
+                    
+                } else {
+                    
+                    tempAction.title = @"取消";
+                    
+                    tempAction.titleColor = [UIColor lightGrayColor];
+                    
+                    tempAction.clickBlock = nil;
+                }
+                
+                [tempAction update];
+            };
+            
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"举报内容问题")
+            .LeeItemInsets(UIEdgeInsetsMake(20, 0, 20, 0))
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.isAutoWidth = YES;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                tempAction = action;
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor lightGrayColor];
+                
+                action.backgroundColor = [UIColor whiteColor];
+            })
+            .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
+            .LeeHeaderColor([UIColor colorWithRed:243/255.0f green:243/255.0f blue:243/255.0f alpha:1.0f])
+            .LeeActionSheetBottomMargin(0.0f) // 设置底部距离屏幕的边距为0
+            .LeeCornerRadius(0.0f) // 设置圆角曲率为0
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
+                
+                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+            })
+            .LeeShow();
         }
             break;
             

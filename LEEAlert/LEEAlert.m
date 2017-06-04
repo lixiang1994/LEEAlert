@@ -910,6 +910,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     _action = action;
     
+    self.clipsToBounds = YES;
+    
     if (action.title) [self setTitle:action.title forState:UIControlStateNormal];
  
     if (action.highlight) [self setTitle:action.highlight forState:UIControlStateHighlighted];
@@ -933,6 +935,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (action.highlightImage) [self setImage:action.highlightImage forState:UIControlStateHighlighted];
     
     if (action.height) [self setHeight:action.height];
+    
+    if (action.cornerRadius) [self.layer setCornerRadius:action.cornerRadius];
     
     [self setImageEdgeInsets:action.imageEdgeInsets];
     
@@ -1606,13 +1610,15 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         CGRect buttonFrame = button.frame;
         
-        buttonFrame.origin.y = alertViewHeight;
+        buttonFrame.origin.x = button.action.insets.left;
         
-        buttonFrame.size.width = alertViewMaxWidth;
+        buttonFrame.origin.y = alertViewHeight + button.action.insets.top;
+        
+        buttonFrame.size.width = alertViewMaxWidth - button.action.insets.left - button.action.insets.right;
         
         button.frame = buttonFrame;
         
-        alertViewHeight += buttonFrame.size.height;
+        alertViewHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
     }
     
     if (self.alertActionArray.count == 2) {
@@ -1621,19 +1627,23 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         LEEActionButton *buttonB = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.lastObject : self.alertActionArray.firstObject;
         
-        CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame);
+        UIEdgeInsets buttonAInsets = buttonA.action.insets;
         
-        CGFloat buttonBHeight = CGRectGetHeight(buttonB.frame);
+        UIEdgeInsets buttonBInsets = buttonB.action.insets;
         
-        CGFloat maxHeight = buttonAHeight > buttonBHeight ? buttonAHeight : buttonBHeight;
+        CGFloat buttonAHeight = CGRectGetHeight(buttonA.frame) + buttonAInsets.top + buttonAInsets.bottom;
+        
+        CGFloat buttonBHeight = CGRectGetHeight(buttonB.frame) + buttonBInsets.top + buttonBInsets.bottom;
+        
+        //CGFloat maxHeight = buttonAHeight > buttonBHeight ? buttonAHeight : buttonBHeight;
         
         CGFloat minHeight = buttonAHeight < buttonBHeight ? buttonAHeight : buttonBHeight;
         
-        CGFloat minY = buttonA.frame.origin.y > buttonB.frame.origin.y ? buttonB.frame.origin.y : buttonA.frame.origin.y;
+        CGFloat minY = (buttonA.frame.origin.y - buttonAInsets.top) > (buttonB.frame.origin.y - buttonBInsets.top) ? (buttonB.frame.origin.y - buttonBInsets.top) : (buttonA.frame.origin.y - buttonAInsets.top);
         
-        buttonA.frame = CGRectMake(0, minY, alertViewMaxWidth / 2, maxHeight);
+        buttonA.frame = CGRectMake(buttonAInsets.left, minY + buttonAInsets.top, (alertViewMaxWidth / 2) - buttonAInsets.left - buttonAInsets.right, buttonA.frame.size.height);
         
-        buttonB.frame = CGRectMake(alertViewMaxWidth / 2, minY, alertViewMaxWidth / 2, maxHeight);
+        buttonB.frame = CGRectMake((alertViewMaxWidth / 2) + buttonBInsets.left, minY + buttonBInsets.top, (alertViewMaxWidth / 2) - buttonBInsets.left - buttonBInsets.right, buttonB.frame.size.height);
         
         alertViewHeight -= minHeight;
     }
@@ -2153,13 +2163,15 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         CGRect buttonFrame = button.frame;
         
-        buttonFrame.origin.y = actionSheetViewHeight;
+        buttonFrame.origin.x = button.action.insets.left;
         
-        buttonFrame.size.width = actionSheetViewMaxWidth;
+        buttonFrame.origin.y = actionSheetViewHeight + button.action.insets.top;
+        
+        buttonFrame.size.width = actionSheetViewMaxWidth - button.action.insets.left - button.action.insets.right;
         
         button.frame = buttonFrame;
         
-        actionSheetViewHeight += buttonFrame.size.height;
+        actionSheetViewHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
     }
     
     self.actionSheetView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
@@ -2356,8 +2368,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             case LEEActionTypeCancel:
             {
                 [button addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-                
-                button.clipsToBounds = YES;
                 
                 button.backgroundColor = action.backgroundColor;
                 

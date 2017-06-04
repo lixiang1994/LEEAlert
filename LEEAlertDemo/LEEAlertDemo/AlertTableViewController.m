@@ -16,6 +16,8 @@
 
 #import "SignFinishView.h"
 
+#import "SelectedListView.h"
+
 @interface AlertTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -70,6 +72,8 @@
     [demoArray addObject:@{@"title" : @"显示一个提示打开推送的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个提示签到成功的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个单选选择列表的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -586,7 +590,33 @@
             
         case 4:
         {
+            SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, 280, 0) style:UITableViewStylePlain];
             
+            view.isSingle = YES;
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
+            
+            view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
+                
+                [LEEAlert closeWithCompletionBlock:^{
+                   
+                    NSLog(@"选中的%@" , array);
+                }];
+                
+            };
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"举报内容问题")
+            .LeeItemInsets(UIEdgeInsetsMake(20, 0, 20, 0))
+            .LeeCustomView(view)
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
+            .LeeClickBackgroundClose(YES)
+            .LeeShow();
         }
             break;
             

@@ -22,6 +22,8 @@
 		9B1414BE1ED6761000173BB9 /* OpenPushView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1414BD1ED6761000173BB9 /* OpenPushView.m */; };
 		9B1414C21ED6834800173BB9 /* SignFinishView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1414C11ED6834800173BB9 /* SignFinishView.m */; };
 		9B1414C61ED69D0200173BB9 /* FontSizeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1414C51ED69D0200173BB9 /* FontSizeView.m */; };
+		9B14153B1EE3AE4700173BB9 /* SelectedListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B14153A1EE3AE4700173BB9 /* SelectedListView.m */; };
+		9B1415411EE3B2B800173BB9 /* SelectedListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1415401EE3B2B800173BB9 /* SelectedListModel.m */; };
 		9B98146C1ECD695F00014BD3 /* AlertTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */; };
 		9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */; };
 		9B9814781ECF09AB00014BD3 /* LEEAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9814761ECF09AB00014BD3 /* LEEAlert.m */; };
@@ -76,6 +78,10 @@
 		9B1414C11ED6834800173BB9 /* SignFinishView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignFinishView.m; sourceTree = "<group>"; };
 		9B1414C41ED69D0200173BB9 /* FontSizeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSizeView.h; sourceTree = "<group>"; };
 		9B1414C51ED69D0200173BB9 /* FontSizeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSizeView.m; sourceTree = "<group>"; };
+		9B1415391EE3AE4700173BB9 /* SelectedListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectedListView.h; sourceTree = "<group>"; };
+		9B14153A1EE3AE4700173BB9 /* SelectedListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectedListView.m; sourceTree = "<group>"; };
+		9B14153F1EE3B2B800173BB9 /* SelectedListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectedListModel.h; sourceTree = "<group>"; };
+		9B1415401EE3B2B800173BB9 /* SelectedListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectedListModel.m; sourceTree = "<group>"; };
 		9B98146A1ECD695F00014BD3 /* AlertTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertTableViewController.h; sourceTree = "<group>"; };
 		9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertTableViewController.m; sourceTree = "<group>"; };
 		9B98146D1ECD696E00014BD3 /* ActionSheetTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionSheetTableViewController.h; sourceTree = "<group>"; };
@@ -184,6 +190,7 @@
 		9B14146D1ED52EB600173BB9 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9B1415381EE3ADFA00173BB9 /* SelectedListView */,
 				9B1414C31ED69D0200173BB9 /* FontSizeView */,
 				9B1414BF1ED6833B00173BB9 /* SignFinishView */,
 				9B1414BB1ED6761000173BB9 /* OpenPushView */,
@@ -246,6 +253,17 @@
 				9B1414C51ED69D0200173BB9 /* FontSizeView.m */,
 			);
 			path = FontSizeView;
+			sourceTree = "<group>";
+		};
+		9B1415381EE3ADFA00173BB9 /* SelectedListView */ = {
+			isa = PBXGroup;
+			children = (
+				9B1415391EE3AE4700173BB9 /* SelectedListView.h */,
+				9B14153A1EE3AE4700173BB9 /* SelectedListView.m */,
+				9B14153F1EE3B2B800173BB9 /* SelectedListModel.h */,
+				9B1415401EE3B2B800173BB9 /* SelectedListModel.m */,
+			);
+			path = SelectedListView;
 			sourceTree = "<group>";
 		};
 		9B9814741ECF09AB00014BD3 /* LEEAlert */ = {
@@ -396,6 +414,8 @@
 				9B9814781ECF09AB00014BD3 /* LEEAlert.m in Sources */,
 				9B0BB22D1E8E28760087D231 /* AppDelegate.m in Sources */,
 				9B1414BE1ED6761000173BB9 /* OpenPushView.m in Sources */,
+				9B14153B1EE3AE4700173BB9 /* SelectedListView.m in Sources */,
+				9B1415411EE3B2B800173BB9 /* SelectedListModel.m in Sources */,
 				9B1414821ED5300300173BB9 /* ShareView.m in Sources */,
 				9B1414C61ED69D0200173BB9 /* FontSizeView.m in Sources */,
 				9B14147D1ED52FDD00173BB9 /* UITableView+SDAutoTableViewCellHeight.m in Sources */,

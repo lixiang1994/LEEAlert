@@ -219,11 +219,15 @@
 
 @property (nonatomic , strong ) UIImage *highlightImage;
 
+@property (nonatomic , assign ) UIEdgeInsets insets;
+
 @property (nonatomic , assign ) UIEdgeInsets imageEdgeInsets;
 
 @property (nonatomic , assign ) UIEdgeInsets titleEdgeInsets;
 
 @property (nonatomic , assign ) CGFloat borderWidth;
+
+@property (nonatomic , assign ) CGFloat cornerRadius;
 
 @property (nonatomic , assign ) CGFloat height;
 
