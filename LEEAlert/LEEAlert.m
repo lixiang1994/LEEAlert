@@ -913,7 +913,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     self.clipsToBounds = YES;
     
     if (action.title) [self setTitle:action.title forState:UIControlStateNormal];
- 
+    
     if (action.highlight) [self setTitle:action.highlight forState:UIControlStateHighlighted];
     
     if (action.font) [self.titleLabel setFont:action.font];
