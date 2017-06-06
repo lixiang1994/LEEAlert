@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.3
+ *  @version    V1.0.4
  */
 
 #import "LEEAlert.h"
@@ -907,6 +907,10 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (action.title) [self setTitle:action.title forState:UIControlStateNormal];
     
     if (action.highlight) [self setTitle:action.highlight forState:UIControlStateHighlighted];
+    
+    if (action.attributedTitle) [self setAttributedTitle:action.attributedTitle forState:UIControlStateNormal];
+    
+    if (action.attributedHighlight) [self setAttributedTitle:action.attributedHighlight forState:UIControlStateHighlighted];
     
     if (action.font) [self.titleLabel setFont:action.font];
     

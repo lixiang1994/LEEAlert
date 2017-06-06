@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.3
+ *  @version    V1.0.4
  */
 
 #import <Foundation/Foundation.h>
@@ -208,6 +208,12 @@
 
 /** action高亮标题 */
 @property (nonatomic , strong ) NSString *highlight;
+
+/** action标题(attributed) */
+@property (nonatomic , strong ) NSAttributedString *attributedTitle;
+
+/** action高亮标题(attributed) */
+@property (nonatomic , strong ) NSAttributedString *attributedHighlight;
 
 /** action字体 */
 @property (nonatomic , strong ) UIFont *font;

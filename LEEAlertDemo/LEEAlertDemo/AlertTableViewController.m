@@ -28,7 +28,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+        
     self.title = @"Alert";
     
     self.dataArray = [NSMutableArray array];
