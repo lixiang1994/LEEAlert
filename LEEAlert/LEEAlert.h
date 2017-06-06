@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.2
+ *  @version    V1.0.3
  */
 
 #import <Foundation/Foundation.h>
@@ -185,10 +185,13 @@
 
 @interface LEEItem : NSObject
 
+/** item类型 */
 @property (nonatomic , assign ) LEEItemType type;
 
+/** item间距范围 */
 @property (nonatomic , assign ) UIEdgeInsets insets;
 
+/** item设置视图Block */
 @property (nonatomic , copy ) void (^block)(id view);
 
 - (void)update;
@@ -197,42 +200,64 @@
 
 @interface LEEAction : NSObject
 
+/** action类型 */
 @property (nonatomic , assign ) LEEActionType type;
 
+/** action标题 */
 @property (nonatomic , strong ) NSString *title;
 
+/** action高亮标题 */
 @property (nonatomic , strong ) NSString *highlight;
 
+/** action字体 */
 @property (nonatomic , strong ) UIFont *font;
 
+/** action标题颜色 */
 @property (nonatomic , strong ) UIColor *titleColor;
 
+/** action高亮标题颜色 */
 @property (nonatomic , strong ) UIColor *highlightColor;
 
+/** action背景颜色 */
 @property (nonatomic , strong ) UIColor *backgroundColor;
 
+/** action高亮背景颜色 */
 @property (nonatomic , strong ) UIColor *backgroundHighlightColor;
 
-@property (nonatomic , strong ) UIColor *borderColor;
-
+/** action图片 */
 @property (nonatomic , strong ) UIImage *image;
 
+/** action高亮图片 */
 @property (nonatomic , strong ) UIImage *highlightImage;
 
+/** action间距范围 */
 @property (nonatomic , assign ) UIEdgeInsets insets;
 
+/** action图片的间距范围 */
 @property (nonatomic , assign ) UIEdgeInsets imageEdgeInsets;
 
+/** action标题的间距范围 */
 @property (nonatomic , assign ) UIEdgeInsets titleEdgeInsets;
 
-@property (nonatomic , assign ) CGFloat borderWidth;
-
+/** action圆角曲率 */
 @property (nonatomic , assign ) CGFloat cornerRadius;
 
+/** action高度 */
 @property (nonatomic , assign ) CGFloat height;
 
+/** action边框宽度 */
+@property (nonatomic , assign ) CGFloat borderWidth;
+
+/** action边框颜色 */
+@property (nonatomic , strong ) UIColor *borderColor;
+
+/** action边框位置 */
+@property (nonatomic , assign ) LEEActionBorderPosition borderPosition;
+
+/** action点击不关闭 (仅适用于默认类型) */
 @property (nonatomic , assign ) BOOL isClickNotClose;
 
+/** action点击事件回调Block */
 @property (nonatomic , copy ) void (^clickBlock)();
 
 - (void)update;
@@ -241,10 +266,13 @@
 
 @interface LEECustomView : NSObject
 
+/** 自定义视图对象 */
 @property (nonatomic , strong ) UIView *view;
 
+/** 自定义视图位置类型 (默认为居中) */
 @property (nonatomic , assign ) LEECustomViewPositionType positionType;
 
+/** 是否自动适应宽度 */
 @property (nonatomic , assign ) BOOL isAutoWidth;
 
 @end

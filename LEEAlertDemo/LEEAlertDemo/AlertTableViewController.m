@@ -74,6 +74,8 @@
     [demoArray addObject:@{@"title" : @"显示一个提示签到成功的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个单选选择列表的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个评分的 alert 弹框" , @"content" : @"自定义的Action 通过设置其间距范围和边框等属性实现"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -622,7 +624,78 @@
             
         case 5:
         {
-            
+            [LEEAlert alert].config
+            .LeeTitle(@"评个分吧")
+            .LeeAddContent(^(UILabel *label) {
+                
+                label.text = @"如果您觉得不错, 那就给个五星好评吧 亲~";
+                
+                label.textColor = [UIColor grayColor];
+            })
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"果断拒绝";
+                
+                action.titleColor = [UIColor darkGrayColor];
+                
+                action.backgroundColor = [UIColor colorWithRed:249/255.0f green:249/255.0f blue:249/255.0f alpha:1.0f];
+                
+                action.backgroundHighlightColor = [UIColor colorWithRed:239/255.0f green:239/255.0f blue:239/255.0f alpha:1.0f];
+                
+                action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
+                
+                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                
+                action.borderWidth = 1.0f;
+                
+                action.borderColor = action.backgroundHighlightColor;
+                
+                action.cornerRadius = 5.0f;
+            })
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"立刻吐槽";
+                
+                action.titleColor = [UIColor darkGrayColor];
+                
+                action.backgroundColor = [UIColor colorWithRed:249/255.0f green:249/255.0f blue:249/255.0f alpha:1.0f];
+                
+                action.backgroundHighlightColor = [UIColor colorWithRed:239/255.0f green:239/255.0f blue:239/255.0f alpha:1.0f];
+                
+                action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
+                
+                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                
+                action.borderWidth = 1.0f;
+                
+                action.borderColor = action.backgroundHighlightColor;
+                
+                action.cornerRadius = 5.0f;
+            })
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.type = LEEActionTypeCancel;
+                
+                action.title = @"五星好评";
+                
+                action.titleColor = [UIColor whiteColor];
+                
+                action.backgroundColor = [UIColor colorWithRed:243/255.0f green:94/255.0f blue:83/255.0f alpha:1.0f];
+                
+                action.backgroundHighlightColor = [UIColor colorWithRed:219/255.0f green:100/255.0f blue:94/255.0f alpha:1.0f];
+                
+                action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
+                
+                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                
+                action.borderWidth = 1.0f;
+                
+                action.borderColor = action.backgroundHighlightColor;
+                
+                action.cornerRadius = 5.0f;
+            })
+            .LeeCornerRadius(2.0f)
+            .LeeShow();
         }
             break;
             

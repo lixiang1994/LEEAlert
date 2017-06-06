@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.2
+ *  @version    V1.0.3
  */
 
 #ifndef LEEAlertHelper_h
@@ -50,6 +50,18 @@ typedef NS_ENUM(NSInteger, LEEActionType) {
 };
 
 
+typedef NS_OPTIONS(NSInteger, LEEActionBorderPosition) {
+    /** Action边框位置 上 */
+    LEEActionBorderPositionTop = 1<<0,
+    /** Action边框位置 下 */
+    LEEActionBorderPositionBottom = 1<<1,
+    /** Action边框位置 左 */
+    LEEActionBorderPositionLeft = 1<<2,
+    /** Action边框位置 右 */
+    LEEActionBorderPositionRight = 1<<3
+};
+
+
 typedef NS_ENUM(NSInteger, LEEItemType) {
     /** 标题 */
     LEEItemTypeTitle,
@@ -61,6 +73,7 @@ typedef NS_ENUM(NSInteger, LEEItemType) {
     LEEItemTypeCustomView,
 };
 
+
 typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
     /** 居中 */
     LEECustomViewPositionTypeCenter,
@@ -69,6 +82,7 @@ typedef NS_ENUM(NSInteger, LEECustomViewPositionType) {
     /** 靠右 */
     LEECustomViewPositionTypeRight
 };
+
 
 typedef LEEAlertConfigModel *(^LEEConfig)();
 typedef LEEAlertConfigModel *(^LEEConfigToBool)(BOOL is);

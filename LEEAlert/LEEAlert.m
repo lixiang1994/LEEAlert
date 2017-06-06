@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.2
+ *  @version    V1.0.3
  */
 
 #import "LEEAlert.h"
@@ -873,14 +873,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 + (LEEActionButton *)button;
 
-- (void)addTopBorder;
-
-- (void)addBottomBorder;
-
-- (void)addLeftBorder;
-
-- (void)addRightBorder;
-
 @end
 
 @interface LEEActionButton ()
@@ -941,6 +933,38 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self setImageEdgeInsets:action.imageEdgeInsets];
     
     [self setTitleEdgeInsets:action.titleEdgeInsets];
+    
+    if (action.borderPosition & LEEActionBorderPositionTop &&
+        action.borderPosition & LEEActionBorderPositionBottom &&
+        action.borderPosition & LEEActionBorderPositionLeft &&
+        action.borderPosition & LEEActionBorderPositionRight) {
+        
+        self.layer.borderWidth = action.borderWidth;
+        
+        self.layer.borderColor = action.borderColor.CGColor;
+        
+        [self removeTopBorder];
+        
+        [self removeBottomBorder];
+        
+        [self removeLeftBorder];
+        
+        [self removeRightBorder];
+    
+    } else {
+        
+        self.layer.borderWidth = 0.0f;
+     
+        self.layer.borderColor = [UIColor clearColor].CGColor;
+        
+        if (action.borderPosition & LEEActionBorderPositionTop) [self addTopBorder]; else [self removeTopBorder];
+        
+        if (action.borderPosition & LEEActionBorderPositionBottom) [self addBottomBorder]; else [self removeBottomBorder];
+        
+        if (action.borderPosition & LEEActionBorderPositionLeft) [self addLeftBorder]; else [self removeLeftBorder];
+        
+        if (action.borderPosition & LEEActionBorderPositionRight) [self addRightBorder]; else [self removeRightBorder];
+    }
     
     __weak typeof(self) weakSelf = self;
     
@@ -1004,6 +1028,26 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 - (void)addRightBorder{
     
     [self.layer addSublayer:self.rightLayer];
+}
+
+- (void)removeTopBorder{
+    
+    if (_topLayer) [_topLayer removeFromSuperlayer]; _topLayer = nil;
+}
+
+- (void)removeBottomBorder{
+    
+    if (_bottomLayer) [_bottomLayer removeFromSuperlayer]; _bottomLayer = nil;
+}
+
+- (void)removeLeftBorder{
+    
+    if (_leftLayer) [_leftLayer removeFromSuperlayer]; _leftLayer = nil;
+}
+
+- (void)removeRightBorder{
+    
+    if (_rightLayer) [_rightLayer removeFromSuperlayer]; _rightLayer = nil;
 }
 
 - (CALayer *)createLayer{
@@ -1780,8 +1824,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
     }];
     
-    for (id item in self.config.modelActionArray) {
-        
+    [self.config.modelActionArray enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL * _Nonnull stop) {
+       
         void (^block)(LEEAction *action) = item;
         
         LEEAction *action = [[LEEAction alloc] init];
@@ -1802,6 +1846,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (!action.borderWidth) action.borderWidth = 0.35f;
         
+        if (!action.borderPosition) action.borderPosition = (self.config.modelActionArray.count == 2 && idx == 0) ? LEEActionBorderPositionTop | LEEActionBorderPositionRight : LEEActionBorderPositionTop;
+        
         if (!action.height) action.height = 45.0f;
         
         LEEActionButton *button = [LEEActionButton button];
@@ -1810,19 +1856,16 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
-        [button addTopBorder];
-        
         [self.alertView addSubview:button];
         
         [self.alertActionArray addObject:button];
         
         button.heightChangedBlock = ^{
-          
+            
             if (weakSelf) [weakSelf updateAlertLayout];
         };
-    }
-    
-    if (self.alertActionArray.count == 2) [self.alertActionArray.lastObject addLeftBorder];
+        
+    }];
     
     // 更新布局
     
@@ -2389,7 +2432,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
             default:
             {
-                [button addTopBorder];
+                if (!action.borderPosition) action.borderPosition = LEEActionBorderPositionTop;
                 
                 [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
