@@ -27,6 +27,7 @@
 		9B98146C1ECD695F00014BD3 /* AlertTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */; };
 		9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */; };
 		9B9814781ECF09AB00014BD3 /* LEEAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9814761ECF09AB00014BD3 /* LEEAlert.m */; };
+		9BBEF12B1EE682EB000B91F9 /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9BBEF12A1EE682EB000B91F9 /* address.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		9B9814751ECF09AB00014BD3 /* LEEAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEEAlert.h; sourceTree = "<group>"; };
 		9B9814761ECF09AB00014BD3 /* LEEAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEEAlert.m; sourceTree = "<group>"; };
 		9B9814771ECF09AB00014BD3 /* LEEAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEEAlertHelper.h; sourceTree = "<group>"; };
+		9BBEF12A1EE682EB000B91F9 /* address.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = address.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 				9B0BB2341E8E28760087D231 /* Assets.xcassets */,
 				9B0BB2361E8E28760087D231 /* LaunchScreen.storyboard */,
 				9B0BB2391E8E28760087D231 /* Info.plist */,
+				9BBEF12A1EE682EB000B91F9 /* address.plist */,
 				9B0BB2281E8E28760087D231 /* Supporting Files */,
 				9B98146A1ECD695F00014BD3 /* AlertTableViewController.h */,
 				9B98146B1ECD695F00014BD3 /* AlertTableViewController.m */,
@@ -385,6 +388,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B0BB2381E8E28760087D231 /* LaunchScreen.storyboard in Resources */,
+				9BBEF12B1EE682EB000B91F9 /* address.plist in Resources */,
 				9B0BB2351E8E28760087D231 /* Assets.xcassets in Resources */,
 				9B0BB2331E8E28760087D231 /* Main.storyboard in Resources */,
 			);
