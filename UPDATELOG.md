@@ -3,6 +3,10 @@
 
 V1.0.4
 ==============
+修复actionsheet的action默认无分隔线的BUG
+
+V1.0.4
+==============
 action增加attributed标题设置
 
 V1.0.3

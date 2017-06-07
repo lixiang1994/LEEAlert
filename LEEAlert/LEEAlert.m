@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.4
+ *  @version    V1.0.5
  */
 
 #import "LEEAlert.h"
@@ -2408,8 +2408,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         LEEActionButton *button = [LEEActionButton button];
         
-        button.action = action;
-        
         switch (action.type) {
                 
             case LEEActionTypeCancel:
@@ -2446,6 +2444,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             }
                 break;
         }
+        
+        button.action = action;
         
         button.heightChangedBlock = ^{
           
