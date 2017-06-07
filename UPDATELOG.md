@@ -1,7 +1,7 @@
 
 # LEEAlert - 更新日志
 
-V1.0.4
+V1.0.5
 ==============
 修复actionsheet的action默认无分隔线的BUG
 
