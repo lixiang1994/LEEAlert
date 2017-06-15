@@ -918,6 +918,7 @@
             })
             .LeeCornerRadius(5.0f)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeClickBackgroundClose(YES)
             .LeeShow();
         }
             break;
