@@ -78,6 +78,8 @@
     [demoArray addObject:@{@"title" : @"显示一个省市区选择列表的 alert 弹框" , @"content" : @"自定义的Action 通过设置其间距范围和边框等属性实现"}];
     
     [demoArray addObject:@{@"title" : @"显示一个评分的 alert 弹框" , @"content" : @"自定义的Action 通过设置其间距范围和边框等属性实现"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个新手红包的 alert 弹框" , @"content" : @"包含自定义视图 自定义title 自定义Action"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -862,7 +864,61 @@
             
         case 7:
         {
+            UIColor *redColor = [UIColor colorWithRed:221/255.0f green:86/255.0f blue:78/255.0f alpha:1.0f];
             
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 280, 280 * 0.4f)];
+            
+            imageView.image = [UIImage imageNamed:@"infor_pop_hongbao"];
+            
+            [LEEAlert alert].config
+            .LeeCustomView(imageView)
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddTitle(^(UILabel *label) {
+                
+                label.text = @"注册后您将获得";
+                
+                label.textColor = redColor;
+                
+                label.font = [UIFont systemFontOfSize:16.0f];
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0))
+            .LeeAddTitle(^(UILabel *label) {
+                
+                label.text = @"¥10.0";
+                
+                label.textColor = [UIColor blackColor];
+                
+                label.font = [UIFont boldSystemFontOfSize:35.0f];
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0))
+            .LeeAddTitle(^(UILabel *label) {
+                
+                label.text = @"注册后存入您的余额";
+                
+                label.textColor = [UIColor grayColor];
+                
+                label.font = [UIFont systemFontOfSize:12.0f];
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(10, 0, 10, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.type = LEEActionTypeCancel;
+                
+                action.title = @"立即注册";
+                
+                action.titleColor = [UIColor whiteColor];
+                
+                action.backgroundColor = redColor;
+                
+                action.backgroundHighlightColor = [UIColor colorWithRed:219/255.0f green:100/255.0f blue:94/255.0f alpha:1.0f];
+                
+                action.insets = UIEdgeInsetsMake(10, 10, 10, 10);
+                
+                action.cornerRadius = 5.0f;
+            })
+            .LeeCornerRadius(5.0f)
+            .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeShow();
         }
             break;
             
