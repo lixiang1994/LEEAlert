@@ -930,7 +930,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (action.highlightImage) [self setImage:action.highlightImage forState:UIControlStateHighlighted];
     
-    if (action.height) [self setHeight:action.height];
+    if (action.height) [self setActionHeight:action.height];
     
     if (action.cornerRadius) [self.layer setCornerRadius:action.cornerRadius];
     
@@ -979,14 +979,14 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (CGFloat)height{
+- (CGFloat)actionHeight{
     
     return self.frame.size.height;
 }
 
-- (void)setHeight:(CGFloat)height{
+- (void)setActionHeight:(CGFloat)height{
     
-    BOOL isChange = [self height] == height ? NO : YES;
+    BOOL isChange = [self actionHeight] == height ? NO : YES;
     
     CGRect buttonFrame = self.frame;
     
@@ -2223,7 +2223,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     self.actionSheetView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
     
-    CGFloat cancelActionTotalHeight = self.actionSheetCancelAction ? self.actionSheetCancelAction.height + self.config.modelActionSheetCancelActionSpaceWidth : 0.0f;
+    CGFloat cancelActionTotalHeight = self.actionSheetCancelAction ? self.actionSheetCancelAction.actionHeight + self.config.modelActionSheetCancelActionSpaceWidth : 0.0f;
     
     CGRect actionSheetViewFrame = self.actionSheetView.frame;
     
