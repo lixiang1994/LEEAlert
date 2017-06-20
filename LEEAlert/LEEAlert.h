@@ -154,6 +154,9 @@
 /** 设置 模糊背景样式及类型 -> 格式: .LeeBackgroundStyleBlur(UIBlurEffectStyleDark) */
 @property (nonatomic , copy , readonly ) LEEConfigToBlurEffectStyle LeeBackgroundStyleBlur;
 
+/** 设置 点击头部关闭 -> 格式: .LeeClickHeaderClose(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickHeaderClose;
+
 /** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickBackgroundClose;
 

@@ -147,6 +147,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , strong ) UIColor *modelHeaderColor;
 @property (nonatomic , strong ) UIColor *modelBackgroundColor;
 
+@property (nonatomic , assign ) BOOL modelIsClickHeaderClose;
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
 @property (nonatomic , assign ) BOOL modelIsAddQueue;
 
@@ -618,6 +619,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             weakSelf.modelBackgroundBlurEffectStyle = style;
         }
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeClickHeaderClose{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(BOOL is){
+        
+        if (weakSelf) weakSelf.modelIsClickHeaderClose = is;
         
         return weakSelf;
     };
@@ -1316,7 +1330,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @end
 
-@interface LEEBaseViewController ()
+@interface LEEBaseViewController ()<UIGestureRecognizerDelegate>
 
 @property (nonatomic , strong ) LEEAlertConfigModel *config;
 
@@ -1943,6 +1957,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (void)headerTapAction:(UITapGestureRecognizer *)tap{
+    
+    if (self.config.modelIsClickHeaderClose) [self closeAnimationsWithCompletionBlock:nil];
+}
+
 #pragma mark start animations
 
 - (void)showAnimationsWithCompletionBlock:(void (^)())completionBlock{
@@ -2043,6 +2062,15 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return nil;
 }
 
+#pragma mark delegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    
+    return (touch.view == self.alertView) ? YES : NO;
+}
+
+#pragma mark LazyLoading
+
 - (UIScrollView *)alertView{
     
     if (!_alertView) {
@@ -2054,6 +2082,16 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _alertView.directionalLockEnabled = YES;
         
         _alertView.bounces = NO;
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerTapAction:)];
+        
+        tap.numberOfTapsRequired = 1;
+        
+        tap.numberOfTouchesRequired = 1;
+        
+        tap.delegate = self;
+        
+        [_alertView addGestureRecognizer:tap];
     }
     
     return _alertView;
@@ -2536,6 +2574,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (void)headerTapAction:(UITapGestureRecognizer *)tap{
+    
+    if (self.config.modelIsClickHeaderClose) [self closeAnimationsWithCompletionBlock:nil];
+}
+
 #pragma mark start animations
 
 - (void)showAnimationsWithCompletionBlock:(void (^)())completionBlock{
@@ -2636,6 +2679,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+#pragma mark delegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    
+    return (touch.view == self.actionSheetView) ? YES : NO;
+}
+
 #pragma mark LazyLoading
 
 - (UIView *)actionSheetView{
@@ -2649,6 +2699,16 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _actionSheetView.directionalLockEnabled = YES;
         
         _actionSheetView.bounces = NO;
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerTapAction:)];
+        
+        tap.numberOfTapsRequired = 1;
+        
+        tap.numberOfTouchesRequired = 1;
+        
+        tap.delegate = self;
+        
+        [_actionSheetView addGestureRecognizer:tap];
     }
     
     return _actionSheetView;
