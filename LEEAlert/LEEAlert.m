@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.5
+ *  @version    V1.0.6
  */
 
 #import "LEEAlert.h"
@@ -1482,45 +1482,25 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [super viewDidLoad];
     
+    [self configNotification];
+    
     [self configAlert];
 }
 
 - (void)configNotification{
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShown:) name:UIKeyboardWillShowNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHidden:) name:UIKeyboardWillHideNotification object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrame:) name:UIKeyboardDidChangeFrameNotification object:nil];
-}
-
-- (void)keyboardWillShown:(NSNotification *)notify{
-    
-    keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    isShowingKeyboard = YES;
-}
-
-- (void)keyboardWillHidden:(NSNotification *)notify{
-    
-    keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    isShowingKeyboard = NO;
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notify{
-    
-}
-
-- (void)keyboardDidChangeFrame:(NSNotification *)notify{
     
     double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
     keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
-    [UIView beginAnimations:@"keyboardDidChangeFrame" context:NULL];
+    isShowingKeyboard = keyboardFrame.origin.y < SCREEN_HEIGHT;
+    
+    [UIView beginAnimations:@"keyboardWillChangeFrame" context:NULL];
     
     [UIView setAnimationDuration:duration];
     
@@ -1559,17 +1539,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             CGFloat tempAlertViewHeight = keyboardY - alertViewHeight < 20 ? keyboardY - 20 : alertViewHeight;
             
+            CGFloat tempAlertViewY = keyboardY - tempAlertViewHeight - 10;
+            
+            CGFloat originalAlertViewY = (viewHeight - alertViewFrame.size.height) * 0.5f;
+            
             alertViewFrame.size.height = tempAlertViewHeight;
             
             alertViewFrame.size.width = alertViewMaxWidth;
             
             alertViewFrame.origin.x = (viewWidth - alertViewFrame.size.width) * 0.5f;
             
-            alertViewFrame.origin.y = keyboardY - alertViewFrame.size.height - 10;
+            alertViewFrame.origin.y = tempAlertViewY < originalAlertViewY ? tempAlertViewY : originalAlertViewY;
             
             self.alertView.frame = alertViewFrame;
-            
-            [self.alertView setContentOffset:CGPointZero animated:NO];
             
             [self.alertView scrollRectToVisible:[self findFirstResponder:self.alertView].frame animated:YES];
         }
@@ -1586,7 +1568,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         alertViewFrame.origin.x = (viewWidth - alertViewMaxWidth) * 0.5f;
         
-        alertViewFrame.origin.y = (viewHeight - alertViewFrame.size.height) / 2;
+        alertViewFrame.origin.y = (viewHeight - alertViewFrame.size.height) * 0.5f;
         
         self.alertView.frame = alertViewFrame;
     }
@@ -1594,6 +1576,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 }
 
 - (void)updateAlertItemsLayout{
+    
+    [UIView setAnimationsEnabled:NO];
     
     alertViewHeight = 0.0f;
     
@@ -1711,6 +1695,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     }
     
     self.alertView.contentSize = CGSizeMake(alertViewMaxWidth, alertViewHeight);
+
+    [UIView setAnimationsEnabled:YES];
 }
 
 - (void)configAlert{
@@ -1892,8 +1878,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self showAnimationsWithCompletionBlock:^{
     
         if (weakSelf) {
-            
-            [weakSelf configNotification];
             
             [weakSelf updateAlertLayout];
         }
@@ -2150,10 +2134,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self configActionSheet];
 }
 
-- (void)configNotification{
-    
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -2172,6 +2152,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     CGFloat actionSheetViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
     
+    [UIView setAnimationsEnabled:NO];
     
     __block CGFloat actionSheetViewHeight = 0.0f;
     
@@ -2260,6 +2241,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     }
     
     self.actionSheetView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
+    
+    [UIView setAnimationsEnabled:YES];
     
     CGFloat cancelActionTotalHeight = self.actionSheetCancelAction ? self.actionSheetCancelAction.actionHeight + self.config.modelActionSheetCancelActionSpaceWidth : 0.0f;
     
@@ -2498,8 +2481,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self showAnimationsWithCompletionBlock:^{
         
         if (weakSelf) {
-            
-            [weakSelf configNotification];
             
             [weakSelf updateActionSheetLayout];
         }
