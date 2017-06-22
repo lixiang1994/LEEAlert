@@ -1,6 +1,11 @@
 
 # LEEAlert - 更新日志
 
+V1.0.7
+==============
+增加windowLevel设置 调整action的borderwidth最小宽度
+增加自动旋转和显示方向设置
+
 V1.0.6
 ==============
 调整内部方法名 解决与Masonry冲突问题
