@@ -27,6 +27,7 @@
 #define SCREEN_HEIGHT CGRectGetHeight([[UIScreen mainScreen] bounds])
 #define VIEW_WIDTH CGRectGetWidth(self.view.frame)
 #define VIEW_HEIGHT CGRectGetHeight(self.view.frame)
+#define DEFAULTBORDERWIDTH (1 / [[UIScreen mainScreen] scale])
 
 @interface LEEAlert ()
 
@@ -143,6 +144,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
 @property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
+@property (nonatomic , assign ) CGFloat modelWindowLevel;
 
 @property (nonatomic , strong ) UIColor *modelHeaderColor;
 @property (nonatomic , strong ) UIColor *modelBackgroundColor;
@@ -189,6 +191,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelOpenAnimationDuration = 0.3f; //默认打开动画时长
         _modelCloseAnimationDuration = 0.2f; //默认关闭动画时长
         _modelBackgroundStyleColorAlpha = 0.45f; //自定义背景样式颜色透明度 默认为半透明背景样式 透明度为0.45f
+        _modelWindowLevel = UIWindowLevelAlert;
         
         _modelActionSheetCancelActionSpaceColor = [UIColor clearColor]; //默认actionsheet取消按钮间隔颜色
         _modelActionSheetCancelActionSpaceWidth = 10.0f; //默认actionsheet取消按钮间隔宽度
@@ -664,6 +667,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToFloat)LeeWindowLevel{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(CGFloat number){
+        
+        if (weakSelf) weakSelf.modelWindowLevel = number;
+        
+        return weakSelf;
+    };
+    
+}
+
 - (LEEConfig)LeeShow{
     
     __weak typeof(self) weakSelf = self;
@@ -938,7 +954,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (action.borderColor) [self setBorderColor:action.borderColor];
     
-    if (action.borderWidth) [self setBorderWidth:action.borderWidth < 0.35f ? 0.35f : action.borderWidth];
+    if (action.borderWidth > 0) [self setBorderWidth:action.borderWidth < DEFAULTBORDERWIDTH ? DEFAULTBORDERWIDTH : action.borderWidth]; else [self setBorderWidth:0.0f];
     
     if (action.image) [self setImage:action.image forState:UIControlStateNormal];
     
@@ -1448,6 +1464,18 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return _currentKeyWindow;
 }
 
+#pragma mark - 设置竖屏
+
+- (BOOL)shouldAutorotate{
+    
+    return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+    
+    return UIInterfaceOrientationMaskAll;
+}
+
 @end
 
 #pragma mark - Alert
@@ -1848,7 +1876,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (!action.borderColor) action.borderColor = [UIColor colorWithWhite:0.84 alpha:1.0f];
         
-        if (!action.borderWidth) action.borderWidth = 0.35f;
+        if (!action.borderWidth) action.borderWidth = DEFAULTBORDERWIDTH;
         
         if (!action.borderPosition) action.borderPosition = (self.config.modelActionArray.count == 2 && idx == 0) ? LEEActionBorderPositionTop | LEEActionBorderPositionRight : LEEActionBorderPositionTop;
         
@@ -2423,7 +2451,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (!action.borderColor) action.borderColor = [UIColor colorWithWhite:0.86 alpha:1.0f];
         
-        if (!action.borderWidth) action.borderWidth = 0.35f;
+        if (!action.borderWidth) action.borderWidth = DEFAULTBORDERWIDTH;
         
         if (!action.height) action.height = 57.0f;
         
@@ -2818,6 +2846,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (![LEEAlert shareManager].viewController) return;
     
     [LEEAlert shareManager].viewController.config = self.config;
+    
+    [LEEAlert shareManager].leeWindow.windowLevel = self.config.modelWindowLevel;
     
     [LEEAlert shareManager].leeWindow.rootViewController = [LEEAlert shareManager].viewController;
     

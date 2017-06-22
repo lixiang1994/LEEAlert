@@ -163,6 +163,9 @@
 /** 设置 是否加入到队列 -> 格式: .LeeAddQueue() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeAddQueue;
 
+/** 设置 window等级 -> 格式: .LeeWindowLevel(UIWindowLevel) */
+@property (nonatomic , copy , readonly ) LEEConfigToFloat LeeWindowLevel;
+
 
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;
