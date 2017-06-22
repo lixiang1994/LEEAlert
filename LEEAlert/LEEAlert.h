@@ -166,6 +166,12 @@
 /** 设置 window等级 -> 格式: .LeeWindowLevel(UIWindowLevel) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeWindowLevel;
 
+/** 设置 是否支持自动旋转 -> 格式: .LeeShouldAutorotate(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeShouldAutorotate;
+
+/** 设置 是否支持显示方向 -> 格式: .LeeShouldAutorotate(UIInterfaceOrientationMaskAll) */
+@property (nonatomic , copy , readonly ) LEEConfigToInterfaceOrientationMask LeeSupportedInterfaceOrientations;
+
 
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;

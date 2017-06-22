@@ -92,6 +92,7 @@ typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);
 typedef LEEAlertConfigModel *(^LEEConfigToColor)(UIColor *color);
 typedef LEEAlertConfigModel *(^LEEConfigToEdgeInsets)(UIEdgeInsets insets);
 typedef LEEAlertConfigModel *(^LEEConfigToBlurEffectStyle)(UIBlurEffectStyle style);
+typedef LEEAlertConfigModel *(^LEEConfigToInterfaceOrientationMask)(UIInterfaceOrientationMask);
 typedef LEEAlertConfigModel *(^LEEConfigToFloatBlock)(CGFloat(^)(LEEScreenOrientationType type));
 typedef LEEAlertConfigModel *(^LEEConfigToAction)(void(^)(LEEAction *action));
 typedef LEEAlertConfigModel *(^LEEConfigToCustomView)(void(^)(LEECustomView *custom));
@@ -99,5 +100,6 @@ typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (
 typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^)(UILabel *label));
 typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^)(UITextField *textField));
 typedef LEEAlertConfigModel *(^LEEConfigToItem)(void(^)(LEEItem *item));
+
 
 #endif /* LEEAlertHelper_h */

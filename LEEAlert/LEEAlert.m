@@ -152,6 +152,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) BOOL modelIsClickHeaderClose;
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
 @property (nonatomic , assign ) BOOL modelIsAddQueue;
+@property (nonatomic , assign ) BOOL modelIsShouldAutorotate;
 
 @property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
 
@@ -163,6 +164,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) LEEBackgroundStyle modelBackgroundStyle;
 
 @property (nonatomic , assign ) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
+@property (nonatomic , assign ) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
 
 @property (nonatomic , strong ) UIColor *modelActionSheetCancelActionSpaceColor;
 @property (nonatomic , assign ) CGFloat modelActionSheetCancelActionSpaceWidth;
@@ -202,10 +204,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         _modelIsClickBackgroundClose = NO; //默认点击背景不关闭
         _modelIsAddQueue = NO; //默认不加入队列
+        _modelIsShouldAutorotate = YES; //默认支持自动旋转
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
         
         _modelBackgroundBlurEffectStyle = UIBlurEffectStyleDark; //默认模糊效果类型Dark
+        _modelSupportedInterfaceOrientations = UIInterfaceOrientationMaskAll; //默认支持所有方向
     }
     return self;
 }
@@ -674,6 +678,32 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(CGFloat number){
         
         if (weakSelf) weakSelf.modelWindowLevel = number;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeShouldAutorotate{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(BOOL is){
+        
+        if (weakSelf) weakSelf.modelIsShouldAutorotate = is;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToInterfaceOrientationMask)LeeSupportedInterfaceOrientations{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(UIInterfaceOrientationMask mask){
+        
+        if (weakSelf) weakSelf.modelSupportedInterfaceOrientations = mask;
         
         return weakSelf;
     };
@@ -1464,16 +1494,16 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return _currentKeyWindow;
 }
 
-#pragma mark - 设置竖屏
+#pragma mark - 旋转
 
 - (BOOL)shouldAutorotate{
     
-    return YES;
+    return self.config.modelIsShouldAutorotate;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations{
     
-    return UIInterfaceOrientationMaskAll;
+    return self.config.modelSupportedInterfaceOrientations;
 }
 
 @end
