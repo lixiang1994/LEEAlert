@@ -918,6 +918,7 @@
             })
             .LeeCornerRadius(5.0f)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeHeaderColor([UIColor colorWithRed:239 / 255.0f green:225 / 255.0f blue:212 / 255.0f alpha:1.0f])
             .LeeClickBackgroundClose(YES)
             .LeeShow();
         }
