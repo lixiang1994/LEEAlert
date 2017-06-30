@@ -1,6 +1,12 @@
 
 # LEEAlert - 更新日志
 
+V1.0.8
+==============
+去除iPad actionsheet样式转换
+增加动画配置设置 可自行根据需求设置打开关闭动画的UIView的animation方法的使用
+增加动画样式设置 可自定义打开关闭动画的动画方向 (上左下右), 淡入淡出, 缩放等样式
+
 V1.0.7
 ==============
 增加windowLevel设置 调整action的borderwidth最小宽度
