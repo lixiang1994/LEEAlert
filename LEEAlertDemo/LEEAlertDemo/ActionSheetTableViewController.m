@@ -871,6 +871,18 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+                [UIView animateWithDuration:1.0f delay:0 usingSpringWithDamping:0.7 initialSpringVelocity:1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                    
+                    animatingBlock(); //调用动画中Block
+                    
+                } completion:^(BOOL finished) {
+                    
+                    animatedBlock(); //调用动画结束Block
+                }];
+                
+            })
             .LeeShow();
         }
             break;
