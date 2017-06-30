@@ -12,6 +12,8 @@
 
 #import "ShareView.h"
 
+#import "AllShareView.h"
+
 #import "FontSizeView.h"
 
 #import "SelectedListView.h"
@@ -65,6 +67,10 @@
     
     [baseArray addObject:@{@"title" : @"显示两个加入队列的 actionSheet 菜单" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个自定义动画配置的 actionSheet 菜单" , @"content" : @"可自定义打开与关闭的动画配置(UIView 动画)"}];
+    
+    [baseArray addObject:@{@"title" : @"显示一个自定义动画样式的 actionSheet 菜单" , @"content" : @"动画样式可设置动画方向, 淡入淡出, 缩放等"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 actionSheet 菜单" , @"content" : @"菜单背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个类似微信布局的 actionSheet 菜单" , @"content" : @"只需要调整最大宽度,取消action的间隔颜色和底部间距即可"}];
@@ -76,6 +82,8 @@
     [demoArray addObject:@{@"title" : @"显示一个单选举报的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
     
     [demoArray addObject:@{@"title" : @"显示一个多选举报的 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
+    
+    [demoArray addObject:@{@"title" : @"显示一个带有更多功能的分享 actionSheet 菜单" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
 }
 
 #pragma mark - 自定义视图点击事件 (随机调整size)
@@ -429,6 +437,65 @@
         }
             break;
             
+        case 12:
+        {   
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"自定义动画配置的 Actionsheet")
+            .LeeContent(@"支持 自定义打开动画配置和关闭动画配置 基于 UIView 动画API")
+            .LeeAction(@"好的", ^{
+                
+                // 点击事件Block
+            })
+            .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+                [UIView animateWithDuration:1.5f delay:0 usingSpringWithDamping:0.7 initialSpringVelocity:1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                    
+                    animatingBlock(); //调用动画中Block
+                    
+                } completion:^(BOOL finished) {
+                    
+                    animatedBlock(); //调用动画结束Block
+                }];
+                
+            })
+            .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+                [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+                    
+                    animatingBlock();
+                    
+                } completion:^(BOOL finished) {
+                    
+                    animatedBlock();
+                }];
+                
+            })
+            .LeeShow();
+        }
+            break;
+            
+        case 13:
+        {
+            /*
+             动画样式的方向只可以设置一个 其他样式枚举可随意增加.
+             动画样式和动画配置可同时设置 这里不多做演示 欢迎自行探索
+             */
+            
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"自定义动画样式的 Actionsheet")
+            .LeeContent(@"动画样式可设置动画方向, 淡入淡出, 缩放等")
+            .LeeAction(@"好的", ^{
+                
+                // 点击事件Block
+            })
+            //.LeeOpenAnimationStyle(LEEAnimationStyleOrientationTop | LEEAnimationStyleZoom) //这里设置打开动画样式的方向为上 以及淡入效果.
+            //.LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleZoom) //这里设置关闭动画样式的方向为下 以及淡出效果
+            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationLeft | LEEAnimationStyleFade) //这里设置打开动画样式的方向为左 以及缩放效果.
+            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationRight | LEEAnimationStyleFade) //这里设置关闭动画样式的方向为右 以及缩放效果
+            .LeeShow();
+        }
+            break;
+            
         default:
             break;
     }
@@ -532,15 +599,9 @@
             
             ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, width, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
             
-            shareView.OpenShareBlock = ^(ShareType type){
+            shareView.openShareBlock = ^(ShareType type){
                 
-                // 关闭
-                
-                [LEEAlert closeWithCompletionBlock:^{
-                    
-                    NSLog(@"%d" , type);
-                }];
-                
+                NSLog(@"%d" , type);
             };
             
             [LEEAlert actionsheet].config
@@ -740,7 +801,77 @@
             
         case 6:
         {
+            AllShareView *view = [[AllShareView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] bounds]), 0) ShowMore:YES ShowReport:YES];
             
+            view.openShareBlock = ^(ShareType type) {
+              
+                NSLog(@"%d" , type);
+            };
+            
+            view.openMoreBlock = ^(MoreType type) {
+                
+                switch (type) {
+                    
+                    case MoreTypeToTheme:
+                        
+                        // 切换主题 (关于主题开源库 推荐一下: https://github.com/lixiang1994/LEETheme)
+                        
+                        break;
+                        
+                    case MoreTypeToReport:
+                        
+                        // 打开举报
+                        [self demo:4];
+                        
+                        break;
+                        
+                    case MoreTypeToFontSize:
+                        
+                        // 打开字体设置
+                        [self demo:3];
+                        
+                        break;
+                        
+                    case MoreTypeToCopyLink:
+                        
+                        // 复制链接
+                        
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
+            };
+            
+            // 显示代码可以封装到自定义视图中 例如 [view show];
+            
+            [LEEAlert actionsheet].config
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.isAutoWidth = YES;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeAddAction(^(LEEAction *action) {
+                
+                action.title = @"取消";
+                
+                action.titleColor = [UIColor grayColor];
+                
+                action.height = 45.0f;
+            })
+            .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeActionSheetBottomMargin(0.0f)
+            .LeeCornerRadius(0.0f)
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+                
+                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
+                
+                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+            })
+            .LeeShow();
         }
             break;
             

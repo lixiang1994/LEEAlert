@@ -172,6 +172,18 @@
 /** 设置 是否支持显示方向 -> 格式: .LeeShouldAutorotate(UIInterfaceOrientationMaskAll) */
 @property (nonatomic , copy , readonly ) LEEConfigToInterfaceOrientationMask LeeSupportedInterfaceOrientations;
 
+/** 设置 打开动画配置 -> 格式: .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToBlockAndBlock LeeOpenAnimationConfig;
+
+/** 设置 关闭动画配置 -> 格式: .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToBlockAndBlock LeeCloseAnimationConfig;
+
+/** 设置 打开动画样式 -> 格式: .LeeOpenAnimationStyle() */
+@property (nonatomic , copy , readonly ) LEEConfigToAnimationStyle LeeOpenAnimationStyle;
+
+/** 设置 关闭动画样式 -> 格式: .LeeCloseAnimationStyle() */
+@property (nonatomic , copy , readonly ) LEEConfigToAnimationStyle LeeCloseAnimationStyle;
+
 
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;

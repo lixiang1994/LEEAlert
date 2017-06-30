@@ -1,18 +1,22 @@
 
 /*!
  *  @header ShareView.m
- *          LEEActionSheetDemo
+ *          LEEAlertDemo
  *
  *  @brief  分享视图
  *
- *  @author 李响
+ *  @author LEE
  *  @copyright    Copyright © 2016年 lee. All rights reserved.
  *  @version    16/4/26.
  */
 
 #import "ShareView.h"
 
+#import "ShareButton.h"
+
 #import "SDAutoLayout.h"
+
+#import "LEEAlert.h"
 
 @interface ShareView () <UIScrollViewDelegate>
 
@@ -99,27 +103,25 @@
     if (!_infoArray) {
         
         _infoArray = @[
-                       @{@"title" : @"微信" , @"image" : @"popup_share_weixing" , @"highlightedImage" : @"popup_share_weixing_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToWXFriend]} ,
+                       @{@"title" : @"微信" , @"image" : @"infor_popshare_weixin_nor" , @"highlightedImage" : @"infor_popshare_weixin_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToWechat]} ,
                        
-                       @{@"title" : @"微信朋友圈" , @"image" : @"popup_share_penyouquan" , @"highlightedImage" : @"popup_share_penyouquan_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToWXQuan]} ,
+                       @{@"title" : @"微信朋友圈" , @"image" : @"infor_popshare_friends_nor" , @"highlightedImage" : @"infor_popshare_friends_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToWechatTimeline]} ,
                        
                        /** 多复制几个 用来演示分页 */
                        
-                       @{@"title" : @"新浪微博" , @"image" : @"popup_share_sina" , @"highlightedImage" : @"popup_share_sina_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToSina]} ,
+                       @{@"title" : @"新浪微博" , @"image" : @"infor_popshare_sina_nor" , @"highlightedImage" : @"infor_popshare_sina_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToSina]} ,
                        
-                       @{@"title" : @"QQ好友" , @"image" : @"popup_share_qq" , @"highlightedImage" : @"popup_share_qq_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToQQFriend]} ,
+                       @{@"title" : @"QQ好友" , @"image" : @"infor_popshare_qq_nor" , @"highlightedImage" : @"infor_popshare_qq_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToQQFriend]} ,
                        
-                       @{@"title" : @"QQ空间" , @"image" : @"popup_share_kongjian" , @"highlightedImage" : @"popup_share_kongjian_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToQZone]} ,
+                       @{@"title" : @"QQ空间" , @"image" : @"infor_popshare_kunjian_nor" , @"highlightedImage" : @"infor_popshare_kunjian_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToQZone]} ,
                        
                        /** 结束 */
-//                       
-                       @{@"title" : @"新浪微博" , @"image" : @"popup_share_sina" , @"highlightedImage" : @"popup_share_sina_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToSina]} ,
-//
-                       @{@"title" : @"QQ好友" , @"image" : @"popup_share_qq" , @"highlightedImage" : @"popup_share_qq_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToQQFriend]} ,
-//
-                       @{@"title" : @"QQ空间" , @"image" : @"popup_share_kongjian" , @"highlightedImage" : @"popup_share_kongjian_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToQZone]} ,
+                        
+                       @{@"title" : @"新浪微博" , @"image" : @"infor_popshare_sina_nor" , @"highlightedImage" : @"infor_popshare_sina_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToSina]} ,
                        
-                       @{@"title" : @"腾讯微博" , @"image" : @"popup_share_ten Weibo" , @"highlightedImage" : @"popup_share_ten Weibo_night" , @"type" : [NSNumber numberWithInteger:ShareTypeToTencetnwb]}];
+                       @{@"title" : @"QQ好友" , @"image" : @"infor_popshare_qq_nor" , @"highlightedImage" : @"infor_popshare_qq_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToQQFriend]} ,
+                       
+                       @{@"title" : @"QQ空间" , @"image" : @"infor_popshare_kunjian_nor" , @"highlightedImage" : @"infor_popshare_kunjian_pre" , @"type" : [NSNumber numberWithInteger:ShareTypeToQZone]}];
         
     }
     
@@ -337,14 +339,18 @@
 
 - (void)shareButtonAction:(UIButton *)sender{
     
-    NSInteger index = [self.buttonArray indexOfObject:sender];
+    __weak typeof(self) weakSelf = self;
     
-    ShareType type = (ShareType)[self.infoArray[index][@"type"] integerValue];
-    
-    if (self.OpenShareBlock) {
+    [LEEAlert closeWithCompletionBlock:^{
         
-        self.OpenShareBlock(type);
-    }
+        if (!weakSelf) return;
+        
+        NSInteger index = [weakSelf.buttonArray indexOfObject:sender];
+        
+        ShareType type = (ShareType)[weakSelf.infoArray[index][@"type"] integerValue];
+        
+        if (weakSelf.openShareBlock) weakSelf.openShareBlock(type);
+    }];
     
 }
 
@@ -355,73 +361,6 @@
     //通过最终的偏移量offset值 来确定pageControl当前应该显示第几页
     
     self.pageControl.currentPage = scrollView.contentOffset.x / scrollView.width;
-}
-
-@end
-
-#pragma mark - -----------------分享按钮-----------------
-
-@implementation ShareButton
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        
-        _range = 10.0f;
-    }
-    return self;
-}
-
-- (void)setRange:(CGFloat)range{
-    
-    _range = range;
-    
-    [self layoutSubviews];
-}
-
--(void)layoutSubviews{
-    
-    [super layoutSubviews];
-    
-    //图片
-    
-    CGPoint center = self.imageView.center;
-    
-    center.x = self.frame.size.width/2;
-    
-    center.y = self.imageView.frame.size.height/2;
-    
-    self.imageView.center = center;
-    
-    //修正位置
-    
-    CGRect imageFrame = [self imageView].frame;
-    
-    imageFrame.origin.y = (self.frame.size.height - imageFrame.size.height - self.titleLabel.frame.size.height - _range ) / 2;
-    
-    self.imageView.frame = imageFrame;
-    
-    //标题
-    
-    CGRect titleFrame = [self titleLabel].frame;
-    
-    titleFrame.origin.x = 0;
-    
-    titleFrame.origin.y = self.imageView.frame.origin.y + self.imageView.frame.size.height + _range;
-    
-    titleFrame.size.width = self.frame.size.width;
-    
-    self.titleLabel.frame = titleFrame;
-    
-    self.titleLabel.textAlignment = NSTextAlignmentCenter;
-}
-
-- (void)configTitle:(NSString *)title Image:(UIImage *)image{
-    
-    [self setTitle:title forState:UIControlStateNormal];
-    
-    [self setImage:image forState:UIControlStateNormal];
 }
 
 @end

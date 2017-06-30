@@ -65,6 +65,10 @@
     
     [baseArray addObject:@{@"title" : @"显示两个加入队列的 alert 弹框" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个自定义动画配置的 alert 弹框" , @"content" : @"可自定义打开与关闭的动画配置(UIView 动画)"}];
+    
+    [baseArray addObject:@{@"title" : @"显示一个自定义动画样式的 alert 弹框" , @"content" : @"动画样式可设置动画方向, 淡入淡出, 缩放等"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
@@ -435,6 +439,7 @@
             .LeeAction(@"确认", nil)
             .LeeCancelAction(@"取消", nil)
             .LeeBackgroundStyleBlur(UIBlurEffectStyleLight)
+            .LeeOpenAnimationDuration(5.0f)
             .LeeShow();
         }
             break;
@@ -456,6 +461,65 @@
             .LeeCancelAction(@"取消", nil)
             .LeeAction(@"确认", nil)
             .LeeAddQueue()
+            .LeeShow();
+        }
+            break;
+            
+        case 12:
+        {
+            [LEEAlert alert].config
+            .LeeTitle(@"自定义动画配置的 Alert")
+            .LeeContent(@"支持 自定义打开动画配置和关闭动画配置 基于 UIView 动画API")
+            .LeeAction(@"好的", ^{
+                
+                // 点击事件Block
+            })
+            .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+                [UIView animateWithDuration:1.0f delay:0 usingSpringWithDamping:0.4 initialSpringVelocity:1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                    
+                    animatingBlock(); //调用动画中Block
+                    
+                } completion:^(BOOL finished) {
+                    
+                    animatedBlock(); //调用动画结束Block
+                }];
+                
+            })
+            .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+                [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                    
+                    animatingBlock();
+                    
+                } completion:^(BOOL finished) {
+                    
+                    animatedBlock();
+                }];
+                
+            })
+            .LeeShow();
+        }
+            break;
+            
+        case 13:
+        {
+            /*
+             动画样式的方向只可以设置一个 其他样式枚举可随意增加.
+             动画样式和动画配置可同时设置 这里不多做演示 欢迎自行探索
+             */
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"自定义动画样式的 Alert")
+            .LeeContent(@"动画样式可设置动画方向, 淡入淡出, 缩放等")
+            .LeeAction(@"好的", ^{
+                
+                // 点击事件Block
+            })
+            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationTop | LEEAnimationStyleFade) //这里设置打开动画样式的方向为上 以及淡入效果.
+            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleFade) //这里设置关闭动画样式的方向为下 以及淡出效果
+            //.LeeOpenAnimationStyle(LEEAnimationStyleOrientationLeft | LEEAnimationStyleZoom) //这里设置打开动画样式的方向为左 以及缩放效果.
+            //.LeeCloseAnimationStyle(LEEAnimationStyleOrientationRight | LEEAnimationStyleZoom) //这里设置关闭动画样式的方向为右 以及缩放效果
             .LeeShow();
         }
             break;
@@ -530,15 +594,9 @@
             
             ShareView *shareView = [[ShareView alloc] initWithFrame:CGRectMake(0, 0, 280, 0) InfoArray:nil MaxLineNumber:2 MaxSingleCount:3];
             
-            shareView.OpenShareBlock = ^(ShareType type){
+            shareView.openShareBlock = ^(ShareType type){
                 
-                // 关闭
-                
-                [LEEAlert closeWithCompletionBlock:^{
-                    
-                    NSLog(@"%d" , type);
-                }];
-                
+                NSLog(@"%d" , type);  
             };
             
             [LEEAlert alert].config

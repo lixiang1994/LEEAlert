@@ -28,6 +28,8 @@
 		9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B98146E1ECD696E00014BD3 /* ActionSheetTableViewController.m */; };
 		9B9814781ECF09AB00014BD3 /* LEEAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9814761ECF09AB00014BD3 /* LEEAlert.m */; };
 		9BBEF12B1EE682EB000B91F9 /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9BBEF12A1EE682EB000B91F9 /* address.plist */; };
+		9BF6B30D1F0636EB00C099A1 /* AllShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6B30A1F0636EB00C099A1 /* AllShareView.m */; };
+		9BF6B30E1F0636EB00C099A1 /* ShareButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6B30C1F0636EB00C099A1 /* ShareButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,10 @@
 		9B9814761ECF09AB00014BD3 /* LEEAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEEAlert.m; sourceTree = "<group>"; };
 		9B9814771ECF09AB00014BD3 /* LEEAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEEAlertHelper.h; sourceTree = "<group>"; };
 		9BBEF12A1EE682EB000B91F9 /* address.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = address.plist; sourceTree = "<group>"; };
+		9BF6B3091F0636EB00C099A1 /* AllShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllShareView.h; sourceTree = "<group>"; };
+		9BF6B30A1F0636EB00C099A1 /* AllShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllShareView.m; sourceTree = "<group>"; };
+		9BF6B30B1F0636EB00C099A1 /* ShareButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareButton.h; sourceTree = "<group>"; };
+		9BF6B30C1F0636EB00C099A1 /* ShareButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +233,10 @@
 			children = (
 				9B1414801ED5300300173BB9 /* ShareView.h */,
 				9B1414811ED5300300173BB9 /* ShareView.m */,
+				9BF6B3091F0636EB00C099A1 /* AllShareView.h */,
+				9BF6B30A1F0636EB00C099A1 /* AllShareView.m */,
+				9BF6B30B1F0636EB00C099A1 /* ShareButton.h */,
+				9BF6B30C1F0636EB00C099A1 /* ShareButton.m */,
 			);
 			path = ShareView;
 			sourceTree = "<group>";
@@ -415,6 +425,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BF6B30D1F0636EB00C099A1 /* AllShareView.m in Sources */,
+				9BF6B30E1F0636EB00C099A1 /* ShareButton.m in Sources */,
 				9B9814781ECF09AB00014BD3 /* LEEAlert.m in Sources */,
 				9B0BB22D1E8E28760087D231 /* AppDelegate.m in Sources */,
 				9B1414BE1ED6761000173BB9 /* OpenPushView.m in Sources */,
