@@ -439,7 +439,6 @@
             .LeeAction(@"确认", nil)
             .LeeCancelAction(@"取消", nil)
             .LeeBackgroundStyleBlur(UIBlurEffectStyleLight)
-            .LeeOpenAnimationDuration(5.0f)
             .LeeShow();
         }
             break;
