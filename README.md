@@ -218,6 +218,39 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeShow();
 ```
 
+### 自定义动画方法设置
+
+```
+    [LEEAlert alert].config
+    .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+        
+	// 可自定义UIView动画方法以及参数设置
+	
+        [UIView animateWithDuration:1.0f delay:0 usingSpringWithDamping:0.4 initialSpringVelocity:1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                    
+            animatingBlock(); //调用动画中Block
+                    
+        } completion:^(BOOL finished) {
+                    
+            animatedBlock(); //调用动画结束Block
+        }];
+                
+    })
+    .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
+                
+        [UIView animateWithDuration:0.5f delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                    
+            animatingBlock();
+                    
+        } completion:^(BOOL finished) {
+                    
+            animatedBlock();
+        }];
+                
+     })
+    .LeeShow();
+```
+
 ### 其他设置
 
 ```
