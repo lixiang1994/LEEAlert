@@ -255,6 +255,9 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 
 ```
     [LEEAlert alert].config
+    .LeeShouldAutorotate(YES) // 是否支持自动旋转 默认为NO
+    .LeeSupportedInterfaceOrientations(UIInterfaceOrientationMaskAll) // 支持的旋转方向 默认为UIInterfaceOrientationMaskAll
+    .LeeClickHeaderClose(YES) // 点击弹框进行关闭 默认为NO
     .LeeClickBackgroundClose(YES) 	// 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
     .LeeAddQueue() 	// 设置添加到显示队列 默认不添加 (添加后 处于显示状态时 如果有新的弹框显示 会将它暂时隐藏 等在它之后的弹框显示结束 再将其显示出来 , 队列属于先进后出)
     .LeeShow();
