@@ -209,6 +209,15 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeShow();
 ```
 
+### 自定义动画样式
+
+```
+    [LEEAlert alert].config
+    .LeeOpenAnimationStyle(LEEAnimationStyleOrientationTop | LEEAnimationStyleFade | LEEAnimationStyleZoom) //设置打开动画样式的方向为上 以及淡入效果和缩放效果.
+    .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleFade | LEEAnimationStyleZoom) //设置关闭动画样式的方向为下 以及淡出效果和缩放效果.
+    .LeeShow();
+```
+
 ### 其他设置
 
 ```
