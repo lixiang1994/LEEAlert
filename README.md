@@ -27,7 +27,7 @@
  - 支持自定义action添加 可动态调整其样式
  - 支持内部添加的功能项的间距范围设置等
  - 支持圆角设置 支持阴影效果设置
- - 支持队列显示 多个同时显示时根据先后顺序排队弹出.
+ - 支持队列和优先级 多个同时显示时根据优先级顺序排队弹出 添加到队列的如被高优先级覆盖 以后还会继续显示等.
  - 支持两种背景样式 1.半透明 (支持自定义透明度比例和颜色) 2.毛玻璃 (支持效果类型)
  - 支持自定义UIView动画方法
  - 支持自定义打开关闭动画样式(动画方向 渐变过渡 缩放过渡等)
@@ -251,6 +251,16 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeShow();
 ```
 
+### 队列与优先级设置
+
+```
+    [LEEAlert alert].config
+    .LeeQueue(YES)	// 设置添加到队列 默认不添加 (添加后 处于显示状态时 如果有新的弹框显示 会将它暂时隐藏 等新的弹框显示结束 再将其显示出来)
+    .LeePriority(1) 	// 设置优先级 默认为0 按照优先级从高到低的顺序显示, 优先级相同时 优先显示最新的
+    .LeeShow();
+    // 优先级和队列结合使用会将其特性融合 具体效果请运行demo自行调试体验
+```
+
 ### 其他设置
 
 ```
@@ -260,7 +270,6 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeSupportedInterfaceOrientations(UIInterfaceOrientationMaskAll) // 支持的旋转方向 默认为UIInterfaceOrientationMaskAll
     .LeeClickHeaderClose(YES) // 点击弹框进行关闭 默认为NO
     .LeeClickBackgroundClose(YES) 	// 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
-    .LeeAddQueue() 	// 设置添加到显示队列 默认不添加 (添加后 处于显示状态时 如果有新的弹框显示 会将它暂时隐藏 等在它之后的弹框显示结束 再将其显示出来 , 队列属于先进后出)
     .LeeShow();
 ```
 
