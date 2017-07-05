@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.8
+ *  @version    V1.0.9
  */
 
 #ifndef LEEAlertHelper_h
@@ -103,6 +103,7 @@ typedef NS_OPTIONS(NSInteger, LEEAnimationStyle) {
 
 typedef LEEAlertConfigModel *(^LEEConfig)();
 typedef LEEAlertConfigModel *(^LEEConfigToBool)(BOOL is);
+typedef LEEAlertConfigModel *(^LEEConfigToInteger)(NSInteger number);
 typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
 typedef LEEAlertConfigModel *(^LEEConfigToString)(NSString *str);
 typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);

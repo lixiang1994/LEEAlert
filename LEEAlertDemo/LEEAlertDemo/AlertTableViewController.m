@@ -63,7 +63,7 @@
     
     [baseArray addObject:@{@"title" : @"显示一个模糊背景样式的 alert 弹框" , @"content" : @"传入UIBlurEffectStyle枚举类型 默认为Dark"}];
     
-    [baseArray addObject:@{@"title" : @"显示两个加入队列的 alert 弹框" , @"content" : @"会根据显示队列中的先后顺序去显示 ,如果未加入队列 则不会再被显示"}];
+    [baseArray addObject:@{@"title" : @"显示多个加入队列和优先级的 alert 弹框" , @"content" : @"当多个同时需要显示时, 队列和优先级决定了如何去显示"}];
     
     [baseArray addObject:@{@"title" : @"显示一个自定义动画配置的 alert 弹框" , @"content" : @"可自定义打开与关闭的动画配置(UIView 动画)"}];
     
@@ -445,13 +445,18 @@
             
         case 11:
         {
-            // 第一个显示时 第二个也显示了 这时会隐藏第一个 ,在第二个显示结束后再将第一个显示出来
+            // 队列: 加入队列后 在显示过程中 如果有一个更高优先级的alert要显示 那么当前的alert会暂时关闭 显示新的 待新的alert显示结束后 继续显示.
+            // 优先级: 按照优先级从高到低的顺序显示, 优先级相同时 优先显示最新的.
+            // 队列和优先级: 当两者结合时 两者的特性会相互融合
+            
+            // 下面代码可自行调试理解
             
             [LEEAlert alert].config
             .LeeTitle(@"alert 1")
             .LeeCancelAction(@"取消", nil)
             .LeeAction(@"确认", nil)
-            .LeeAddQueue()
+//            .LeeQueue(YES) // 添加到队列
+            .LeePriority(1) // 设置优先级
             .LeeShow();
             
             
@@ -459,7 +464,17 @@
             .LeeTitle(@"alert 2")
             .LeeCancelAction(@"取消", nil)
             .LeeAction(@"确认", nil)
-            .LeeAddQueue()
+            .LeeQueue(YES) // 添加到队列
+            .LeePriority(3) // 设置优先级
+            .LeeShow();
+            
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"alert 3")
+            .LeeCancelAction(@"取消", nil)
+            .LeeAction(@"确认", nil)
+            .LeeQueue(YES) // 添加到队列
+            .LeePriority(2) // 设置优先级
             .LeeShow();
         }
             break;
@@ -475,7 +490,7 @@
             })
             .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
                 
-                [UIView animateWithDuration:1.0f delay:0 usingSpringWithDamping:0.4 initialSpringVelocity:1 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                [UIView animateWithDuration:1.0f delay:0 usingSpringWithDamping:0.4 initialSpringVelocity:1.0f options:UIViewAnimationOptionAllowUserInteraction animations:^{
                     
                     animatingBlock(); //调用动画中Block
                     
