@@ -1345,7 +1345,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             Method leeMethod = class_getInstanceMethod(self, NSSelectorFromString(leeSelString));
             
-            method_exchangeImplementations(originalMethod, leeMethod);
+            BOOL isAddedMethod = class_addMethod(self, NSSelectorFromString(selString), method_getImplementation(leeMethod), method_getTypeEncoding(leeMethod));
+            
+            if (isAddedMethod) {
+            
+                class_replaceMethod(self, NSSelectorFromString(leeSelString), method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+            
+            } else {
+                
+                method_exchangeImplementations(originalMethod, leeMethod);
+            }
+            
         }];
         
     });
