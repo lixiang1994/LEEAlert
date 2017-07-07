@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.9
+ *  @version    V1.1.0
  */
 
 #ifndef LEEAlertHelper_h
@@ -97,8 +97,11 @@ typedef NS_OPTIONS(NSInteger, LEEAnimationStyle) {
     
     /** 动画样式 淡入淡出 */
     LEEAnimationStyleFade               = 1 << 12,
-    /** 动画样式 缩放 */
-    LEEAnimationStyleZoom               = 2 << 12
+    
+    /** 动画样式 缩放 放大 */
+    LEEAnimationStyleZoomEnlarge        = 1 << 24,
+    /** 动画样式 缩放 缩小 */
+    LEEAnimationStyleZoomShrink         = 2 << 24,
 };
 
 typedef LEEAlertConfigModel *(^LEEConfig)();

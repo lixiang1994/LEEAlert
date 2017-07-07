@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.0.9
+ *  @version    V1.1.0
  */
 
 #import "LEEAlert.h"
@@ -27,7 +27,7 @@
 #define SCREEN_HEIGHT CGRectGetHeight([[UIScreen mainScreen] bounds])
 #define VIEW_WIDTH CGRectGetWidth(self.view.frame)
 #define VIEW_HEIGHT CGRectGetHeight(self.view.frame)
-#define DEFAULTBORDERWIDTH (1 / [[UIScreen mainScreen] scale])
+#define DEFAULTBORDERWIDTH (1.0f / [[UIScreen mainScreen] scale] + 0.02f)
 
 @interface LEEAlert ()
 
@@ -1328,6 +1328,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @end
 
+static NSString *const LEEShadowViewHandleKeyFrame = @"frame";
+static NSString *const LEEShadowViewHandleKeyAlpha = @"alpha";
+static NSString *const LEEShadowViewHandleKeyCenter = @"center";
+static NSString *const LEEShadowViewHandleKeyHidden = @"hidden";
+static NSString *const LEEShadowViewHandleKeyTransform = @"transform";
+static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor";
+
 @implementation UIView (LEEShadowViewHandle)
 
 + (void)load{
@@ -1335,7 +1342,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        NSArray *selStringsArray = @[@"dealloc" , @"layoutSubviews" , @"removeFromSuperview" , @"setFrame:" , @"setCenter:" , @"setHidden:" , @"setAlpha:" , @"setTransform:" , @"setBackgroundColor:"];
+        NSArray *selStringsArray = @[@"dealloc" , @"layoutSubviews" , @"removeFromSuperview"];
         
         [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
             
@@ -1364,12 +1371,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (void)lee_alert_dealloc{
     
-    if ([self isAddShadow]) {
-        
-        [self removeShadow];
-        
-        objc_removeAssociatedObjects(self);
-    }
+    if ([self isAddShadow]) objc_removeAssociatedObjects(self);
     
     [self lee_alert_dealloc];
 }
@@ -1386,48 +1388,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self removeShadow];
     
     [self lee_alert_removeFromSuperview];
-}
-
-- (void)lee_alert_setFrame:(CGRect)frame{
-    
-    [self lee_alert_setFrame:frame];
-    
-    if ([self isAddShadow]) [self shadowView].frame = self.frame;
-}
-
-- (void)lee_alert_setCenter:(CGPoint)center{
-    
-    [self lee_alert_setCenter:center];
-    
-    if ([self isAddShadow]) [self shadowView].center = center;
-}
-
-- (void)lee_alert_setHidden:(BOOL)hidden{
-    
-    [self lee_alert_setHidden:hidden];
-    
-    if ([self isAddShadow]) [self shadowView].hidden = hidden;
-}
-
-- (void)lee_alert_setAlpha:(CGFloat)alpha{
-    
-    [self lee_alert_setAlpha:alpha];
-    
-    if ([self isAddShadow]) [self shadowView].alpha = alpha;
-}
-
-- (void)lee_alert_setTransform:(CGAffineTransform)transform{
-    
-    [self lee_alert_setTransform:transform];
-    
-    if ([self isAddShadow]) [self shadowView].transform = transform;
-}
-
-- (void)lee_alert_setBackgroundColor:(UIColor *)backgroundColor{
-    
-    [self lee_alert_setBackgroundColor:backgroundColor];
-    
-    if ([self isAddShadow]) [self shadowView].backgroundColor = backgroundColor;
 }
 
 - (void)cornerRadius:(CGFloat)cornerRadius{
@@ -1457,6 +1417,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
          
             [self.superview insertSubview:shadowView belowSubview:self];
             
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyFrame options:NSKeyValueObservingOptionNew context:NULL];
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyAlpha options:NSKeyValueObservingOptionNew context:NULL];
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyCenter options:NSKeyValueObservingOptionNew context:NULL];
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyHidden options:NSKeyValueObservingOptionNew context:NULL];
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyTransform options:NSKeyValueObservingOptionNew context:NULL];
+            [self addObserver:self forKeyPath:LEEShadowViewHandleKeyBackgroundColor options:NSKeyValueObservingOptionNew context:NULL];
+            
             objc_setAssociatedObject(self, @selector(shadowView), shadowView , OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         }
         
@@ -1465,13 +1432,71 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (void)removeShadow{
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
     
-    if ([self isAddShadow]) {
-    
-        [[self shadowView] removeFromSuperview];
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyFrame]) {
+        
+        CGRect frame = [change[NSKeyValueChangeNewKey] CGRectValue];
+        
+        [self shadowView].frame = frame;
     }
     
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyAlpha]) {
+        
+        CGFloat alpha = [change[NSKeyValueChangeNewKey] floatValue];
+        
+        [self shadowView].alpha = alpha;
+    }
+    
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyCenter]) {
+        
+        CGPoint center = [change[NSKeyValueChangeNewKey] CGPointValue];
+        
+        [self shadowView].center = center;
+    }
+    
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyCenter]) {
+        
+        CGPoint center = [change[NSKeyValueChangeNewKey] CGPointValue];
+        
+        [self shadowView].center = center;
+    }
+    
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyHidden]) {
+        
+        bool hidden = [change[NSKeyValueChangeNewKey] boolValue];
+        
+        [self shadowView].hidden = hidden;
+    }
+    
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyTransform]) {
+        
+        CGAffineTransform transform = [change[NSKeyValueChangeNewKey] CGAffineTransformValue];
+        
+        [self shadowView].transform = transform;
+    }
+    
+    if ([keyPath isEqualToString:LEEShadowViewHandleKeyBackgroundColor]) {
+        
+        UIColor *color = change[NSKeyValueChangeNewKey];
+        
+        [self shadowView].backgroundColor = color;
+    }
+    
+}
+
+- (void)removeShadow{
+    
+    if (![self isAddShadow]) return;
+    
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyFrame];
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyAlpha];
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyCenter];
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyHidden];
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyTransform];
+    [self removeObserver:self forKeyPath:LEEShadowViewHandleKeyBackgroundColor];
+    
+    [[self shadowView] removeFromSuperview];
 }
 
 - (UIView *)shadowView{
@@ -1682,11 +1707,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [UIView commitAnimations];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+- (void)viewDidLayoutSubviews{
     
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [super viewDidLayoutSubviews];
     
-    [self updateAlertLayoutWithViewWidth:size.width ViewHeight:size.height];
+    if (!self.isShowing && !self.isClosing) [self updateAlertLayout];
 }
 
 - (void)updateAlertLayout{
@@ -1902,6 +1927,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [self.alertView cornerRadius:self.config.modelCornerRadius];
     
+    
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
        
         void (^itemBlock)(LEEItem *) = obj;
@@ -2070,11 +2096,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [self showAnimationsWithCompletionBlock:^{
     
-        if (weakSelf) {
-            
-            [weakSelf updateAlertLayout];
-        }
-        
+        if (weakSelf) [weakSelf updateAlertLayout];
     }];
     
 }
@@ -2190,7 +2212,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (self.config.modelOpenAnimationStyle & LEEAnimationStyleFade) self.containerView.alpha = 0.0f;
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoom) self.containerView.transform = CGAffineTransformMakeScale(0.5f , 0.5f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+    
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
     
     __weak typeof(self) weakSelf = self;
     
@@ -2215,9 +2239,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         weakSelf.containerView.frame = containerFrame;
         
-        if (weakSelf.config.modelOpenAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 1.0f;
+        weakSelf.containerView.alpha = 1.0f;
         
-        if (weakSelf.config.modelOpenAnimationStyle & LEEAnimationStyleZoom) weakSelf.containerView.transform = CGAffineTransformIdentity;
+        weakSelf.containerView.transform = CGAffineTransformIdentity;
         
     }, ^{
        
@@ -2300,7 +2324,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 0.0f;
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoom) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.5f , 0.5f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+        
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
         
     }, ^{
        
@@ -2421,11 +2447,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [self configActionSheet];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+- (void)viewDidLayoutSubviews{
     
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [super viewDidLayoutSubviews];
     
-    [self updateActionSheetLayoutWithViewWidth:size.width ViewHeight:size.height];
+    if (!self.isShowing && !self.isClosing) [self updateActionSheetLayout];
 }
 
 - (void)updateActionSheetLayout{
@@ -2911,7 +2937,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (self.config.modelOpenAnimationStyle & LEEAnimationStyleFade) self.containerView.alpha = 0.0f;
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoom) self.containerView.transform = CGAffineTransformMakeScale(0.5f , 0.5f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+    
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
     
     __weak typeof(self) weakSelf = self;
     
@@ -2945,9 +2973,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         weakSelf.containerView.frame = containerFrame;
         
-        if (weakSelf.config.modelOpenAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 1.0f;
+        weakSelf.containerView.alpha = 1.0f;
         
-        if (weakSelf.config.modelOpenAnimationStyle & LEEAnimationStyleZoom) weakSelf.containerView.transform = CGAffineTransformIdentity;
+        weakSelf.containerView.transform = CGAffineTransformIdentity;
         
     }, ^{
        
@@ -3033,7 +3061,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 0.0f;
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoom) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.5f , 0.5f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+        
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
         
     }, ^{
         
@@ -3179,8 +3209,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
                 
                 return SCREEN_HEIGHT - 40.0f;
             })
-            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoom)
-            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoom);
+            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomEnlarge)
+            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomShrink);
             
             break;
             
