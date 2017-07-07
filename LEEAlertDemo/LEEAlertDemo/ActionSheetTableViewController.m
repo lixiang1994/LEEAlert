@@ -494,8 +494,8 @@
                 
                 // 点击事件Block
             })
-            //.LeeOpenAnimationStyle(LEEAnimationStyleOrientationTop | LEEAnimationStyleZoom) //这里设置打开动画样式的方向为上 以及淡入效果.
-            //.LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleZoom) //这里设置关闭动画样式的方向为下 以及淡出效果
+            //.LeeOpenAnimationStyle(LEEAnimationStyleOrientationTop | LEEAnimationStyleZoomShrink) //这里设置打开动画样式的方向为上 以及淡入效果.
+            //.LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleZoomShrink) //这里设置关闭动画样式的方向为下 以及淡出效果
             .LeeOpenAnimationStyle(LEEAnimationStyleOrientationLeft | LEEAnimationStyleFade) //这里设置打开动画样式的方向为左 以及缩放效果.
             .LeeCloseAnimationStyle(LEEAnimationStyleOrientationRight | LEEAnimationStyleFade) //这里设置关闭动画样式的方向为右 以及缩放效果
             .LeeShow();
