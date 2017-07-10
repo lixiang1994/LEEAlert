@@ -22,7 +22,7 @@
 FOUNDATION_EXPORT double LEEAlertVersionNumber;
 FOUNDATION_EXPORT const unsigned char LEEAlertVersionString[];
 
-@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAction , LEEItem , LEECustomView;
+@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAlertWindow , LEEAction , LEEItem , LEECustomView;
 
 typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
     /** 屏幕方向类型 横屏 */

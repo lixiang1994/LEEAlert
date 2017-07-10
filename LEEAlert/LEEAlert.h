@@ -66,6 +66,10 @@
 
 + (LEEAlertConfig *)actionsheet;
 
+/** 获取Alert窗口 */
+
++ (LEEAlertWindow *)getAlertWindow;
+
 /** 设置主窗口 */
 
 + (void)configMainWindow:(UIWindow *)window;
@@ -320,6 +324,8 @@
 
 @end
 
+
+@interface LEEAlertWindow : UIWindow @end
 
 @interface LEEBaseViewController : UIViewController @end
 

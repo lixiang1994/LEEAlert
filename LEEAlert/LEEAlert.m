@@ -33,7 +33,7 @@
 
 @property (nonatomic , strong ) UIWindow *mainWindow;
 
-@property (nonatomic , strong ) UIWindow *leeWindow;
+@property (nonatomic , strong ) LEEAlertWindow *leeWindow;
 
 @property (nonatomic , strong ) NSMutableArray <LEEAlertConfig *>*queueArray;
 
@@ -83,6 +83,11 @@
     return config;
 }
 
++ (LEEAlertWindow *)getAlertWindow{
+    
+    return [LEEAlert shareManager].leeWindow;
+}
+
 + (void)configMainWindow:(UIWindow *)window{
     
     if (window) [LEEAlert shareManager].mainWindow = window;
@@ -112,7 +117,7 @@
     
     if (!_leeWindow) {
         
-        _leeWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         
         _leeWindow.backgroundColor = [UIColor clearColor];
         
@@ -916,6 +921,10 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return _modelItemInsetsInfo;
 }
+
+@end
+
+@implementation LEEAlertWindow
 
 @end
 
@@ -3295,10 +3304,6 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             if ([LEEAlert shareManager].queueArray.count) {
                 
                 [LEEAlert shareManager].queueArray.lastObject.config.modelFinishConfig();
-                
-            } else {
-                
-                [LEEAlert shareManager].leeWindow = nil;
             }
             
         } else {
