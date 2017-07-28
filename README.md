@@ -12,8 +12,8 @@
 
 演示
 ==============
-![AlertDemo演示](https://github.com/lixiang1994/Resources/blob/master/Resources/alertDemo.gif)
-![ActionSheetDemo演示](https://github.com/lixiang1994/Resources/blob/master/Resources/actionSheetDemo.gif)
+![AlertDemo演示](https://github.com/lixiang1994/Resources/blob/master/LEEAlert/alertDemo.gif)
+![ActionSheetDemo演示](https://github.com/lixiang1994/Resources/blob/master/LEEAlert/actionSheetDemo.gif)
 
 
 特性
