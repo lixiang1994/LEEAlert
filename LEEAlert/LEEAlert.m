@@ -170,6 +170,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , copy ) void(^modelOpenAnimationConfigBlock)(void (^animatingBlock)() , void (^animatedBlock)());
 @property (nonatomic , copy ) void(^modelCloseAnimationConfigBlock)(void (^animatingBlock)() , void (^animatedBlock)());
 @property (nonatomic , copy ) void (^modelFinishConfig)();
+@property (nonatomic , copy ) void (^modelCloseComplete)();
 
 @property (nonatomic , assign ) LEEBackgroundStyle modelBackgroundStyle;
 @property (nonatomic , assign ) LEEAnimationStyle modelOpenAnimationStyle;
@@ -898,6 +899,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToBlock)LeeCloseComplete{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(void (^block)()){
+        
+        if (weakSelf) weakSelf.modelCloseComplete = block;
+        
+        return weakSelf;
+    };
+}
 
 #pragma mark LazyLoading
 
@@ -3310,7 +3322,8 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             
             [[LEEAlert shareManager].queueArray removeObject:strongSelf];
         }
-
+        
+        if (strongSelf.config.modelCloseComplete) strongSelf.config.modelCloseComplete();
     };
     
 }

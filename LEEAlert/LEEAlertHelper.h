@@ -122,6 +122,7 @@ typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (
 typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^)(UILabel *label));
 typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^)(UITextField *textField));
 typedef LEEAlertConfigModel *(^LEEConfigToItem)(void(^)(LEEItem *item));
+typedef LEEAlertConfigModel *(^LEEConfigToBlock)(void(^block)());
 typedef LEEAlertConfigModel *(^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)() , void (^animatedBlock)()));
 
 #endif /* LEEAlertHelper_h */

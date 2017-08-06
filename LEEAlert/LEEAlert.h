@@ -212,6 +212,11 @@
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
 
+
+
+/** 设置 当前Alert关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;
+
 @end
 
 
