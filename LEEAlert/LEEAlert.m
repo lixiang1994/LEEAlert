@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.1.0
+ *  @version    V1.1.1
  */
 
 #import "LEEAlert.h"
@@ -909,6 +909,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         return weakSelf;
     };
+    
 }
 
 #pragma mark LazyLoading
