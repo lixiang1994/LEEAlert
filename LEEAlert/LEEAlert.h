@@ -201,6 +201,9 @@
 /** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
 
+/** 设置 是否闪避键盘 -> 格式: .LeeAvoidKeyboard(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeAvoidKeyboard;
+
 /** ✨actionSheet 专用设置 */
 
 /** 设置 取消动作的间隔宽度 -> 格式: .LeeActionSheetCancelActionSpaceWidth(10.0f) */

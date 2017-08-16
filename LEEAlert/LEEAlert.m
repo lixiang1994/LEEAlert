@@ -161,6 +161,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
 @property (nonatomic , assign ) BOOL modelIsShouldAutorotate;
 @property (nonatomic , assign ) BOOL modelIsQueue;
+@property (nonatomic , assign ) BOOL modelIsAvoidKeyboard;
 
 @property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
 
@@ -220,6 +221,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsClickBackgroundClose = NO; //默认点击背景不关闭
         _modelIsShouldAutorotate = YES; //默认支持自动旋转
         _modelIsQueue = NO; //默认不加入队列
+        _modelIsAvoidKeyboard = YES; //默认闪避键盘
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
         
@@ -854,6 +856,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             item.block = block;
         });
         
+    };
+    
+}
+
+- (LEEConfigToBool)LeeAvoidKeyboard{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(BOOL is){
+        
+        if (weakSelf) weakSelf.modelIsAvoidKeyboard = is;
+        
+        return weakSelf;
     };
     
 }
@@ -1714,19 +1729,23 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notify{
     
-    double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    if (self.config.modelIsAvoidKeyboard) {
+        
+        double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        
+        keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        
+        isShowingKeyboard = keyboardFrame.origin.y < SCREEN_HEIGHT;
+        
+        [UIView beginAnimations:@"keyboardWillChangeFrame" context:NULL];
+        
+        [UIView setAnimationDuration:duration];
+        
+        [self updateAlertLayout];
+        
+        [UIView commitAnimations];
+    }
     
-    keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    isShowingKeyboard = keyboardFrame.origin.y < SCREEN_HEIGHT;
-    
-    [UIView beginAnimations:@"keyboardWillChangeFrame" context:NULL];
-    
-    [UIView setAnimationDuration:duration];
-    
-    [self updateAlertLayout];
-    
-    [UIView commitAnimations];
 }
 
 - (void)viewDidLayoutSubviews{
