@@ -74,6 +74,14 @@
 
 + (void)configMainWindow:(UIWindow *)window;
 
+/** 继续队列显示 */
+
++ (void)continueQueueDisplay;
+
+/** 清空队列 */
+
++ (void)clearQueue;
+
 /** 关闭 */
 
 + (void)closeWithCompletionBlock:(void (^)())completionBlock;
@@ -165,11 +173,17 @@
 /** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickBackgroundClose;
 
+/** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
+@property (nonatomic , copy , readonly ) LEEConfigToString LeeIdentifier;
+
 /** 设置 是否加入到队列 -> 格式: .LeeQueue(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeQueue;
 
 /** 设置 优先级 -> 格式: .LeePriority(1000) */
 @property (nonatomic , copy , readonly ) LEEConfigToInteger LeePriority;
+
+/** 设置 是否继续队列显示 -> 格式: .LeeContinueQueue(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeContinueQueueDisplay;
 
 /** 设置 window等级 -> 格式: .LeeWindowLevel(UIWindowLevel) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeWindowLevel;
@@ -217,7 +231,7 @@
 
 
 
-/** 设置 当前Alert关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
+/** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;
 
 @end

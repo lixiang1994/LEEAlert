@@ -29,108 +29,6 @@
 #define VIEW_HEIGHT CGRectGetHeight(self.view.frame)
 #define DEFAULTBORDERWIDTH (1.0f / [[UIScreen mainScreen] scale] + 0.02f)
 
-@interface LEEAlert ()
-
-@property (nonatomic , strong ) UIWindow *mainWindow;
-
-@property (nonatomic , strong ) LEEAlertWindow *leeWindow;
-
-@property (nonatomic , strong ) NSMutableArray <LEEAlertConfig *>*queueArray;
-
-@property (nonatomic , strong ) LEEBaseViewController *viewController;
-
-@end
-
-@protocol LEEAlertProtocol <NSObject>
-
-- (void)closeWithCompletionBlock:(void (^)())completionBlock;
-
-@end
-
-@implementation LEEAlert
-
-+ (LEEAlert *)shareManager{
-    
-    static LEEAlert *alertManager;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        
-        alertManager = [[LEEAlert alloc] init];
-    });
-    
-    return alertManager;
-}
-
-+ (LEEAlertConfig *)alert{
-    
-    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
-    
-    config.type = LEEAlertTypeAlert;
-    
-    return config;
-}
-
-+ (LEEAlertConfig *)actionsheet{
-    
-    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
-    
-//    config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
-    
-    config.type = LEEAlertTypeActionSheet;
-    
-    config.config.LeeClickBackgroundClose(YES);
-    
-    return config;
-}
-
-+ (LEEAlertWindow *)getAlertWindow{
-    
-    return [LEEAlert shareManager].leeWindow;
-}
-
-+ (void)configMainWindow:(UIWindow *)window{
-    
-    if (window) [LEEAlert shareManager].mainWindow = window;
-}
-
-+ (void)closeWithCompletionBlock:(void (^)())completionBlock{
-    
-    if ([LEEAlert shareManager].queueArray.count) {
-        
-        LEEAlertConfig *item = [LEEAlert shareManager].queueArray.lastObject;
-        
-        if ([item respondsToSelector:@selector(closeWithCompletionBlock:)]) [item performSelector:@selector(closeWithCompletionBlock:) withObject:completionBlock];
-    }
-    
-}
-
-#pragma mark LazyLoading
-
-- (NSMutableArray <LEEAlertConfig *>*)queueArray{
-    
-    if (!_queueArray) _queueArray = [NSMutableArray array];
-    
-    return _queueArray;
-}
-
-- (UIWindow *)leeWindow{
-    
-    if (!_leeWindow) {
-        
-        _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        
-        _leeWindow.backgroundColor = [UIColor clearColor];
-        
-        _leeWindow.windowLevel = UIWindowLevelAlert;
-        
-        _leeWindow.hidden = YES;
-    }
-    
-    return _leeWindow;
-}
-
-@end
-
 #pragma mark - ===================配置模型===================
 
 typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
@@ -161,9 +59,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
 @property (nonatomic , assign ) BOOL modelIsShouldAutorotate;
 @property (nonatomic , assign ) BOOL modelIsQueue;
+@property (nonatomic , assign ) BOOL modelIsContinueQueueDisplay;
 @property (nonatomic , assign ) BOOL modelIsAvoidKeyboard;
 
 @property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
+
+@property (nonatomic , copy ) NSString *modelIdentifier;
 
 @property (nonatomic , copy ) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType);
 @property (nonatomic , copy ) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType);
@@ -192,6 +93,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     _modelActionArray = nil;
     _modelItemArray = nil;
+    _modelItemInsetsInfo = nil;
 }
 
 - (instancetype)init
@@ -221,6 +123,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsClickBackgroundClose = NO; //默认点击背景不关闭
         _modelIsShouldAutorotate = YES; //默认支持自动旋转
         _modelIsQueue = NO; //默认不加入队列
+        _modelIsContinueQueueDisplay = YES; //默认继续队列显示
         _modelIsAvoidKeyboard = YES; //默认闪避键盘
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
@@ -705,6 +608,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToString)LeeIdentifier{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(NSString *string){
+        
+        if (weakSelf) weakSelf.modelIdentifier = string;
+        
+        return weakSelf;
+    };
+    
+}
+
 - (LEEConfigToBool)LeeQueue{
     
     __weak typeof(self) weakSelf = self;
@@ -725,6 +641,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(NSInteger number){
         
         if (weakSelf) weakSelf.modelQueuePriority = number > 0 ? number : 0;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeContinueQueueDisplay{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(BOOL is){
+        
+        if (weakSelf) weakSelf.modelIsContinueQueueDisplay = is;
         
         return weakSelf;
     };
@@ -948,6 +877,118 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (!_modelItemInsetsInfo) _modelItemInsetsInfo = [NSMutableDictionary dictionary];
     
     return _modelItemInsetsInfo;
+}
+
+@end
+
+@interface LEEAlert ()
+
+@property (nonatomic , strong ) UIWindow *mainWindow;
+
+@property (nonatomic , strong ) LEEAlertWindow *leeWindow;
+
+@property (nonatomic , strong ) NSMutableArray <LEEAlertConfig *>*queueArray;
+
+@property (nonatomic , strong ) LEEBaseViewController *viewController;
+
+@end
+
+@protocol LEEAlertProtocol <NSObject>
+
+- (void)closeWithCompletionBlock:(void (^)())completionBlock;
+
+@end
+
+@implementation LEEAlert
+
++ (LEEAlert *)shareManager{
+    
+    static LEEAlert *alertManager;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        alertManager = [[LEEAlert alloc] init];
+    });
+    
+    return alertManager;
+}
+
++ (LEEAlertConfig *)alert{
+    
+    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
+    
+    config.type = LEEAlertTypeAlert;
+    
+    return config;
+}
+
++ (LEEAlertConfig *)actionsheet{
+    
+    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
+    
+    //    config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
+    
+    config.type = LEEAlertTypeActionSheet;
+    
+    config.config.LeeClickBackgroundClose(YES);
+    
+    return config;
+}
+
++ (LEEAlertWindow *)getAlertWindow{
+    
+    return [LEEAlert shareManager].leeWindow;
+}
+
++ (void)configMainWindow:(UIWindow *)window{
+    
+    if (window) [LEEAlert shareManager].mainWindow = window;
+}
+
++ (void)continueQueueDisplay{
+    
+    if ([LEEAlert shareManager].queueArray.count) [LEEAlert shareManager].queueArray.lastObject.config.modelFinishConfig();
+}
+
++ (void)clearQueue{
+    
+    [[LEEAlert shareManager].queueArray removeAllObjects];
+}
+
++ (void)closeWithCompletionBlock:(void (^)())completionBlock{
+    
+    if ([LEEAlert shareManager].queueArray.count) {
+        
+        LEEAlertConfig *item = [LEEAlert shareManager].queueArray.lastObject;
+        
+        if ([item respondsToSelector:@selector(closeWithCompletionBlock:)]) [item performSelector:@selector(closeWithCompletionBlock:) withObject:completionBlock];
+    }
+    
+}
+
+#pragma mark LazyLoading
+
+- (NSMutableArray <LEEAlertConfig *>*)queueArray{
+    
+    if (!_queueArray) _queueArray = [NSMutableArray array];
+    
+    return _queueArray;
+}
+
+- (LEEAlertWindow *)leeWindow{
+    
+    if (!_leeWindow) {
+        
+        _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        _leeWindow.backgroundColor = [UIColor clearColor];
+        
+        _leeWindow.windowLevel = UIWindowLevelAlert;
+        
+        _leeWindow.hidden = YES;
+    }
+    
+    return _leeWindow;
 }
 
 @end
@@ -3333,10 +3374,7 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             
             [[LEEAlert shareManager].queueArray removeObject:strongSelf];
             
-            if ([LEEAlert shareManager].queueArray.count) {
-                
-                [LEEAlert shareManager].queueArray.lastObject.config.modelFinishConfig();
-            }
+            if (strongSelf.config.modelIsContinueQueueDisplay) [LEEAlert continueQueueDisplay];
             
         } else {
             
