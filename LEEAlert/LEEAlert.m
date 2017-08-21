@@ -926,8 +926,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
     
-    //    config.type = IS_IPAD ? LEEAlertTypeAlert : LEEAlertTypeActionSheet;
-    
     config.type = LEEAlertTypeActionSheet;
     
     config.config.LeeClickBackgroundClose(YES);
