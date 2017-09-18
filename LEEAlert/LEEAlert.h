@@ -174,7 +174,7 @@
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickBackgroundClose;
 
 /** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
-@property (nonatomic , copy , readonly ) LEEConfigToString LeeIdentifier;
+//@property (nonatomic , copy , readonly ) LEEConfigToString LeeIdentifier;
 
 /** 设置 是否加入到队列 -> 格式: .LeeQueue(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeQueue;

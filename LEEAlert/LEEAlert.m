@@ -28,6 +28,7 @@
 #define VIEW_WIDTH CGRectGetWidth(self.view.frame)
 #define VIEW_HEIGHT CGRectGetHeight(self.view.frame)
 #define DEFAULTBORDERWIDTH (1.0f / [[UIScreen mainScreen] scale] + 0.02f)
+#define VIEWSAFEAREAINSETS(view) ({UIEdgeInsets i; if(@available(iOS 11.0, *)) {i = view.safeAreaInsets;} else {i = UIEdgeInsetsZero;} i;})
 
 #pragma mark - ===================配置模型===================
 
@@ -1794,6 +1795,13 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
     if (!self.isShowing && !self.isClosing) [self updateAlertLayout];
 }
 
+- (void)viewSafeAreaInsetsDidChange{
+    
+    [super viewSafeAreaInsetsDidChange];
+
+    [self updateAlertLayout];
+}
+
 - (void)updateAlertLayout{
     
     [self updateAlertLayoutWithViewWidth:VIEW_WIDTH ViewHeight:VIEW_HEIGHT];
@@ -2534,6 +2542,13 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
     if (!self.isShowing && !self.isClosing) [self updateActionSheetLayout];
 }
 
+- (void)viewSafeAreaInsetsDidChange{
+    
+    [super viewSafeAreaInsetsDidChange];
+    
+    [self updateActionSheetLayout];
+}
+
 - (void)updateActionSheetLayout{
     
     [self updateActionSheetLayoutWithViewWidth:VIEW_WIDTH ViewHeight:VIEW_HEIGHT];
@@ -2684,7 +2699,7 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
     
     if (isShowed) {
         
-        containerFrame.origin.y = (viewHeight - containerFrame.size.height) - self.config.modelActionSheetBottomMargin;
+        containerFrame.origin.y = (viewHeight - containerFrame.size.height - VIEWSAFEAREAINSETS(self.view).bottom) - self.config.modelActionSheetBottomMargin;
         
     } else {
         
@@ -3287,7 +3302,7 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             })
             .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
                 
-                return SCREEN_HEIGHT - 40.0f;
+                return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
             })
             .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomEnlarge)
             .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomShrink);
@@ -3299,11 +3314,11 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             self.config
             .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
                 
-                return type == LEEScreenOrientationTypeHorizontal ? SCREEN_HEIGHT - 20.0f : SCREEN_WIDTH - 20.0f;
+                return type == LEEScreenOrientationTypeHorizontal ? SCREEN_HEIGHT - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom - 20.0f : SCREEN_WIDTH - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).left - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).right - 20.0f;
             })
             .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
                 
-                return SCREEN_HEIGHT - 40.0f;
+                return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
             })
             .LeeOpenAnimationStyle(LEEAnimationStyleOrientationBottom)
             .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom);

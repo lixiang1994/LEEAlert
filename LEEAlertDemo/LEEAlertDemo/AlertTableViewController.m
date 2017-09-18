@@ -31,6 +31,17 @@
         
     self.title = @"Alert";
     
+    if (@available(iOS 11.0, *)) {
+        
+        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    }
+    
+    self.tableView.estimatedRowHeight = 0;
+    
+    self.tableView.estimatedSectionHeaderHeight = 0;
+    
+    self.tableView.estimatedSectionFooterHeight = 0;
+    
     self.dataArray = [NSMutableArray array];
     
     NSMutableArray *baseArray = [NSMutableArray array];
