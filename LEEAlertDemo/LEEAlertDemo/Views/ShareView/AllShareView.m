@@ -16,6 +16,8 @@
 
 #import "LEEAlert.h"
 
+#define VIEWSAFEAREAINSETS(view) ({UIEdgeInsets i; if(@available(iOS 11.0, *)) {i = view.safeAreaInsets;} else {i = UIEdgeInsetsZero;} i;})
+
 @interface AllShareView ()
 
 @property (nonatomic , strong ) UIView *backGroundView; //背景视图
@@ -353,6 +355,26 @@
     }
     
     self.height = height;
+}
+
+- (void)safeAreaInsetsDidChange{
+    
+    [super safeAreaInsetsDidChange];
+    
+    self.shareScrollView.sd_layout
+    .topSpaceToView(self.backGroundView , 20)
+    .leftSpaceToView(self.backGroundView , VIEWSAFEAREAINSETS(self).left)
+    .rightSpaceToView(self.backGroundView , VIEWSAFEAREAINSETS(self).left)
+    .heightIs(100);
+    
+    if (isShowMore) {
+        
+        self.moreScrollView.sd_layout
+        .topSpaceToView(self.lineView , 10)
+        .leftSpaceToView(self.backGroundView , VIEWSAFEAREAINSETS(self).left)
+        .rightSpaceToView(self.backGroundView , VIEWSAFEAREAINSETS(self).left)
+        .heightIs(100);
+    }
 }
 
 #pragma mark - 分享按钮点击事件

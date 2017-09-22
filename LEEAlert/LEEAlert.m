@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.1.2
+ *  @version    V1.1.3
  */
 
 #import "LEEAlert.h"
@@ -1895,11 +1895,11 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             
             CGRect viewFrame = view.frame;
             
-            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left;
+            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left + VIEWSAFEAREAINSETS(view).left;
             
             viewFrame.origin.y = alertViewHeight + view.item.insets.top;
             
-            viewFrame.size.width = alertViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
+            viewFrame.size.width = alertViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
             
             if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
             
@@ -2574,11 +2574,11 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
             
             CGRect viewFrame = view.frame;
             
-            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left;
+            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left + VIEWSAFEAREAINSETS(view).left;
             
             viewFrame.origin.y = actionSheetViewHeight + view.item.insets.top;
             
-            viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right;
+            viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
             
             if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
             
@@ -3064,7 +3064,7 @@ static NSString *const LEEShadowViewHandleKeyBackgroundColor = @"backgroundColor
         
         containerFrame.origin.x = (viewWidth - containerFrame.size.width) * 0.5f;
         
-        containerFrame.origin.y = (viewHeight - containerFrame.size.height) - weakSelf.config.modelActionSheetBottomMargin;
+        containerFrame.origin.y = (viewHeight - containerFrame.size.height) - weakSelf.config.modelActionSheetBottomMargin - VIEWSAFEAREAINSETS(weakSelf.view).bottom;
         
         weakSelf.containerView.frame = containerFrame;
         
