@@ -104,7 +104,7 @@ typedef NS_OPTIONS(NSInteger, LEEAnimationStyle) {
     LEEAnimationStyleZoomShrink         = 2 << 24,
 };
 
-typedef LEEAlertConfigModel *(^LEEConfig)();
+typedef LEEAlertConfigModel *(^LEEConfig)(void);
 typedef LEEAlertConfigModel *(^LEEConfigToBool)(BOOL is);
 typedef LEEAlertConfigModel *(^LEEConfigToInteger)(NSInteger number);
 typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
@@ -118,11 +118,11 @@ typedef LEEAlertConfigModel *(^LEEConfigToInterfaceOrientationMask)(UIInterfaceO
 typedef LEEAlertConfigModel *(^LEEConfigToFloatBlock)(CGFloat(^)(LEEScreenOrientationType type));
 typedef LEEAlertConfigModel *(^LEEConfigToAction)(void(^)(LEEAction *action));
 typedef LEEAlertConfigModel *(^LEEConfigToCustomView)(void(^)(LEECustomView *custom));
-typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (^)());
+typedef LEEAlertConfigModel *(^LEEConfigToStringAndBlock)(NSString *str , void (^)(void));
 typedef LEEAlertConfigModel *(^LEEConfigToConfigLabel)(void(^)(UILabel *label));
 typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^)(UITextField *textField));
 typedef LEEAlertConfigModel *(^LEEConfigToItem)(void(^)(LEEItem *item));
-typedef LEEAlertConfigModel *(^LEEConfigToBlock)(void(^block)());
-typedef LEEAlertConfigModel *(^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)() , void (^animatedBlock)()));
+typedef LEEAlertConfigModel *(^LEEConfigToBlock)(void(^block)(void));
+typedef LEEAlertConfigModel *(^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)(void) , void (^animatedBlock)(void)));
 
 #endif /* LEEAlertHelper_h */
