@@ -6,3 +6,5 @@ xcode_scheme: LEEAlert #你需要集成测试的scheme
 
 osx_image: xcode9
 
+script:
+- xctool -project Framework/LEEAlert/LEEAlert.xcodeproj -scheme LEEAlert build test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
