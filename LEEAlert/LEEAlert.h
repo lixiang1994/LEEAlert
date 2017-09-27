@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.1.3
+ *  @version    V1.1.4
  */
 
 #import <Foundation/Foundation.h>
