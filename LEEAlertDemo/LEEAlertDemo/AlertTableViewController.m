@@ -717,7 +717,7 @@
             
             __block NSString *area = nil;
             
-            void (^resultBlock)() = ^{
+            void (^resultBlock)(void) = ^{
             
                 // 显示结果Block
                 

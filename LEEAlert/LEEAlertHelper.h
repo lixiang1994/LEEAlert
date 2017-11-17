@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.1.4
+ *  @version    V1.1.5
  */
 
 #ifndef LEEAlertHelper_h
@@ -111,6 +111,7 @@ typedef LEEAlertConfigModel *(^LEEConfigToFloat)(CGFloat number);
 typedef LEEAlertConfigModel *(^LEEConfigToString)(NSString *str);
 typedef LEEAlertConfigModel *(^LEEConfigToView)(UIView *view);
 typedef LEEAlertConfigModel *(^LEEConfigToColor)(UIColor *color);
+typedef LEEAlertConfigModel *(^LEEConfigToSize)(CGSize size);
 typedef LEEAlertConfigModel *(^LEEConfigToEdgeInsets)(UIEdgeInsets insets);
 typedef LEEAlertConfigModel *(^LEEConfigToAnimationStyle)(LEEAnimationStyle style);
 typedef LEEAlertConfigModel *(^LEEConfigToBlurEffectStyle)(UIBlurEffectStyle style);
