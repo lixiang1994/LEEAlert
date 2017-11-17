@@ -692,7 +692,7 @@
             view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                 
                 [LEEAlert closeWithCompletionBlock:^{
-                   
+                    
                     NSLog(@"选中的%@" , array);
                 }];
                 
