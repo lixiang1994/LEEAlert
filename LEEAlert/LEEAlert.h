@@ -12,8 +12,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2017年 lee. All rights reserved.
- *  @version    V1.1.5
+ *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
+ *  @version    V1.1.6
  */
 
 #import <Foundation/Foundation.h>
@@ -229,6 +229,9 @@
 
 /** ✨actionSheet 专用设置 */
 
+/** 设置 ActionSheet的背景视图颜色 -> 格式: .LeeActionSheetBackgroundColor(UIColor) */
+@property (nonatomic , copy , readonly ) LEEConfigToColor LeeActionSheetBackgroundColor;
+
 /** 设置 取消动作的间隔宽度 -> 格式: .LeeActionSheetCancelActionSpaceWidth(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetCancelActionSpaceWidth;
 
@@ -237,8 +240,6 @@
 
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
-
-
 
 /** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;

@@ -67,7 +67,7 @@ typedef SDAutoLayoutModel *(^MarginEqualToView)(UIView *toView);
 typedef SDAutoLayoutModel *(^WidthHeight)(CGFloat value);
 typedef SDAutoLayoutModel *(^WidthHeightEqualToView)(UIView *toView, CGFloat ratioValue);
 typedef SDAutoLayoutModel *(^AutoHeightWidth)(CGFloat ratioValue);
-typedef SDAutoLayoutModel *(^SameWidthHeight)();
+typedef SDAutoLayoutModel *(^SameWidthHeight)(void);
 typedef SDAutoLayoutModel *(^Offset)(CGFloat value);
 typedef void (^SpaceToSuperView)(UIEdgeInsets insets);
 
