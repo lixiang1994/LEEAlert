@@ -2,6 +2,10 @@
 # LEEAlert - 更新日志
 
 
+V1.1.7
+==============
+- LEEAction增加`backgroundImage`和`backgroundHighlightImage`属性, 用于设置action的背景样式, 与 `backgroundColor`..属性相同.
+
 V1.1.6
 ==============
 - 增加ActionSheet背景视图颜色设置方法, 可通过设置颜色解决填充底部间隙的效果.
