@@ -1099,7 +1099,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 + (LEEItemView *)view{
     
-    return [[LEEItemView alloc] init];;
+    return [[LEEItemView alloc] init];
 }
 
 @end
