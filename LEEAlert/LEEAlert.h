@@ -288,11 +288,17 @@
 /** action高亮标题颜色 */
 @property (nonatomic , strong ) UIColor *highlightColor;
 
-/** action背景颜色 */
+/** action背景颜色 (与 backgroundImage 相同) */
 @property (nonatomic , strong ) UIColor *backgroundColor;
 
 /** action高亮背景颜色 */
 @property (nonatomic , strong ) UIColor *backgroundHighlightColor;
+
+/** action背景图片 (与 backgroundColor 相同) */
+@property (nonatomic , strong ) UIImage *backgroundImage;
+
+/** action高亮背景图片 */
+@property (nonatomic , strong ) UIImage *backgroundHighlightImage;
 
 /** action图片 */
 @property (nonatomic , strong ) UIImage *image;
