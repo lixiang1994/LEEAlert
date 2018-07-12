@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.1.8
+ *  @version    V1.1.9
  */
 
 #import "LEEAlert.h"
@@ -1454,6 +1454,10 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
     
     UIView *view = (UIView *)object;
+    
+    if (self.isAutoWidth) {
+        self.size = CGSizeMake(view.frame.size.width, self.size.height);
+    }
     
     if (!CGSizeEqualToSize(self.size, view.frame.size)) {
         
