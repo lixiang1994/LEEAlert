@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.1.9
+ *  @version    V1.2.0
  */
 
 #ifndef LEEAlertHelper_h
@@ -125,5 +125,7 @@ typedef LEEAlertConfigModel *(^LEEConfigToConfigTextField)(void(^)(UITextField *
 typedef LEEAlertConfigModel *(^LEEConfigToItem)(void(^)(LEEItem *item));
 typedef LEEAlertConfigModel *(^LEEConfigToBlock)(void(^block)(void));
 typedef LEEAlertConfigModel *(^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)(void) , void (^animatedBlock)(void)));
+
+typedef LEEAlertConfigModel *(^LEEConfigToStatusBarStyle)(UIStatusBarStyle style);
 
 #endif /* LEEAlertHelper_h */

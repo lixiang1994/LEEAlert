@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.1.9
+ *  @version    V1.2.0
  */
 
 #import "LEEAlert.h"
@@ -82,6 +82,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) LEEAnimationStyle modelOpenAnimationStyle;
 @property (nonatomic , assign ) LEEAnimationStyle modelCloseAnimationStyle;
 
+@property (nonatomic , assign ) UIStatusBarStyle modelStatusBarStyle;
 @property (nonatomic , assign ) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
 @property (nonatomic , assign ) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
 
@@ -792,6 +793,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(LEEAnimationStyle style){
         
         if (weakSelf) weakSelf.modelCloseAnimationStyle = style;
+        
+        return weakSelf;
+    };
+    
+}
+
+- (LEEConfigToStatusBarStyle)LeeStatusBarStyle{
+    
+    __weak typeof(self) weakSelf = self;
+    
+    return ^(UIStatusBarStyle style){
+        
+        if (weakSelf) weakSelf.modelStatusBarStyle = style;
         
         return weakSelf;
     };
@@ -1547,6 +1561,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     
+    [super touchesBegan:touches withEvent:event];
+    
     if (self.config.modelIsClickBackgroundClose) [self closeAnimationsWithCompletionBlock:nil];
 }
 
@@ -1596,6 +1612,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations{
     
     return self.config.modelSupportedInterfaceOrientations;
+}
+
+#pragma mark - 状态栏
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    
+    return self.config.modelStatusBarStyle;
 }
 
 @end

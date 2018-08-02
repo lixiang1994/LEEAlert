@@ -1,6 +1,11 @@
 
 # LEEAlert - 更新日志
 
+V1.2.0
+==============
+增加状态栏样式设置
+`.LeeStatusBarStyle(UIStatusBarStyleLightContent)`
+
 V1.1.9
 ==============
 修复自定义视图自动适应宽度的计算异常问题

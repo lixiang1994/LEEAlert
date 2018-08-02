@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.1.9
+ *  @version    V1.2.0
  */
 
 #import <Foundation/Foundation.h>
@@ -214,6 +214,9 @@
 
 /** 设置 关闭动画样式 -> 格式: .LeeCloseAnimationStyle() */
 @property (nonatomic , copy , readonly ) LEEConfigToAnimationStyle LeeCloseAnimationStyle;
+
+/** 设置 状态栏样式 -> 格式: .LeeStatusBarStyle(UIStatusBarStyleDefault) */
+@property (nonatomic , copy , readonly ) LEEConfigToStatusBarStyle LeeStatusBarStyle;
 
 
 /** 显示  -> 格式: .LeeShow() */
