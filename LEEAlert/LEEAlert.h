@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.0
+ *  @version    V1.2.1
  */
 
 #import <Foundation/Foundation.h>
@@ -62,17 +62,17 @@
 
 /** 初始化 */
 
-+ (LEEAlertConfig *)alert;
++ (nonnull LEEAlertConfig *)alert;
 
-+ (LEEAlertConfig *)actionsheet;
++ (nonnull LEEAlertConfig *)actionsheet;
 
 /** 获取Alert窗口 */
 
-+ (LEEAlertWindow *)getAlertWindow;
++ (nonnull LEEAlertWindow *)getAlertWindow;
 
 /** 设置主窗口 */
 
-+ (void)configMainWindow:(UIWindow *)window;
++ (void)configMainWindow:(UIWindow * _Nonnull)window;
 
 /** 继续队列显示 */
 
@@ -346,7 +346,7 @@
 @interface LEECustomView : NSObject
 
 /** 自定义视图对象 */
-@property (nonatomic , strong ) UIView *view;
+@property (nonatomic , strong, nonnull ) UIView *view;
 
 /** 自定义视图位置类型 (默认为居中) */
 @property (nonatomic , assign ) LEECustomViewPositionType positionType;
@@ -358,7 +358,7 @@
 
 @interface LEEAlertConfig : NSObject
 
-@property (nonatomic , strong ) LEEAlertConfigModel *config;
+@property (nonatomic , strong, nonnull ) LEEAlertConfigModel *config;
 
 @property (nonatomic , assign ) LEEAlertType type;
 
