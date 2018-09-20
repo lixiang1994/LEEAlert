@@ -30,6 +30,8 @@
 		9BBEF12B1EE682EB000B91F9 /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9BBEF12A1EE682EB000B91F9 /* address.plist */; };
 		9BF6B30D1F0636EB00C099A1 /* AllShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6B30A1F0636EB00C099A1 /* AllShareView.m */; };
 		9BF6B30E1F0636EB00C099A1 /* ShareButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6B30C1F0636EB00C099A1 /* ShareButton.m */; };
+		C9B83DA12153928C00404492 /* NibView.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DA02153928C00404492 /* NibView.m */; };
+		C9B83DA32153929800404492 /* NibView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9B83DA22153929800404492 /* NibView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,9 @@
 		9BF6B30A1F0636EB00C099A1 /* AllShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AllShareView.m; sourceTree = "<group>"; };
 		9BF6B30B1F0636EB00C099A1 /* ShareButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareButton.h; sourceTree = "<group>"; };
 		9BF6B30C1F0636EB00C099A1 /* ShareButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareButton.m; sourceTree = "<group>"; };
+		C9B83D9F2153928C00404492 /* NibView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NibView.h; sourceTree = "<group>"; };
+		C9B83DA02153928C00404492 /* NibView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NibView.m; sourceTree = "<group>"; };
+		C9B83DA22153929800404492 /* NibView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NibView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +204,7 @@
 		9B14146D1ED52EB600173BB9 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C9B83D9E2153915A00404492 /* NibView */,
 				9B1415381EE3ADFA00173BB9 /* SelectedListView */,
 				9B1414C31ED69D0200173BB9 /* FontSizeView */,
 				9B1414BF1ED6833B00173BB9 /* SignFinishView */,
@@ -288,6 +294,16 @@
 			);
 			name = LEEAlert;
 			path = ../../LEEAlert;
+			sourceTree = "<group>";
+		};
+		C9B83D9E2153915A00404492 /* NibView */ = {
+			isa = PBXGroup;
+			children = (
+				C9B83D9F2153928C00404492 /* NibView.h */,
+				C9B83DA02153928C00404492 /* NibView.m */,
+				C9B83DA22153929800404492 /* NibView.xib */,
+			);
+			path = NibView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -402,6 +418,7 @@
 				9B0BB2381E8E28760087D231 /* LaunchScreen.storyboard in Resources */,
 				9BBEF12B1EE682EB000B91F9 /* address.plist in Resources */,
 				9B0BB2351E8E28760087D231 /* Assets.xcassets in Resources */,
+				C9B83DA32153929800404492 /* NibView.xib in Resources */,
 				9B0BB2331E8E28760087D231 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -443,6 +460,7 @@
 				9B1414C21ED6834800173BB9 /* SignFinishView.m in Sources */,
 				9B98146F1ECD696E00014BD3 /* ActionSheetTableViewController.m in Sources */,
 				9B1414691ED455FF00173BB9 /* TabBarViewController.m in Sources */,
+				C9B83DA12153928C00404492 /* NibView.m in Sources */,
 				9B98146C1ECD695F00014BD3 /* AlertTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -18,6 +18,8 @@
 
 #import "SelectedListView.h"
 
+#import "NibView.h"
+
 @interface AlertTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -79,6 +81,8 @@
     [baseArray addObject:@{@"title" : @"显示一个自定义动画配置的 alert 弹框" , @"content" : @"可自定义打开与关闭的动画配置(UIView 动画)"}];
     
     [baseArray addObject:@{@"title" : @"显示一个自定义动画样式的 alert 弹框" , @"content" : @"动画样式可设置动画方向, 淡入淡出, 缩放等"}];
+    
+    [baseArray addObject:@{@"title" : @"显示一个带XIB自定义视图的 alert 弹框" , @"content" : @"自定义视图的size发生改变时 会自动适应其改变."}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
@@ -545,6 +549,31 @@
             .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom | LEEAnimationStyleFade) //这里设置关闭动画样式的方向为下 以及淡出效果
             //.LeeOpenAnimationStyle(LEEAnimationStyleOrientationLeft | LEEAnimationStyleZoomEnlarge) //这里设置打开动画样式的方向为左 以及缩放效果.
             //.LeeCloseAnimationStyle(LEEAnimationStyleOrientationRight | LEEAnimationStyleZoomEnlarge) //这里设置关闭动画样式的方向为右 以及缩放效果
+            .LeeShow();
+        }
+            break;
+        
+        case 14:
+        {
+            
+            NibView *view = [NibView instance];
+            
+            // Nib形式请设置UIViewAutoresizingNone
+            view.autoresizingMask = UIViewAutoresizingNone;
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(30, 10, 30, 10)) // 想为哪一项设置间距范围 直接在其后面设置即可 ()
+            .LeeContent(@"内容")
+            .LeeItemInsets(UIEdgeInsetsMake(10, 10, 10, 10)) // 这个间距范围就是对content设置的
+            .LeeAction(@"确认", nil)
+            .LeeCancelAction(@"取消", nil)
             .LeeShow();
         }
             break;
