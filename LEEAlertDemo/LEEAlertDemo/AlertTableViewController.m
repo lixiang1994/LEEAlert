@@ -919,7 +919,10 @@
                 
                 action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
                 
-                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                action.borderPosition = LEEActionBorderPositionTop
+                | LEEActionBorderPositionBottom
+                | LEEActionBorderPositionLeft
+                | LEEActionBorderPositionRight;
                 
                 action.borderWidth = 1.0f;
                 
@@ -939,7 +942,10 @@
                 
                 action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
                 
-                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                action.borderPosition = LEEActionBorderPositionTop
+                | LEEActionBorderPositionBottom
+                | LEEActionBorderPositionLeft
+                | LEEActionBorderPositionRight;
                 
                 action.borderWidth = 1.0f;
                 
@@ -961,7 +967,10 @@
                 
                 action.insets = UIEdgeInsetsMake(0, 10, 10, 10);
                 
-                action.borderPosition = LEEActionBorderPositionTop | LEEActionBorderPositionBottom | LEEActionBorderPositionLeft | LEEActionBorderPositionRight;
+                action.borderPosition = LEEActionBorderPositionTop
+                | LEEActionBorderPositionBottom
+                | LEEActionBorderPositionLeft
+                | LEEActionBorderPositionRight;
                 
                 action.borderWidth = 1.0f;
                 
