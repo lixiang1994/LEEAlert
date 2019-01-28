@@ -1707,15 +1707,15 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             switch (custom.positionType) {
                 case LEECustomViewPositionTypeCenter:
-                viewFrame.origin.x = (alertViewMaxWidth - viewFrame.size.width) * 0.5f;
+                    viewFrame.origin.x = (alertViewMaxWidth - viewFrame.size.width) * 0.5f;
                     break;
                     
                 case LEECustomViewPositionTypeLeft:
-                viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
+                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
                     break;
                 
                 case LEECustomViewPositionTypeRight:
-                viewFrame.origin.x = alertViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
+                    viewFrame.origin.x = alertViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
                     break;
                     
                 default:
