@@ -5,7 +5,7 @@
 [![](http://img.shields.io/cocoapods/v/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
 [![](http://img.shields.io/cocoapods/p/LEEAlert.svg?style=flat)](http://cocoapods.org/?q=LEEAlert)&nbsp;
 [![](https://img.shields.io/badge/support-iOS8%2B-blue.svg?style=flat)](https://www.apple.com/nl/ios/)&nbsp;
-[![](https://img.shields.io/badge/Xcode-9.0-blue.svg)](https://developer.apple.com/xcode/)&nbsp;
+[![](https://img.shields.io/badge/Xcode-10.0-blue.svg)](https://developer.apple.com/xcode/)&nbsp;
 [![](https://img.shields.io/badge/language-Objective--C-f48041.svg?style=flat)](https://www.apple.com/)&nbsp;
 ![Build Status](https://travis-ci.org/lixiang1994/LEEAlert.svg?branch=master)&nbsp;
 ![](https://img.shields.io/cocoapods/dt/LEEAlert.svg)
@@ -273,20 +273,25 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeShouldAutorotate(YES) // 是否支持自动旋转 默认为NO
     .LeeSupportedInterfaceOrientations(UIInterfaceOrientationMaskAll) // 支持的旋转方向 默认为UIInterfaceOrientationMaskAll
     .LeeClickHeaderClose(YES) // 点击弹框进行关闭 默认为NO
-    .LeeClickBackgroundClose(YES) 	// 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
+    .LeeClickBackgroundClose(YES) // 设置点击背景进行关闭 Alert默认 NO , ActionSheet默认 YES
     .LeeCloseComplete(^{ 
     	// 关闭回调事件
     })
     .LeeShow();
 ```
 
-### 关闭当前显示
+### 关闭显示
 
 ```
+    // 关闭指定标识的Alert或ActionSheet
+    [LEEAlert closeWithIdentifier:@"xxxx" completionBlock:^{
+        // 关闭完成
+    }];
+
     // 关闭当前显示的Alert或ActionSheet
     [LEEAlert closeWithCompletionBlock:^{
     	
-    	//如果在关闭后需要做一些其他操作 建议在该Block中进行
+    	// 如果在关闭后需要做一些其他操作 建议在该Block中进行
     }];
 ```
 
