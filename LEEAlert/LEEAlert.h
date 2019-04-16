@@ -57,6 +57,7 @@
  *****************************************************
  */
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface LEEAlert : NSObject
 
@@ -84,7 +85,7 @@
 
 /** 关闭 */
 
-+ (void)closeWithCompletionBlock:(void (^)(void))completionBlock;
++ (void)closeWithCompletionBlock:(void (^ _Nullable)(void))completionBlock;
 
 @end
 
@@ -337,7 +338,7 @@
 @property (nonatomic , assign ) BOOL isClickNotClose;
 
 /** action点击事件回调Block */
-@property (nonatomic , copy ) void (^clickBlock)(void);
+@property (nonatomic , copy ) void (^ _Nullable clickBlock)(void);
 
 - (void)update;
 
@@ -372,3 +373,5 @@
 @interface LEEAlertViewController : LEEBaseViewController @end
 
 @interface LEEActionSheetViewController : LEEBaseViewController @end
+
+NS_ASSUME_NONNULL_END
