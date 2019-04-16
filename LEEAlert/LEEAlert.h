@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.1
+ *  @version    V1.2.2
  */
 
 #import <Foundation/Foundation.h>
@@ -68,23 +68,29 @@ NS_ASSUME_NONNULL_BEGIN
 + (nonnull LEEAlertConfig *)actionsheet;
 
 /** 获取Alert窗口 */
-
 + (nonnull LEEAlertWindow *)getAlertWindow;
 
 /** 设置主窗口 */
-
-+ (void)configMainWindow:(UIWindow * _Nonnull)window;
++ (void)configMainWindow:(UIWindow *)window;
 
 /** 继续队列显示 */
-
 + (void)continueQueueDisplay;
 
 /** 清空队列 */
-
 + (void)clearQueue;
 
-/** 关闭 */
+/**
+ 关闭指定标识 
 
+ @param identifier 标识
+ */
++ (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^ _Nullable)(void))completionBlock;
+
+/**
+ 关闭当前
+
+ @param completionBlock 关闭完成回调
+ */
 + (void)closeWithCompletionBlock:(void (^ _Nullable)(void))completionBlock;
 
 @end
@@ -184,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeShadowColor;
 
 /** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
-//@property (nonatomic , copy , readonly ) LEEConfigToString LeeIdentifier;
+@property (nonatomic , copy , readonly ) LEEConfigToString LeeIdentifier;
 
 /** 设置 是否加入到队列 -> 格式: .LeeQueue(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeQueue;

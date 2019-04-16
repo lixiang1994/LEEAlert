@@ -84,6 +84,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个带XIB自定义视图的 alert 弹框" , @"content" : @"自定义视图的size发生改变时 会自动适应其改变."}];
     
+    [baseArray addObject:@{@"title" : @"显示多个带Identifier的 alert 弹框" , @"content" : @"关闭指定Identifier的alert."}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
@@ -578,6 +580,54 @@
         }
             break;
             
+        case 15:
+        {
+            /*
+             场景模拟: 同时有3个需要 alert 显示, 一个显示中, 其余在队列中等待显示, 此时发生某些情况需要移除指定某个alert.
+             
+             为不同alert设置.LeeIdentifier(@"xxx")
+             通过 [LEEAlert closeWithIdentifier: completionBlock:] 方法关闭指定Identifier的alert.
+             
+             注意:
+             当关闭指定的alert正在显示时则与正常关闭相同.
+             当关闭指定的alert在队列中等待时会直接移除.
+             当队列中存在相同Identifier的alert时 会移除所匹配到的全部alert.
+             */
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"alert 1")
+            .LeeCancelAction(@"取消", nil)
+            .LeeAction(@"确认", nil)
+            .LeeIdentifier(@"1")
+            .LeeQueue(YES) // 添加到队列
+            .LeeShow();
+            
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"alert 2")
+            .LeeCancelAction(@"取消", nil)
+            .LeeAction(@"确认", nil)
+            .LeeIdentifier(@"2")
+            .LeeQueue(YES) // 添加到队列
+            .LeeShow();
+            
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"alert 3")
+            .LeeCancelAction(@"取消", nil)
+            .LeeAction(@"确认", nil)
+            .LeeIdentifier(@"3")
+            .LeeQueue(YES) // 添加到队列
+            .LeeShow();
+            
+            // 模拟5秒后关闭指定标识的alert
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [LEEAlert closeWithIdentifier:@"2" completionBlock:^{
+                    // 关闭完成
+                }];
+            });
+        }
+            break;
         default:
             break;
     }

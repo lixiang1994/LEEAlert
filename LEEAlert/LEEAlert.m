@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.1
+ *  @version    V1.2.2
  */
 
 #import "LEEAlert.h"
@@ -910,6 +910,48 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 + (void)clearQueue{
     
     [[LEEAlert shareManager].queueArray removeAllObjects];
+}
+
++ (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^)(void))completionBlock{
+    
+    if ([LEEAlert shareManager].queueArray.count) {
+        
+        BOOL isLast = false;
+        
+        NSUInteger count = [LEEAlert shareManager].queueArray.count;
+        
+        NSMutableIndexSet *indexs = [[NSMutableIndexSet alloc] init];
+        
+        for (NSUInteger i = 0; i < count; i++) {
+            
+            LEEAlertConfig *config = [LEEAlert shareManager].queueArray[i];
+            
+            LEEAlertConfigModel *model = config.config;
+            
+            if (model.modelIdentifier != nil && [identifier isEqualToString: model.modelIdentifier]) {
+                
+                if (i == count - 1 && [[LEEAlert shareManager] viewController]) {
+                    
+                    isLast = true;
+                    
+                } else {
+                    
+                    [indexs addIndex:i];
+                }
+            }
+        }
+        
+        [[LEEAlert shareManager].queueArray removeObjectsAtIndexes:indexs];
+        
+        if (isLast) {
+        
+            [LEEAlert closeWithCompletionBlock:completionBlock];
+        
+        } else {
+            
+            completionBlock();
+        }
+    }
 }
 
 + (void)closeWithCompletionBlock:(void (^)(void))completionBlock{
