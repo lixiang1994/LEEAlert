@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.2
+ *  @version    V1.2.3
  */
 
 #import <Foundation/Foundation.h>
@@ -83,8 +83,18 @@ NS_ASSUME_NONNULL_BEGIN
  关闭指定标识 
 
  @param identifier 标识
+ @param completionBlock 关闭完成回调
  */
 + (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^ _Nullable)(void))completionBlock;
+
+/**
+ 关闭指定标识
+
+ @param identifier 标识
+ @param force 是否强制关闭
+ @param completionBlock 关闭完成回调
+ */
++ (void)closeWithIdentifier:(NSString *)identifier force:(BOOL)force completionBlock:(void (^ _Nullable)(void))completionBlock;
 
 /**
  关闭当前
@@ -250,6 +260,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
+
+/** 设置 是否可以关闭 -> 格式: .leeShouldClose(^{ return YES; }) */
+@property (nonatomic, copy, readonly ) LEEConfigToBlockReturnBool leeShouldClose;
+
+/** 设置 是否可以关闭(Action 点击) -> 格式: .leeShouldActionClickClose(^(NSInteger index){ return YES; }) */
+@property (nonatomic, copy, readonly ) LEEConfigToBlockIntegerReturnBool leeShouldActionClickClose;
 
 /** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;

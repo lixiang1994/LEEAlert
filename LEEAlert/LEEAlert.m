@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.2
+ *  @version    V1.2.3
  */
 
 #import "LEEAlert.h"
@@ -76,6 +76,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , copy ) void(^modelOpenAnimationConfigBlock)(void (^animatingBlock)(void) , void (^animatedBlock)(void));
 @property (nonatomic , copy ) void(^modelCloseAnimationConfigBlock)(void (^animatingBlock)(void) , void (^animatedBlock)(void));
 @property (nonatomic , copy ) void (^modelFinishConfig)(void);
+@property (nonatomic , copy ) BOOL (^modelShouldClose)(void);
+@property (nonatomic , copy ) BOOL (^modelShouldActionClickClose)(NSInteger);
 @property (nonatomic , copy ) void (^modelCloseComplete)(void);
 
 @property (nonatomic , assign ) LEEBackgroundStyle modelBackgroundStyle;
@@ -169,7 +171,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
         };
         
+        _modelShouldClose = ^{
+            return YES;
+        };
         
+        _modelShouldActionClickClose = ^(NSInteger index){
+            return YES;
+        };
     }
     return self;
 }
@@ -804,6 +812,28 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToBlockReturnBool)leeShouldClose{
+    
+    return ^(BOOL (^block)(void)){
+        
+        self.modelShouldClose = block;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBlockIntegerReturnBool)leeShouldActionClickClose{
+    
+    return ^(BOOL (^block)(NSInteger index)){
+        
+        self.modelShouldActionClickClose = block;
+        
+        return self;
+    };
+    
+}
+
 - (LEEConfigToBlock)LeeCloseComplete{
     
     return ^(void (^block)(void)){
@@ -912,7 +942,11 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [[LEEAlert shareManager].queueArray removeAllObjects];
 }
 
-+ (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^)(void))completionBlock{
++ (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^ _Nullable)(void))completionBlock{
+    [self closeWithIdentifier:identifier force:NO completionBlock:completionBlock];
+}
+
++ (void)closeWithIdentifier:(NSString *)identifier force:(BOOL)force completionBlock:(void (^)(void))completionBlock{
     
     if ([LEEAlert shareManager].queueArray.count) {
         
@@ -931,6 +965,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             if (model.modelIdentifier != nil && [identifier isEqualToString: model.modelIdentifier]) {
                 
                 if (i == count - 1 && [[LEEAlert shareManager] viewController]) {
+                    if (force) {
+                        model.modelShouldClose = ^{ return YES; };
+                    }
                     
                     isLast = true;
                     
@@ -2014,48 +2051,43 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (void)buttonAction:(UIButton *)sender{
+- (void)buttonAction:(LEEActionButton *)sender{
     
     BOOL isClose = NO;
     
     void (^clickBlock)(void) = nil;
     
-    for (LEEActionButton *button in self.alertActionArray) {
-        
-        if (button == sender) {
+    switch (sender.action.type) {
             
-            switch (button.action.type) {
-                    
-                case LEEActionTypeDefault:
-                
-                    isClose = button.action.isClickNotClose ? NO : YES;
-                    
-                    break;
-                    
-                case LEEActionTypeCancel:
-                
-                    isClose = YES;
-                
-                    break;
-                    
-                case LEEActionTypeDestructive:
-                
-                    isClose = YES;
-                
-                    break;
-                
-                default:
-                    break;
-            }
+        case LEEActionTypeDefault:
             
-            clickBlock = button.action.clickBlock;
+            isClose = sender.action.isClickNotClose ? NO : YES;
             
             break;
-        }
-        
+            
+        case LEEActionTypeCancel:
+            
+            isClose = YES;
+            
+            break;
+            
+        case LEEActionTypeDestructive:
+            
+            isClose = YES;
+            
+            break;
+            
+        default:
+            break;
     }
     
+    clickBlock = sender.action.clickBlock;
+    
+    NSInteger index = [self.alertActionArray indexOfObject:sender];
+    
     if (isClose) {
+        
+        if (self.config.modelShouldActionClickClose && !self.config.modelShouldActionClickClose(index)) return;
         
         [self closeAnimationsWithCompletionBlock:^{
             
@@ -2178,6 +2210,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [super closeAnimationsWithCompletionBlock:completionBlock];
     
     if (self.isClosing) return;
+    if (self.config.modelShouldClose && !self.config.modelShouldClose()) return;
     
     self.isClosing = YES;
     
@@ -2682,7 +2715,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         switch (action.type) {
             case LEEActionTypeCancel:
             {
-                [button addTarget:self action:@selector(cancelButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+                [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
                 button.layer.cornerRadius = self.config.modelCornerRadius;
                 
@@ -2732,47 +2765,46 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (void)buttonAction:(UIButton *)sender{
+- (void)buttonAction:(LEEActionButton *)sender{
     
     BOOL isClose = NO;
-    
+    NSInteger index = 0;
     void (^clickBlock)(void) = nil;
     
-    for (LEEActionButton *button in self.actionSheetActionArray) {
-        
-        if (button == sender) {
+    switch (sender.action.type) {
+        case LEEActionTypeDefault:
             
-            switch (button.action.type) {
-                case LEEActionTypeDefault:
-                    
-                    isClose = button.action.isClickNotClose ? NO : YES;
-                
-                    break;
-                    
-                case LEEActionTypeCancel:
-                    
-                    isClose = YES;
-                    
-                    break;
-                    
-                case LEEActionTypeDestructive:
-                    
-                    isClose = YES;
-                    
-                    break;
-                    
-                default:
-                    break;
-            }
+            isClose = sender.action.isClickNotClose ? NO : YES;
             
-            clickBlock = button.action.clickBlock;
+            index = [self.actionSheetActionArray indexOfObject:sender];
             
             break;
-        }
-        
+            
+        case LEEActionTypeCancel:
+            
+            isClose = YES;
+            
+            index = self.actionSheetActionArray.count;
+            
+            break;
+            
+        case LEEActionTypeDestructive:
+            
+            isClose = YES;
+            
+            index = [self.actionSheetActionArray indexOfObject:sender];
+            
+            break;
+            
+        default:
+            break;
     }
     
+    clickBlock = sender.action.clickBlock;
+    
     if (isClose) {
+        
+        if (self.config.modelShouldActionClickClose && !self.config.modelShouldActionClickClose(index)) return;
         
         [self closeAnimationsWithCompletionBlock:^{
             
@@ -2783,17 +2815,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         if (clickBlock) clickBlock();
     }
-    
-}
-
-- (void)cancelButtonAction:(UIButton *)sender{
-    
-    void (^clickBlock)(void) = self.actionSheetCancelAction.action.clickBlock;
-    
-    [self closeAnimationsWithCompletionBlock:^{
-        
-        if (clickBlock) clickBlock();
-    }];
     
 }
 
@@ -2917,6 +2938,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [super closeAnimationsWithCompletionBlock:completionBlock];
     
     if (self.isClosing) return;
+    if (self.config.modelShouldClose && !self.config.modelShouldClose()) return;
     
     self.isClosing = YES;
     
