@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.3
+ *  @version    V1.2.4
  */
 
 #import "LEEAlert.h"
@@ -66,6 +66,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) BOOL modelIsAvoidKeyboard;
 
 @property (nonatomic , assign ) CGSize modelShadowOffset;
+@property (nonatomic , assign ) CGPoint modelAlertCenterOffset;
 @property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
 
 @property (nonatomic , copy ) NSString *modelIdentifier;
@@ -751,6 +752,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             item.block = block;
         });
         
+    };
+    
+}
+    
+- (LEEConfigToPoint)LeeAlertCenterOffset {
+    
+    return ^(CGPoint offset){
+        
+        self.modelAlertCenterOffset = offset;
+        
+        return self;
     };
     
 }
@@ -1677,6 +1689,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     CGFloat alertViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
     
+    CGPoint offset = self.config.modelAlertCenterOffset;
+    
     if (isShowingKeyboard) {
         
         if (keyboardFrame.size.height) {
@@ -1691,7 +1705,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             CGFloat tempAlertViewY = keyboardY - tempAlertViewHeight - 10;
             
-            CGFloat originalAlertViewY = (viewHeight - alertViewFrame.size.height) * 0.5f;
+            CGFloat originalAlertViewY = (viewHeight - alertViewFrame.size.height) * 0.5f + offset.y;
             
             alertViewFrame.size.height = tempAlertViewHeight;
             
@@ -1705,7 +1719,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             containerFrame.size.height = alertViewFrame.size.height;
             
-            containerFrame.origin.x = (viewWidth - alertViewFrame.size.width) * 0.5f;
+            containerFrame.origin.x = (viewWidth - alertViewFrame.size.width) * 0.5f + offset.x;
             
             containerFrame.origin.y = tempAlertViewY < originalAlertViewY ? tempAlertViewY : originalAlertViewY;
             
@@ -1732,9 +1746,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         containerFrame.size.height = alertViewFrame.size.height;
         
-        containerFrame.origin.x = (viewWidth - alertViewMaxWidth) * 0.5f;
+        containerFrame.origin.x = (viewWidth - alertViewMaxWidth) * 0.5f + offset.x;
         
-        containerFrame.origin.y = (viewHeight - alertViewFrame.size.height) * 0.5f;
+        containerFrame.origin.y = (viewHeight - alertViewFrame.size.height) * 0.5f + offset.y;
         
         self.containerView.frame = containerFrame;
     }

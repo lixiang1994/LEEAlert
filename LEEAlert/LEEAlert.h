@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.3
+ *  @version    V1.2.4
  */
 
 #import <Foundation/Foundation.h>
@@ -244,6 +244,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
 
+/** 设置 中心点偏移 -> 格式: .LeeCenterOffset(CGPointMake(0, 0)) */
+@property (nonatomic , copy , readonly ) LEEConfigToPoint LeeAlertCenterOffset;
+    
 /** 设置 是否闪避键盘 -> 格式: .LeeAvoidKeyboard(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeAvoidKeyboard;
 
