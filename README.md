@@ -332,7 +332,7 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 
 许可证
 ==============
-LEEAlert 使用 MIT 许可证，详情见 LICENSE 文件。
+LEEAlert 使用 MIT 许可证，详情见 [LICENSE](LICENSE) 文件。
 
 
 友情链接
