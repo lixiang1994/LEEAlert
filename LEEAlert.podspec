@@ -6,7 +6,7 @@ s.summary      = "优雅的Alert ActionSheet"
 
 s.homepage     = "https://github.com/lixiang1994/LEEAlert"
 
-s.license      = "GPL"
+s.license      = "MIT"
 
 s.author       = { "LEE" => "18611401994@163.com" }
 
