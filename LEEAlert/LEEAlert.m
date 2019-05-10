@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.4
+ *  @version    V1.2.5
  */
 
 #import "LEEAlert.h"
@@ -1731,6 +1731,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     } else {
         
         [self updateAlertItemsLayout];
+        
+        alertViewMaxHeight -= ABS(offset.y);
         
         CGRect alertViewFrame = self.alertView.frame;
         

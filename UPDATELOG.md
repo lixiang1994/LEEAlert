@@ -1,6 +1,34 @@
 
 # LEEAlert - 更新日志
 
+V1.2.5
+==============
+修改开源协议为MIT
+优化中心偏移后超出屏幕的边界问题
+
+V1.2.4
+==============
+增加Alert中心位置偏移设置
+`.LeeAlertCenterOffset(CGPointMake(0, 0))`
+
+V1.2.3
+==============
+增加关闭拦截特性
+增加是否可以关闭回调设置 返回YES则执行关闭处理 返回NO 则放弃关闭
+`.leeShouldClose(^{ return YES; })`
+
+增加Action点击是否可以关闭回调设置 返回YES则执行关闭处理 返回NO 则放弃关闭
+`.leeShouldActionClickClose(^(NSInteger index){ return YES; })`
+
+增加关闭指定标识的方法 可设置是否强制关闭, 如果强制`.leeShouldClose`设置变为无效.
+`+ (void)closeWithIdentifier:(NSString *)identifier force:(BOOL)force completionBlock:(void (^ _Nullable)(void))completionBlock;`
+
+V1.2.2
+==============
+增加标识特性
+增加 `.LeeIdentifier(@"xxx")` 标识设置方法
+增加 `[LEEAlert closeWithIdentifier: completionBlock:]` 关闭指定标识的alert或actionsheet
+
 V1.2.1
 ==============
 优化Swift调用语法 增加nonnull修饰
