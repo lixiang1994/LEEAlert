@@ -12,8 +12,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2018年 lee. All rights reserved.
- *  @version    V1.2.5
+ *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
+ *  @version    V1.2.6
  */
 
 #import <Foundation/Foundation.h>
@@ -372,12 +372,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LEECustomView : NSObject
 
 /** 自定义视图对象 */
-@property (nonatomic , strong, nonnull ) UIView *view;
+@property (nonatomic , strong, nullable ) UIView *view;
 
 /** 自定义视图位置类型 (默认为居中) */
 @property (nonatomic , assign ) LEECustomViewPositionType positionType;
 
-/** 是否自动适应宽度 */
+/** 是否自动适应宽度 (不支持 AutoLayout 布局的视图)*/
 @property (nonatomic , assign ) BOOL isAutoWidth;
 
 @end

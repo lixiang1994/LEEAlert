@@ -448,7 +448,7 @@
         
         return CGRectGetWidth([[UIScreen mainScreen] bounds]);
     })
-    .LeeShow();
+    .LeeShow;
 }
 
 @end

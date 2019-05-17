@@ -20,6 +20,8 @@
 
 #import "NibView.h"
 
+#import "Masonry.h"
+
 @interface AlertTableViewController ()
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
@@ -85,6 +87,8 @@
     [baseArray addObject:@{@"title" : @"显示一个带XIB自定义视图的 alert 弹框" , @"content" : @"自定义视图的size发生改变时 会自动适应其改变."}];
     
     [baseArray addObject:@{@"title" : @"显示多个带Identifier的 alert 弹框" , @"content" : @"关闭指定Identifier的alert."}];
+    
+    [baseArray addObject:@{@"title" : @"显示一个带Masonry布局的自定义视图的 alert 弹框" , @"content" : @"模拟2秒后自定义视图约束发生变化"}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
@@ -210,7 +214,9 @@
                 
                 custom.view = view;
                 
-                custom.positionType = LEECustomViewPositionTypeCenter;
+                custom.isAutoWidth = YES;
+                
+//                custom.positionType = LEECustomViewPositionTypeRight;
             })
             .LeeItemInsets(UIEdgeInsetsMake(30, 10, 30, 10)) // 想为哪一项设置间距范围 直接在其后面设置即可 ()
             .LeeContent(@"内容")
@@ -634,6 +640,58 @@
             });
         }
             break;
+            
+        case 16:
+        {
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
+            
+            view.backgroundColor = [UIColor colorWithRed:43/255.0f green:133/255.0f blue:208/255.0f alpha:1.0f];
+            
+            [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeAddCustomView(^(LEECustomView *custom) {
+                
+                custom.view = view;
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+            })
+            .LeeItemInsets(UIEdgeInsetsMake(30, 10, 30, 10)) // 想为哪一项设置间距范围 直接在其后面设置即可 ()
+            .LeeContent(@"内容")
+            .LeeItemInsets(UIEdgeInsetsMake(10, 10, 10, 10)) // 这个间距范围就是对content设置的
+            .LeeAddTextField(^(UITextField *textField) {
+                
+                textField.placeholder = @"输入框";
+            })
+            .LeeAction(@"确认", nil)
+            .LeeCancelAction(@"取消", nil)
+            .LeeShow();
+            
+            UIView *sub = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
+            
+            sub.backgroundColor = [UIColor redColor];
+            [view addSubview:sub];
+            
+            [sub mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.width.equalTo(@180.0);
+                make.height.equalTo(@300.0);
+            }];
+            
+            [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.edges.equalTo(sub).insets(UIEdgeInsetsMake(-10, -10, -10, -10));
+            }];
+            
+            /// 模拟自定义视图约束发生变化
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [sub mas_updateConstraints:^(MASConstraintMaker *make) {
+                    make.width.equalTo(@100.0);
+                    make.height.equalTo(@100.0);
+                }];
+                
+                NSLog(@"%@", [NSValue valueWithCGRect:view.frame]);
+            });
+        }
+            break;
+            
         default:
             break;
     }
