@@ -90,6 +90,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个带Masonry布局的自定义视图的 alert 弹框" , @"content" : @"模拟2秒后自定义视图约束发生变化"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个mask圆角的 alert 弹框" , @"content" : @"通过CornerRadii指定各个圆角半径"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
@@ -689,6 +691,25 @@
                 
                 NSLog(@"%@", [NSValue valueWithCGRect:view.frame]);
             });
+        }
+            break;
+            
+        case 17:
+        {
+            [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"内容")
+            .LeeCancelAction(@"取消", ^{
+                
+                // 取消点击事件Block
+            })
+            .LeeAction(@"确认", ^{
+                
+                // 确认点击事件Block
+            })
+//            .LeeCornerRadius(20)  // 优先级低于LeeCornerRadii
+            .LeeCornerRadii(CornerRadiiMake(50, 20, 10, 10))   // 指定圆角半径 基于LayerMask实现 优先级高于
+            .LeeShow(); // 设置完成后 别忘记调用Show来显示
         }
             break;
             

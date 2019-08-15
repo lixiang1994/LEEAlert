@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.2.6
+ *  @version    V1.2.7
  */
 
 #import <Foundation/Foundation.h>
@@ -162,6 +162,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeCornerRadius;
+
+/** 设置 圆角半径 -> 格式: .LeeCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))  注意: 该方法优先级高于LeeCornerRadius  */
+@property (nonatomic , copy , readonly ) LEEConfigToCornerRadii LeeCornerRadii;
 
 /** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.3f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeOpenAnimationDuration;
@@ -398,5 +401,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LEEAlertViewController : LEEBaseViewController @end
 
 @interface LEEActionSheetViewController : LEEBaseViewController @end
+
+
+@interface UIView (CornerRadii)
+
+CornerRadii CornerRadiiMake(CGFloat topLeft, CGFloat topRight, CGFloat bottomLeft, CGFloat bottomRight);
+
+CornerRadii CornerRadiiZero(void);
+
+CornerRadii CornerRadiiNull(void);
+
+@end
 
 NS_ASSUME_NONNULL_END

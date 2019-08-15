@@ -81,6 +81,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个自定义动画样式的 actionSheet 菜单" , @"content" : @"动画样式可设置动画方向, 淡入淡出, 缩放等"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个mask圆角的 actionSheet 菜单" , @"content" : @"通过CornerRadii指定各个圆角半径"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 actionSheet 菜单" , @"content" : @"菜单背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个类似微信布局的 actionSheet 菜单" , @"content" : @"只需要调整最大宽度,取消action的间隔颜色和底部间距即可"}];
@@ -509,6 +511,25 @@
             .LeeOpenAnimationStyle(LEEAnimationStyleOrientationLeft | LEEAnimationStyleFade) //这里设置打开动画样式的方向为左 以及缩放效果.
             .LeeCloseAnimationStyle(LEEAnimationStyleOrientationRight | LEEAnimationStyleFade) //这里设置关闭动画样式的方向为右 以及缩放效果
             .LeeShow();
+        }
+            break;
+            
+        case 14:
+        {
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"内容")
+            .LeeCancelAction(@"取消", ^{
+                
+                // 取消点击事件Block
+            })
+            .LeeAction(@"确认", ^{
+                
+                // 确认点击事件Block
+            })
+            //            .LeeCornerRadius(20)  // 优先级低于LeeCornerRadii
+            .LeeCornerRadii(CornerRadiiMake(50, 20, 10, 10))   // 指定圆角半径 基于LayerMask实现 优先级高于
+            .LeeShow(); // 设置完成后 别忘记调用Show来显示
         }
             break;
             
