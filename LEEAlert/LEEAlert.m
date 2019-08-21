@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.2.7
+ *  @version    V1.2.8
  */
 
 #import "LEEAlert.h"
@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) BOOL modelIsQueue;
 @property (nonatomic , assign ) BOOL modelIsContinueQueueDisplay;
 @property (nonatomic , assign ) BOOL modelIsAvoidKeyboard;
+@property (nonatomic , assign ) BOOL modelIsScrollEnabled;
 
 @property (nonatomic , assign ) CGSize modelShadowOffset;
 @property (nonatomic , assign ) CGPoint modelAlertCenterOffset;
@@ -140,6 +141,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsQueue = NO; //默认不加入队列
         _modelIsContinueQueueDisplay = YES; //默认继续队列显示
         _modelIsAvoidKeyboard = YES; //默认闪避键盘
+        _modelIsScrollEnabled = YES; //默认可以滑动
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
         
@@ -556,6 +558,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsClickBackgroundClose = is;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeIsScrollEnabled{
+    
+    return ^(BOOL is){
+        
+        self.modelIsScrollEnabled = is;
         
         return self;
     };
@@ -2156,6 +2169,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.containerView.layer.shadowColor = self.config.modelShadowColor.CGColor;
     
+    self.alertView.scrollEnabled = self.config.modelIsScrollEnabled;
+    
     if (!CornerRadiiEqualTo(self.config.modelCornerRadii, CornerRadiiNull())) {
         
         self.alertView.lee_alert_cornerRadii = self.config.modelCornerRadii;
@@ -2875,6 +2890,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.containerView.layer.shadowColor = self.config.modelShadowColor.CGColor;
     
+    self.actionSheetView.scrollEnabled = self.config.modelIsScrollEnabled;
     
     if (!CornerRadiiEqualTo(self.config.modelCornerRadii, CornerRadiiNull())) {
         

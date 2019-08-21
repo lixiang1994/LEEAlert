@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.2.7
+ *  @version    V1.2.8
  */
 
 #import <Foundation/Foundation.h>
@@ -189,6 +189,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeClickBackgroundClose;
+
+/** 设置 是否可滑动 -> 格式: .LeeIsScrollEnabled(YES) */
+@property (nonatomic , copy , readonly ) LEEConfigToBool LeeIsScrollEnabled;
 
 /** 设置 阴影偏移 -> 格式: .LeeShadowOffset(CGSizeMake(0.0f, 2.0f)) */
 @property (nonatomic , copy , readonly ) LEEConfigToSize LeeShadowOffset;

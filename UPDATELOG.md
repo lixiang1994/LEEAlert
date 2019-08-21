@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.2.8
+==============
+增加是否可滑动开关 `.LeeIsScrollEnabled(YES)`
+
 V1.2.7
 ==============
 增加`.LeeCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))` 圆角半径设置方法 支持4个圆角不同半径的设置
