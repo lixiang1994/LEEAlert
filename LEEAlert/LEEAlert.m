@@ -2894,10 +2894,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (!CornerRadiiEqualTo(self.config.modelCornerRadii, CornerRadiiNull())) {
         
+        self.containerView.lee_alert_cornerRadii = self.config.modelCornerRadii;
         self.actionSheetView.lee_alert_cornerRadii = self.config.modelCornerRadii;
         
     } else {
-        
+        self.containerView.layer.cornerRadius = self.config.modelCornerRadius;
         self.actionSheetView.layer.cornerRadius = self.config.modelCornerRadius;
     }
     
