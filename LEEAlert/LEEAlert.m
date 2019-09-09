@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     LEEBackgroundStyleTranslucent,
 };
 
-@interface LEEAlertConfigModel ()
+@interface LEEBaseConfigModel ()
 
 @property (nonatomic , strong ) NSMutableArray *modelActionArray;
 @property (nonatomic , strong ) NSMutableArray *modelItemArray;
@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @end
 
-@implementation LEEAlertConfigModel
+@implementation LEEBaseConfigModel
 
 - (void)dealloc{
     
@@ -762,93 +762,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-#pragma mark Alert Config
-
-- (LEEConfigToConfigTextField)LeeAddTextField{
-    
-    return ^(void (^block)(UITextField *)){
-        
-        return self.LeeAddItem(^(LEEItem *item) {
-            
-            item.type = LEEItemTypeTextField;
-            
-            item.insets = UIEdgeInsetsMake(10, 0, 10, 0);
-            
-            item.block = block;
-        });
-        
-    };
-    
-}
-    
-- (LEEConfigToPoint)LeeAlertCenterOffset {
-    
-    return ^(CGPoint offset){
-        
-        self.modelAlertCenterOffset = offset;
-        
-        return self;
-    };
-    
-}
-
-- (LEEConfigToBool)LeeAvoidKeyboard{
-    
-    return ^(BOOL is){
-        
-        self.modelIsAvoidKeyboard = is;
-        
-        return self;
-    };
-    
-}
-
-#pragma mark ActionSheet Config
-
-- (LEEConfigToFloat)LeeActionSheetCancelActionSpaceWidth{
-    
-    return ^(CGFloat number){
-        
-        self.modelActionSheetCancelActionSpaceWidth = number;
-        
-        return self;
-    };
-    
-}
-
-- (LEEConfigToColor)LeeActionSheetCancelActionSpaceColor{
-    
-    return ^(UIColor *color){
-        
-        self.modelActionSheetCancelActionSpaceColor = color;
-        
-        return self;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeActionSheetBottomMargin{
-    
-    return ^(CGFloat number){
-        
-        self.modelActionSheetBottomMargin = number;
-        
-        return self;
-    };
-    
-}
-
-- (LEEConfigToColor)LeeActionSheetBackgroundColor{
-    
-    return ^(UIColor *color){
-        
-        self.modelActionSheetBackgroundColor = color;
-        
-        return self;
-    };
-    
-}
-
 - (LEEConfigToBlockReturnBool)leeShouldClose{
     
     return ^(BOOL (^block)(void)){
@@ -907,13 +820,56 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @end
 
+@implementation LEEBaseConfigModel (Alert)
+
+- (LEEConfigToConfigTextField)LeeAddTextField{
+    
+    return ^(void (^block)(UITextField *)){
+        
+        return self.LeeAddItem(^(LEEItem *item) {
+            
+            item.type = LEEItemTypeTextField;
+            
+            item.insets = UIEdgeInsetsMake(10, 0, 10, 0);
+            
+            item.block = block;
+        });
+        
+    };
+    
+}
+
+- (LEEConfigToPoint)LeeAlertCenterOffset {
+    
+    return ^(CGPoint offset){
+        
+        self.modelAlertCenterOffset = offset;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeAvoidKeyboard{
+    
+    return ^(BOOL is){
+        
+        self.modelIsAvoidKeyboard = is;
+        
+        return self;
+    };
+    
+}
+
+@end
+
 @interface LEEAlert ()
 
 @property (nonatomic , strong ) UIWindow *mainWindow;
 
 @property (nonatomic , strong ) LEEAlertWindow *leeWindow;
 
-@property (nonatomic , strong ) NSMutableArray <LEEAlertConfig *>*queueArray;
+@property (nonatomic , strong ) NSMutableArray <LEEBaseConfig *>*queueArray;
 
 @property (nonatomic , strong ) LEEBaseViewController *viewController;
 
@@ -939,24 +895,14 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return alertManager;
 }
 
-+ (LEEAlertConfig *)alert{
++ (LEEBaseConfig *)alert{
     
-    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
-    
-    config.type = LEEAlertTypeAlert;
-    
-    return config;
+    return [[LEEAlertConfig alloc] init];
 }
 
-+ (LEEAlertConfig *)actionsheet{
++ (LEEBaseConfig *)actionsheet{
     
-    LEEAlertConfig *config = [[LEEAlertConfig alloc] init];
-    
-    config.type = LEEAlertTypeActionSheet;
-    
-    config.config.LeeClickBackgroundClose(YES);
-    
-    return config;
+    return [[LEEActionSheetConfig alloc] init];
 }
 
 + (LEEAlertWindow *)getAlertWindow{
@@ -995,9 +941,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         for (NSUInteger i = 0; i < count; i++) {
             
-            LEEAlertConfig *config = [LEEAlert shareManager].queueArray[i];
+            LEEBaseConfig *config = [LEEAlert shareManager].queueArray[i];
             
-            LEEAlertConfigModel *model = config.config;
+            LEEBaseConfigModel *model = config.config;
             
             if (model.modelIdentifier != nil && [identifier isEqualToString: model.modelIdentifier]) {
                 
@@ -1032,7 +978,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if ([LEEAlert shareManager].queueArray.count) {
         
-        LEEAlertConfig *item = [LEEAlert shareManager].queueArray.lastObject;
+        LEEBaseConfig *item = [LEEAlert shareManager].queueArray.lastObject;
         
         if ([item respondsToSelector:@selector(closeWithCompletionBlock:)]) [item performSelector:@selector(closeWithCompletionBlock:) withObject:completionBlock];
     }
@@ -1041,7 +987,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 #pragma mark LazyLoading
 
-- (NSMutableArray <LEEAlertConfig *>*)queueArray{
+- (NSMutableArray <LEEBaseConfig *>*)queueArray{
     
     if (!_queueArray) _queueArray = [NSMutableArray array];
     
@@ -1738,7 +1684,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEBaseViewController ()<UIGestureRecognizerDelegate>
 
-@property (nonatomic , strong ) LEEAlertConfigModel *config;
+@property (nonatomic , strong ) LEEBaseConfigModel *config;
 
 @property (nonatomic , strong ) UIWindow *currentKeyWindow;
 
@@ -3382,11 +3328,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @end
 
-@interface LEEAlertConfig ()<LEEAlertProtocol>
+@interface LEEBaseConfig ()<LEEAlertProtocol>
+
+- (void)show;
 
 @end
 
-@implementation LEEAlertConfig
+@implementation LEEBaseConfig
 
 - (void)dealloc{
     
@@ -3409,7 +3357,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
             
             if ([LEEAlert shareManager].queueArray.count) {
                 
-                LEEAlertConfig *last = [LEEAlert shareManager].queueArray.lastObject;
+                LEEBaseConfig *last = [LEEAlert shareManager].queueArray.lastObject;
                 
                 if (!strongSelf.config.modelIsQueue && last.config.modelQueuePriority > strongSelf.config.modelQueuePriority) return;
                 
@@ -3419,7 +3367,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                     
                     [[LEEAlert shareManager].queueArray addObject:strongSelf];
                     
-                    [[LEEAlert shareManager].queueArray sortUsingComparator:^NSComparisonResult(LEEAlertConfig *configA, LEEAlertConfig *configB) {
+                    [[LEEAlert shareManager].queueArray sortUsingComparator:^NSComparisonResult(LEEBaseConfig *configA, LEEBaseConfig *configB) {
                         
                         return configA.config.modelQueuePriority > configB.config.modelQueuePriority ? NSOrderedDescending
                         : configA.config.modelQueuePriority == configB.config.modelQueuePriority ? NSOrderedSame : NSOrderedAscending;
@@ -3443,71 +3391,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     return self;
 }
 
-- (void)setType:(LEEAlertType)type{
-    
-    _type = type;
-    
-    // 处理默认值
-    
-    switch (type) {
-            
-        case LEEAlertTypeAlert:
-        
-            self.config
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
-            
-                return 280.0f;
-            })
-            .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
-            
-                return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
-            })
-            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomEnlarge)
-            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomShrink);
-        
-            break;
-            
-        case LEEAlertTypeActionSheet:
-            
-        self.config
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
-                
-                return type == LEEScreenOrientationTypeHorizontal ? SCREEN_HEIGHT - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom - 20.0f : SCREEN_WIDTH - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).left - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).right - 20.0f;
-            })
-            .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
-                
-                return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
-            })
-            .LeeOpenAnimationStyle(LEEAnimationStyleOrientationBottom)
-            .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom);
-            
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-
 - (void)show{
-    
-    switch (self.type) {
-            
-        case LEEAlertTypeAlert:
-        
-            [LEEAlert shareManager].viewController = [[LEEAlertViewController alloc] init];
-            
-            break;
-            
-        case LEEAlertTypeActionSheet:
-        
-            [LEEAlert shareManager].viewController = [[LEEActionSheetViewController alloc] init];
-            
-            break;
-            
-        default:
-            break;
-    }
     
     if (![LEEAlert shareManager].viewController) return;
     
@@ -3564,11 +3448,73 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 #pragma mark - LazyLoading
 
-- (LEEAlertConfigModel *)config{
+- (LEEBaseConfigModel *)config{
     
-    if (!_config) _config = [[LEEAlertConfigModel alloc] init];
+    if (!_config) _config = [[LEEBaseConfigModel alloc] init];
     
     return _config;
+}
+
+@end
+
+@implementation LEEAlertConfig
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        
+        self.config
+        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            
+            return 280.0f;
+        })
+        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+            
+            return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
+        })
+        .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomEnlarge)
+        .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomShrink);
+    }
+    return self;
+}
+
+- (void)show {
+    
+    [LEEAlert shareManager].viewController = [[LEEAlertViewController alloc] init];
+    
+    [super show];
+}
+
+@end
+
+@implementation LEEActionSheetConfig
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.config
+        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            
+            return type == LEEScreenOrientationTypeHorizontal ? SCREEN_HEIGHT - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom - 20.0f : SCREEN_WIDTH - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).left - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).right - 20.0f;
+        })
+        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+            
+            return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
+        })
+        .LeeOpenAnimationStyle(LEEAnimationStyleOrientationBottom)
+        .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom)
+        .LeeClickBackgroundClose(YES);
+    }
+    return self;
+}
+
+- (void)show {
+    
+    [LEEAlert shareManager].viewController = [[LEEActionSheetViewController alloc] init];
+    
+    [super show];
 }
 
 @end

@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nonnull LEEAlertConfig *)alert;
 
-+ (nonnull LEEAlertConfig *)actionsheet;
++ (nonnull LEEActionSheetConfig *)actionsheet;
 
 /** 获取Alert窗口 */
 + (nonnull LEEAlertWindow *)getAlertWindow;
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface LEEAlertConfigModel : NSObject
+@interface LEEBaseConfigModel : NSObject
 
 /** ✨通用设置 */
 
@@ -245,18 +245,31 @@ NS_ASSUME_NONNULL_BEGIN
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;
 
-/** ✨alert 专用设置 */
+/** 设置 是否可以关闭 -> 格式: .leeShouldClose(^{ return YES; }) */
+@property (nonatomic, copy, readonly ) LEEConfigToBlockReturnBool leeShouldClose;
+
+/** 设置 是否可以关闭(Action 点击) -> 格式: .leeShouldActionClickClose(^(NSInteger index){ return YES; }) */
+@property (nonatomic, copy, readonly ) LEEConfigToBlockIntegerReturnBool leeShouldActionClickClose;
+
+/** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
+@property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;
+
+@end
+
+@interface LEEBaseConfigModel(Alert)
 
 /** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
 @property (nonatomic , copy , readonly ) LEEConfigToConfigTextField LeeAddTextField;
 
 /** 设置 中心点偏移 -> 格式: .LeeCenterOffset(CGPointMake(0, 0)) */
 @property (nonatomic , copy , readonly ) LEEConfigToPoint LeeAlertCenterOffset;
-    
+
 /** 设置 是否闪避键盘 -> 格式: .LeeAvoidKeyboard(YES) */
 @property (nonatomic , copy , readonly ) LEEConfigToBool LeeAvoidKeyboard;
 
-/** ✨actionSheet 专用设置 */
+@end
+
+@interface LEEBaseConfigModel(ActionSheet)
 
 /** 设置 ActionSheet的背景视图颜色 -> 格式: .LeeActionSheetBackgroundColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeActionSheetBackgroundColor;
@@ -269,15 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
 @property (nonatomic , copy , readonly ) LEEConfigToFloat LeeActionSheetBottomMargin;
-
-/** 设置 是否可以关闭 -> 格式: .leeShouldClose(^{ return YES; }) */
-@property (nonatomic, copy, readonly ) LEEConfigToBlockReturnBool leeShouldClose;
-
-/** 设置 是否可以关闭(Action 点击) -> 格式: .leeShouldActionClickClose(^(NSInteger index){ return YES; }) */
-@property (nonatomic, copy, readonly ) LEEConfigToBlockIntegerReturnBool leeShouldActionClickClose;
-
-/** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
-@property (nonatomic , copy , readonly ) LEEConfigToBlock LeeCloseComplete;
 
 @end
 
@@ -388,14 +392,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface LEEAlertConfig : NSObject
+@interface LEEBaseConfig : NSObject
 
-@property (nonatomic , strong, nonnull ) LEEAlertConfigModel *config;
-
-@property (nonatomic , assign ) LEEAlertType type;
+@property (nonatomic , strong, nonnull ) LEEBaseConfigModel *config;
 
 @end
 
+@interface LEEAlertConfig : LEEBaseConfig
+
+@end
+
+@interface LEEActionSheetConfig : LEEBaseConfig
+
+@end
 
 @interface LEEAlertWindow : UIWindow @end
 

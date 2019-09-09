@@ -22,7 +22,15 @@
 FOUNDATION_EXPORT double LEEAlertVersionNumber;
 FOUNDATION_EXPORT const unsigned char LEEAlertVersionString[];
 
-@class LEEAlert , LEEAlertConfig , LEEAlertConfigModel , LEEAlertWindow , LEEAction , LEEItem , LEECustomView;
+@class LEEAlert
+, LEEBaseConfig
+, LEEAlertConfig
+, LEEActionSheetConfig
+, LEEBaseConfigModel
+, LEEAlertWindow
+, LEEAction
+, LEEItem
+, LEECustomView;
 
 typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
     /** 屏幕方向类型 横屏 */
@@ -112,32 +120,32 @@ typedef struct {
 } CornerRadii;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfig)(void);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBool)(BOOL is);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToInteger)(NSInteger number);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToFloat)(CGFloat number);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToString)(NSString *str);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToView)(UIView *view);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToColor)(UIColor *color);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToSize)(CGSize size);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToPoint)(CGPoint point);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToEdgeInsets)(UIEdgeInsets insets);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToAnimationStyle)(LEEAnimationStyle style);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBlurEffectStyle)(UIBlurEffectStyle style);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToInterfaceOrientationMask)(UIInterfaceOrientationMask);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToFloatBlock)(CGFloat(^)(LEEScreenOrientationType type));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToAction)(void(^)(LEEAction *action));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToCustomView)(void(^)(LEECustomView *custom));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToCornerRadii)(CornerRadii);
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToStringAndBlock)(NSString *str, void (^ _Nullable)(void));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToConfigLabel)(void(^ _Nullable)(UILabel *label));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToConfigTextField)(void(^ _Nullable)(UITextField *textField));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToItem)(void(^)(LEEItem *item));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBlock)(void(^block)(void));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBlockReturnBool)(BOOL(^block)(void));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBlockIntegerReturnBool)(BOOL(^block)(NSInteger index));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)(void) , void (^animatedBlock)(void)));
-typedef LEEAlertConfigModel * _Nonnull (^LEEConfigToStatusBarStyle)(UIStatusBarStyle style);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfig)(void);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBool)(BOOL is);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToInteger)(NSInteger number);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToFloat)(CGFloat number);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToString)(NSString *str);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToView)(UIView *view);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToColor)(UIColor *color);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToSize)(CGSize size);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToPoint)(CGPoint point);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToEdgeInsets)(UIEdgeInsets insets);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToAnimationStyle)(LEEAnimationStyle style);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlurEffectStyle)(UIBlurEffectStyle style);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToInterfaceOrientationMask)(UIInterfaceOrientationMask);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToFloatBlock)(CGFloat(^)(LEEScreenOrientationType type));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToAction)(void(^)(LEEAction *action));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToCustomView)(void(^)(LEECustomView *custom));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToCornerRadii)(CornerRadii);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToStringAndBlock)(NSString *str, void (^ _Nullable)(void));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToConfigLabel)(void(^ _Nullable)(UILabel *label));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToConfigTextField)(void(^ _Nullable)(UITextField *textField));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToItem)(void(^)(LEEItem *item));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlock)(void(^block)(void));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlockReturnBool)(BOOL(^block)(void));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlockIntegerReturnBool)(BOOL(^block)(NSInteger index));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlockAndBlock)(void(^)(void (^animatingBlock)(void) , void (^animatedBlock)(void)));
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToStatusBarStyle)(UIStatusBarStyle style);
 NS_ASSUME_NONNULL_END
 
 #endif /* LEEAlertHelper_h */
