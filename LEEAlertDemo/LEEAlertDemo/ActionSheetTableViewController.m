@@ -593,6 +593,7 @@
                 };
             })
             .LeeHeaderColor(blueColor)
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -625,6 +626,7 @@
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
             .LeeActionSheetBackgroundColor([UIColor whiteColor]) // 通过设置背景颜色来填充底部间隙
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -658,6 +660,7 @@
                 
                 action.titleColor = [UIColor grayColor];
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -697,6 +700,7 @@
                 
                 return type == LEEScreenOrientationTypeHorizontal ? CGRectGetHeight([[UIScreen mainScreen] bounds]) : CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -751,6 +755,7 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -836,6 +841,7 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -925,6 +931,7 @@
                 }];
                 
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;

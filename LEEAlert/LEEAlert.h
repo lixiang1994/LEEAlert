@@ -241,6 +241,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** 设置 状态栏样式 -> 格式: .LeeStatusBarStyle(UIStatusBarStyleDefault) */
 @property (nonatomic , copy , readonly ) LEEConfigToStatusBarStyle LeeStatusBarStyle;
 
+/** 设置 系统界面样式 -> 格式: .LeeUserInterfaceStyle(UIUserInterfaceStyleUnspecified) */
+@property (nonatomic , copy , readonly ) LEEConfigToUserInterfaceStyle LeeUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
+
 
 /** 显示  -> 格式: .LeeShow() */
 @property (nonatomic , copy , readonly ) LEEConfig LeeShow;

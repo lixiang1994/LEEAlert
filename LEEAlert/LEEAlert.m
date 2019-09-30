@@ -91,6 +91,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) UIStatusBarStyle modelStatusBarStyle;
 @property (nonatomic , assign ) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
 @property (nonatomic , assign ) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
+@property (nonatomic , assign ) UIUserInterfaceStyle modelUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
 
 @property (nonatomic , strong ) UIColor *modelActionSheetBackgroundColor;
 @property (nonatomic , strong ) UIColor *modelActionSheetCancelActionSpaceColor;
@@ -133,7 +134,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelActionSheetBottomMargin = 10.0f; //默认actionsheet距离屏幕底部距离
         
         _modelShadowColor = [UIColor blackColor]; //默认阴影颜色
-        _modelHeaderColor = [UIColor whiteColor]; //默认颜色
+        if (@available(iOS 13.0, *)) {
+            _modelHeaderColor = [UIColor tertiarySystemBackgroundColor]; //默认颜色
+            
+        } else {
+            _modelHeaderColor = [UIColor whiteColor]; //默认颜色
+        }
         _modelBackgroundColor = [UIColor blackColor]; //默认背景半透明颜色
         
         _modelIsClickBackgroundClose = NO; //默认点击背景不关闭
@@ -148,6 +154,10 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelCornerRadii = CornerRadiiNull();  //默认为空 使用_modelCornerRadius
         _modelBackgroundBlurEffectStyle = UIBlurEffectStyleDark; //默认模糊效果类型Dark
         _modelSupportedInterfaceOrientations = UIInterfaceOrientationMaskAll; //默认支持所有方向
+        
+        if (@available(iOS 13.0, *)) {
+            _modelUserInterfaceStyle = UIUserInterfaceStyleUnspecified; //默认支持全部样式
+        }
         
         __weak typeof(self) weakSelf = self;
         
@@ -274,7 +284,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             action.title = title;
             
-            action.titleColor = [UIColor redColor];
+            action.titleColor = [UIColor systemRedColor];
             
             action.clickBlock = block;
         });
@@ -750,6 +760,16 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToUserInterfaceStyle)LeeUserInterfaceStyle {
+    
+    return ^(UIUserInterfaceStyle style){
+        
+        self.modelUserInterfaceStyle = style;
+        
+        return self;
+    };
+}
+
 
 - (LEEConfig)LeeShow{
     
@@ -855,6 +875,54 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsAvoidKeyboard = is;
+        
+        return self;
+    };
+    
+}
+
+@end
+
+@implementation LEEBaseConfigModel (ActionSheet)
+
+- (LEEConfigToFloat)LeeActionSheetCancelActionSpaceWidth{
+    
+    return ^(CGFloat number){
+        
+        self.modelActionSheetCancelActionSpaceWidth = number;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToColor)LeeActionSheetCancelActionSpaceColor{
+    
+    return ^(UIColor *color){
+        
+        self.modelActionSheetCancelActionSpaceColor = color;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToFloat)LeeActionSheetBottomMargin{
+    
+    return ^(CGFloat number){
+        
+        self.modelActionSheetBottomMargin = number;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToColor)LeeActionSheetBackgroundColor{
+    
+    return ^(UIColor *color){
+        
+        self.modelActionSheetBackgroundColor = color;
         
         return self;
     };
@@ -1157,6 +1225,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @implementation LEEActionButton
 
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    /// 刷新Action设置
+    self.action = self.action;
+}
+
 + (LEEActionButton *)button{
     
     return [LEEActionButton buttonWithType:UIButtonTypeCustom];;
@@ -1283,22 +1357,22 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 }
 
 - (void)addTopBorder{
-    
+    [self removeTopBorder];
     [self.layer addSublayer:self.topLayer];
 }
 
 - (void)addBottomBorder{
-    
+    [self removeBottomBorder];
     [self.layer addSublayer:self.bottomLayer];
 }
 
 - (void)addLeftBorder{
-    
+    [self removeLeftBorder];
     [self.layer addSublayer:self.leftLayer];
 }
 
 - (void)addRightBorder{
-    
+    [self removeRightBorder];
     [self.layer addSublayer:self.rightLayer];
 }
 
@@ -2154,7 +2228,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 label.font = [UIFont boldSystemFontOfSize:18.0f];
                 
-                label.textColor = [UIColor blackColor];
+                if (@available(iOS 13.0, *)) {
+                    label.textColor = [UIColor labelColor];
+                    
+                } else {
+                    label.textColor = [UIColor blackColor];
+                }
                 
                 label.numberOfLines = 0;
                 
@@ -2183,7 +2262,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 label.font = [UIFont systemFontOfSize:14.0f];
                 
-                label.textColor = [UIColor blackColor];
+                if (@available(iOS 13.0, *)) {
+                    label.textColor = [UIColor labelColor];
+                    
+                } else {
+                    label.textColor = [UIColor blackColor];
+                }
                 
                 label.numberOfLines = 0;
                 
@@ -2257,13 +2341,34 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (!action.title) action.title = @"按钮";
         
-        if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
+        if (!action.titleColor) {
+            if (@available(iOS 13.0, *)) {
+                action.titleColor = [UIColor systemBlueColor];
+                
+            } else {
+                action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
+            }
+        }
         
         if (!action.backgroundColor) action.backgroundColor = self.config.modelHeaderColor;
         
-        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
+        if (!action.backgroundHighlightColor) {
+            if (@available(iOS 13.0, *)) {
+                action.backgroundHighlightColor = [UIColor systemGray6Color];
+                
+            } else {
+                action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
+            }
+        }
         
-        if (!action.borderColor) action.borderColor = [UIColor colorWithWhite:0.84 alpha:1.0f];
+        if (!action.borderColor) {
+            if (@available(iOS 13.0, *)) {
+                action.borderColor = [UIColor systemGray3Color];
+                
+            } else {
+                action.borderColor = [UIColor colorWithWhite:0.84 alpha:1.0f];
+            }
+        }
         
         if (!action.borderWidth) action.borderWidth = DEFAULTBORDERWIDTH;
         
@@ -2875,7 +2980,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 label.font = [UIFont boldSystemFontOfSize:16.0f];
                 
-                label.textColor = [UIColor darkGrayColor];
+                if (@available(iOS 13.0, *)) {
+                    label.textColor = [UIColor secondaryLabelColor];
+                    
+                } else {
+                    label.textColor = [UIColor darkGrayColor];
+                }
                 
                 label.numberOfLines = 0;
                 
@@ -2904,7 +3014,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 label.font = [UIFont systemFontOfSize:14.0f];
                 
-                label.textColor = [UIColor grayColor];
+                if (@available(iOS 13.0, *)) {
+                    label.textColor = [UIColor tertiaryLabelColor];
+                    
+                } else {
+                    label.textColor = [UIColor grayColor];
+                }
                 
                 label.numberOfLines = 0;
                 
@@ -2957,13 +3072,34 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (!action.title) action.title = @"按钮";
         
-        if (!action.titleColor) action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
+        if (!action.titleColor) {
+            if (@available(iOS 13.0, *)) {
+                action.titleColor = [UIColor systemBlueColor];
+                
+            } else {
+                action.titleColor = [UIColor colorWithRed:21/255.0f green:123/255.0f blue:245/255.0f alpha:1.0f];
+            }
+        }
         
         if (!action.backgroundColor) action.backgroundColor = self.config.modelHeaderColor;
         
-        if (!action.backgroundHighlightColor) action.backgroundHighlightColor = action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
+        if (!action.backgroundHighlightColor) {
+            if (@available(iOS 13.0, *)) {
+                action.backgroundHighlightColor = [UIColor systemGray6Color];
+                
+            } else {
+                action.backgroundHighlightColor = [UIColor colorWithWhite:0.97 alpha:1.0f];
+            }
+        }
         
-        if (!action.borderColor) action.borderColor = [UIColor colorWithWhite:0.86 alpha:1.0f];
+        if (!action.borderColor) {
+            if (@available(iOS 13.0, *)) {
+                action.borderColor = [UIColor systemGray3Color];
+                
+            } else {
+                action.borderColor = [UIColor colorWithWhite:0.84 alpha:1.0f];
+            }
+        }
         
         if (!action.borderWidth) action.borderWidth = DEFAULTBORDERWIDTH;
         
@@ -3402,6 +3538,10 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     [LEEAlert shareManager].leeWindow.windowLevel = self.config.modelWindowLevel;
     
     [LEEAlert shareManager].leeWindow.hidden = NO;
+    
+    if (@available(iOS 13.0, *)) {
+        [LEEAlert shareManager].leeWindow.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
+    }
     
     [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
     

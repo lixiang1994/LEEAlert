@@ -164,7 +164,12 @@
                 
                 textField.placeholder = @"输入框";
                 
-                textField.textColor = [UIColor darkGrayColor];
+                if (@available(iOS 13.0, *)) {
+                    textField.textColor = [UIColor secondaryLabelColor];
+                    
+                } else {
+                    textField.textColor = [UIColor darkGrayColor];
+                }
                 
                 tf = textField; //赋值
             })
@@ -286,7 +291,12 @@
                 
                 label.text = @"已经退出该群组";
                 
-                label.textColor = [UIColor darkGrayColor];
+                if (@available(iOS 13.0, *)) {
+                    label.textColor = [UIColor secondaryLabelColor];
+                    
+                } else {
+                    label.textColor = [UIColor darkGrayColor];
+                }
                 
                 label.textAlignment = NSTextAlignmentLeft;
             })
@@ -773,6 +783,7 @@
                 };
             })
             .LeeHeaderColor(blueColor)
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -804,6 +815,7 @@
                 
                 action.titleColor = [UIColor grayColor];
             })
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -820,6 +832,7 @@
             [LEEAlert alert].config
             .LeeCustomView(view)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -837,6 +850,7 @@
             .LeeCustomView(view)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderColor([UIColor clearColor])
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -869,6 +883,7 @@
             .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
             .LeeClickBackgroundClose(YES)
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -992,6 +1007,7 @@
                                         .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                                         .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                                         .LeeClickBackgroundClose(YES)
+                                        .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                                         .LeeShow();
                                     
                                     } else {
@@ -1009,6 +1025,7 @@
                             .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                             .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                             .LeeClickBackgroundClose(YES)
+                            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                             .LeeShow();
                         
                         } else {
@@ -1026,6 +1043,7 @@
                 .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                 .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                 .LeeClickBackgroundClose(YES)
+                .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                 .LeeShow();
             }
             
@@ -1114,6 +1132,7 @@
                 action.cornerRadius = 5.0f;
             })
             .LeeCornerRadius(2.0f)
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
@@ -1176,6 +1195,7 @@
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderColor([UIColor colorWithRed:239 / 255.0f green:225 / 255.0f blue:212 / 255.0f alpha:1.0f])
             .LeeClickBackgroundClose(YES)
+            .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             .LeeShow();
         }
             break;
