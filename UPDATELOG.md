@@ -1,6 +1,22 @@
 
 # LEEAlert - 更新日志
 
+V1.3.0
+==============
+
+### iOS13
+
+由于iOS13API变化, 目前最低支持Xcode11.
+增加iOS13 Dark样式适配, 默认样式兼容Dark样式. 增加`.LeeUserInterfaceStyle(UIUserInterfaceStyleUnspecified)`方法强制样式类型.
+
+### ActionSheet圆角
+在ActionSheet中 由于特殊的UI结构, 其圆角设置方法分为3个, 分别控制整体, 头部, 取消按钮.
+
+原有的`.LeeCornerRadius(20)`相当于`.LeeCornerRadii(CornerRadiiMake(20, 20, 20, 20))`
+
+增加`.LeeActionSheetHeaderCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))`方法设置ActionSheet头部圆角
+增加`.LeeActionSheetCancelActionCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))`方法设置ActionSheet取消按钮圆角
+
 V1.2.8
 ==============
 增加是否可滑动开关 `.LeeIsScrollEnabled(YES)`

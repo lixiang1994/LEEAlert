@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.2.8
+ *  @version    V1.3.0
  */
 
 #import "LEEAlert.h"
@@ -45,7 +45,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , strong ) NSMutableArray *modelItemArray;
 @property (nonatomic , strong ) NSMutableDictionary *modelItemInsetsInfo;
 
-@property (nonatomic , assign ) CGFloat modelCornerRadius;
 @property (nonatomic , assign ) CGFloat modelShadowOpacity;
 @property (nonatomic , assign ) CGFloat modelShadowRadius;
 @property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
@@ -86,12 +85,14 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) LEEAnimationStyle modelOpenAnimationStyle;
 @property (nonatomic , assign ) LEEAnimationStyle modelCloseAnimationStyle;
 
-@property (nonatomic , assign ) CornerRadii modelCornerRadii;
-
 @property (nonatomic , assign ) UIStatusBarStyle modelStatusBarStyle;
 @property (nonatomic , assign ) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
 @property (nonatomic , assign ) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
 @property (nonatomic , assign ) UIUserInterfaceStyle modelUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
+
+@property (nonatomic , assign ) CornerRadii modelCornerRadii;
+@property (nonatomic , assign ) CornerRadii modelActionSheetHeaderCornerRadii;
+@property (nonatomic , assign ) CornerRadii modelActionSheetCancelActionCornerRadii;
 
 @property (nonatomic , strong ) UIColor *modelActionSheetBackgroundColor;
 @property (nonatomic , strong ) UIColor *modelActionSheetCancelActionSpaceColor;
@@ -115,8 +116,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     if (self) {
         
         // 初始化默认值
-        
-        _modelCornerRadius = 13.0f; //默认圆角半径
         _modelShadowOpacity = 0.3f; //默认阴影不透明度
         _modelShadowRadius = 5.0f; //默认阴影半径
         _modelShadowOffset = CGSizeMake(0.0f, 2.0f); //默认阴影偏移
@@ -150,10 +149,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsScrollEnabled = YES; //默认可以滑动
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
-        
-        _modelCornerRadii = CornerRadiiNull();  //默认为空 使用_modelCornerRadius
         _modelBackgroundBlurEffectStyle = UIBlurEffectStyleDark; //默认模糊效果类型Dark
         _modelSupportedInterfaceOrientations = UIInterfaceOrientationMaskAll; //默认支持所有方向
+        
+        _modelCornerRadii = CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f); //默认圆角半径
+        _modelActionSheetHeaderCornerRadii = CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f); //默认圆角半径
+        _modelActionSheetCancelActionCornerRadii = CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f); //默认圆角半径
+        
         
         if (@available(iOS 13.0, *)) {
             _modelUserInterfaceStyle = UIUserInterfaceStyleUnspecified; //默认支持全部样式
@@ -464,7 +466,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(CGFloat number){
         
-        self.modelCornerRadius = number;
+        self.modelCornerRadii = CornerRadiiMake(number, number, number, number);
         
         return self;
     };
@@ -929,6 +931,28 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
+- (LEEConfigToCornerRadii)LeeActionSheetHeaderCornerRadii{
+    
+    return ^(CornerRadii radii){
+        
+        self.modelActionSheetHeaderCornerRadii = radii;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToCornerRadii)LeeActionSheetCancelActionCornerRadii{
+    
+    return ^(CornerRadii radii){
+        
+        self.modelActionSheetCancelActionCornerRadii = radii;
+        
+        return self;
+    };
+    
+}
+
 @end
 
 @interface LEEAlert ()
@@ -1078,6 +1102,171 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     }
     
     return _leeWindow;
+}
+
+@end
+
+@interface UIView (LEEAlertExtension)
+
+@property (nonatomic , assign ) CornerRadii lee_alert_cornerRadii;
+
+@end
+
+@implementation UIView (LEEAlertExtension)
+
+CornerRadii CornerRadiiMake(CGFloat topLeft, CGFloat topRight, CGFloat bottomLeft, CGFloat bottomRight) {
+    return (CornerRadii){
+        topLeft,
+        topRight,
+        bottomLeft,
+        bottomRight,
+    };
+}
+
+CornerRadii CornerRadiiZero() {
+    return (CornerRadii){0, 0, 0, 0};
+}
+
+CornerRadii CornerRadiiNull() {
+    return (CornerRadii){-1, -1, -1, -1};
+}
+
+BOOL CornerRadiiEqualTo(CornerRadii lhs, CornerRadii rhs) {
+    return lhs.topLeft == rhs.topRight
+    && lhs.topRight == rhs.topRight
+    && lhs.bottomLeft == rhs.bottomLeft
+    && lhs.bottomRight == lhs.bottomRight;
+}
+
+// 切圆角函数
+CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii cornerRadii) {
+    const CGFloat minX = CGRectGetMinX(bounds);
+    const CGFloat minY = CGRectGetMinY(bounds);
+    const CGFloat maxX = CGRectGetMaxX(bounds);
+    const CGFloat maxY = CGRectGetMaxY(bounds);
+    
+    const CGFloat topLeftCenterX = minX +  cornerRadii.topLeft;
+    const CGFloat topLeftCenterY = minY + cornerRadii.topLeft;
+    
+    const CGFloat topRightCenterX = maxX - cornerRadii.topRight;
+    const CGFloat topRightCenterY = minY + cornerRadii.topRight;
+    
+    const CGFloat bottomLeftCenterX = minX +  cornerRadii.bottomLeft;
+    const CGFloat bottomLeftCenterY = maxY - cornerRadii.bottomLeft;
+    
+    const CGFloat bottomRightCenterX = maxX -  cornerRadii.bottomRight;
+    const CGFloat bottomRightCenterY = maxY - cornerRadii.bottomRight;
+    // 虽然顺时针参数是YES，在iOS中的UIView中，这里实际是逆时针
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    // 顶 左
+    CGPathAddArc(path, NULL, topLeftCenterX, topLeftCenterY,cornerRadii.topLeft, M_PI, 3 * M_PI_2, NO);
+    // 顶 右
+    CGPathAddArc(path, NULL, topRightCenterX , topRightCenterY, cornerRadii.topRight, 3 * M_PI_2, 0, NO);
+    // 底 右
+    CGPathAddArc(path, NULL, bottomRightCenterX, bottomRightCenterY, cornerRadii.bottomRight, 0, M_PI_2, NO);
+    // 底 左
+    CGPathAddArc(path, NULL, bottomLeftCenterX, bottomLeftCenterY, cornerRadii.bottomLeft, M_PI_2,M_PI, NO);
+    CGPathCloseSubpath(path);
+    return path;
+}
+
++ (void)load{
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSArray *selStringsArray = @[@"layoutSubviews"];
+        
+        [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
+            
+            NSString *leeSelString = [@"lee_alert_" stringByAppendingString:selString];
+            
+            Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
+            
+            Method leeMethod = class_getInstanceMethod(self, NSSelectorFromString(leeSelString));
+            
+            BOOL isAddedMethod = class_addMethod(self, NSSelectorFromString(selString), method_getImplementation(leeMethod), method_getTypeEncoding(leeMethod));
+            
+            if (isAddedMethod) {
+                
+                class_replaceMethod(self, NSSelectorFromString(leeSelString), method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+                
+            } else {
+                
+                method_exchangeImplementations(originalMethod, leeMethod);
+            }
+            
+        }];
+        
+    });
+    
+}
+
+- (void)updateCornerRadii{
+    
+    if (!CornerRadiiEqualTo([self lee_alert_cornerRadii], CornerRadiiNull())) {
+        
+        CAShapeLayer *lastLayer = (CAShapeLayer *)self.layer.mask;
+        CGPathRef lastPath = lastLayer.path ? lastLayer.path : CGPathCreateMutable();
+        CGPathRef path = LEECGPathCreateWithRoundedRect(self.bounds, [self lee_alert_cornerRadii]);
+        
+        // 防止相同路径多次设置
+        if (!CGPathEqualToPath(lastPath, path)) {
+            // 移除原有路径动画
+            [lastLayer removeAnimationForKey:@"path"];
+            // 重置新路径mask
+            CAShapeLayer *maskLayer = [CAShapeLayer layer];
+            maskLayer.path = path;
+            self.layer.mask = maskLayer;
+            // 同步视图大小变更动画
+            CAAnimation *temp = [self.layer animationForKey:@"bounds.size"];
+            if (temp) {
+                CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
+                animation.duration = temp.duration;
+                animation.fillMode = temp.fillMode;
+                animation.timingFunction = temp.timingFunction;
+                animation.fromValue = (__bridge id _Nullable)(lastPath);
+                animation.toValue = (__bridge id _Nullable)(path);
+                [maskLayer addAnimation:animation forKey:@"path"];
+            }
+            
+        }
+        
+    }
+    
+}
+
+- (void)lee_alert_layoutSubviews{
+    
+    [self lee_alert_layoutSubviews];
+    
+    [self updateCornerRadii];
+}
+
+- (CornerRadii)lee_alert_cornerRadii{
+    
+    NSValue *value = objc_getAssociatedObject(self, _cmd);
+    
+    CornerRadii cornerRadii;
+    
+    if (value) {
+        
+        [value getValue:&cornerRadii];
+    
+    } else {
+    
+        cornerRadii = CornerRadiiNull();
+    }
+    
+    return cornerRadii;
+}
+
+- (void)setLee_alert_cornerRadii:(CornerRadii)cornerRadii{
+    
+    NSValue *value = [NSValue valueWithBytes:&cornerRadii objCType:@encode(CornerRadii)];
+    
+    objc_setAssociatedObject(self, @selector(lee_alert_cornerRadii), value , OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -1347,6 +1536,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     [super layoutSubviews];
     
+    [self updateCornerRadii];
+    
     if (_topLayer) _topLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.borderWidth);
     
     if (_bottomLayer) _bottomLayer.frame = CGRectMake(0, self.frame.size.height - self.borderWidth, self.frame.size.width, self.borderWidth);
@@ -1592,166 +1783,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         [self.container addSubview:view];
     }
-}
-
-@end
-
-@interface UIView (LEEAlertExtension)
-
-@property (nonatomic , assign ) CornerRadii lee_alert_cornerRadii;
-
-@end
-
-@implementation UIView (LEEAlertExtension)
-
-CornerRadii CornerRadiiMake(CGFloat topLeft, CGFloat topRight, CGFloat bottomLeft, CGFloat bottomRight) {
-    return (CornerRadii){
-        topLeft,
-        topRight,
-        bottomLeft,
-        bottomRight,
-    };
-}
-
-CornerRadii CornerRadiiZero() {
-    return (CornerRadii){0, 0, 0, 0};
-}
-
-CornerRadii CornerRadiiNull() {
-    return (CornerRadii){-1, -1, -1, -1};
-}
-
-BOOL CornerRadiiEqualTo(CornerRadii lhs, CornerRadii rhs) {
-    return lhs.topLeft == rhs.topRight
-    && lhs.topRight == rhs.topRight
-    && lhs.bottomLeft == rhs.bottomLeft
-    && lhs.bottomRight == lhs.bottomRight;
-}
-
-// 切圆角函数
-CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii cornerRadii) {
-    const CGFloat minX = CGRectGetMinX(bounds);
-    const CGFloat minY = CGRectGetMinY(bounds);
-    const CGFloat maxX = CGRectGetMaxX(bounds);
-    const CGFloat maxY = CGRectGetMaxY(bounds);
-    
-    const CGFloat topLeftCenterX = minX +  cornerRadii.topLeft;
-    const CGFloat topLeftCenterY = minY + cornerRadii.topLeft;
-    
-    const CGFloat topRightCenterX = maxX - cornerRadii.topRight;
-    const CGFloat topRightCenterY = minY + cornerRadii.topRight;
-    
-    const CGFloat bottomLeftCenterX = minX +  cornerRadii.bottomLeft;
-    const CGFloat bottomLeftCenterY = maxY - cornerRadii.bottomLeft;
-    
-    const CGFloat bottomRightCenterX = maxX -  cornerRadii.bottomRight;
-    const CGFloat bottomRightCenterY = maxY - cornerRadii.bottomRight;
-    // 虽然顺时针参数是YES，在iOS中的UIView中，这里实际是逆时针
-    
-    CGMutablePathRef path = CGPathCreateMutable();
-    // 顶 左
-    CGPathAddArc(path, NULL, topLeftCenterX, topLeftCenterY,cornerRadii.topLeft, M_PI, 3 * M_PI_2, NO);
-    // 顶 右
-    CGPathAddArc(path, NULL, topRightCenterX , topRightCenterY, cornerRadii.topRight, 3 * M_PI_2, 0, NO);
-    // 底 右
-    CGPathAddArc(path, NULL, bottomRightCenterX, bottomRightCenterY, cornerRadii.bottomRight,0, M_PI_2, NO);
-    // 底 左
-    CGPathAddArc(path, NULL, bottomLeftCenterX, bottomLeftCenterY, cornerRadii.bottomLeft, M_PI_2,M_PI, NO);
-    CGPathCloseSubpath(path);
-    return path;
-}
-
-+ (void)load{
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        
-        NSArray *selStringsArray = @[@"layoutSubviews"];
-        
-        [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
-            
-            NSString *leeSelString = [@"lee_alert_" stringByAppendingString:selString];
-            
-            Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
-            
-            Method leeMethod = class_getInstanceMethod(self, NSSelectorFromString(leeSelString));
-            
-            BOOL isAddedMethod = class_addMethod(self, NSSelectorFromString(selString), method_getImplementation(leeMethod), method_getTypeEncoding(leeMethod));
-            
-            if (isAddedMethod) {
-                
-                class_replaceMethod(self, NSSelectorFromString(leeSelString), method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
-                
-            } else {
-                
-                method_exchangeImplementations(originalMethod, leeMethod);
-            }
-            
-        }];
-        
-    });
-    
-}
-
-- (void)lee_alert_layoutSubviews{
-    
-    [self lee_alert_layoutSubviews];
-    
-    if (!CornerRadiiEqualTo([self lee_alert_cornerRadii], CornerRadiiNull())) {
-        
-        CAShapeLayer *lastLayer = (CAShapeLayer *)self.layer.mask;
-        CGPathRef lastPath = lastLayer.path ? lastLayer.path : CGPathCreateMutable();
-        CGPathRef path = LEECGPathCreateWithRoundedRect(self.bounds, [self lee_alert_cornerRadii]);
-        
-        // 防止相同路径多次设置
-        if (!CGPathEqualToPath(lastPath, path)) {
-            // 移除原有路径动画
-            [lastLayer removeAnimationForKey:@"path"];
-            // 重置新路径mask
-            CAShapeLayer *maskLayer = [CAShapeLayer layer];
-            maskLayer.path = path;
-            self.layer.mask = maskLayer;
-            // 同步视图大小变更动画
-            CAAnimation *temp = [self.layer animationForKey:@"bounds.size"];
-            if (temp) {
-                CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
-                animation.duration = temp.duration;
-                animation.fillMode = temp.fillMode;
-                animation.timingFunction = temp.timingFunction;
-                animation.fromValue = (__bridge id _Nullable)(lastPath);
-                animation.toValue = (__bridge id _Nullable)(path);
-                [maskLayer addAnimation:animation forKey:@"path"];
-            }
-            
-        }
-        
-    }
-    
-}
-
-- (CornerRadii)lee_alert_cornerRadii{
-    
-    NSValue *value = objc_getAssociatedObject(self, _cmd);
-    
-    CornerRadii cornerRadii;
-    
-    if (value) {
-    
-        [value getValue:&cornerRadii];
-    
-    } else {
-    
-        cornerRadii = CornerRadiiNull();
-    }
-    
-    return cornerRadii;
-}
-
-- (void)setLee_alert_cornerRadii:(CornerRadii)cornerRadii{
-    
-    NSValue *value = [NSValue valueWithBytes:&cornerRadii objCType:@encode(CornerRadii)];
-    
-    objc_setAssociatedObject(self, @selector(lee_alert_cornerRadii), value , OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -2191,14 +2222,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.alertView.scrollEnabled = self.config.modelIsScrollEnabled;
     
-    if (!CornerRadiiEqualTo(self.config.modelCornerRadii, CornerRadiiNull())) {
-        
-        self.alertView.lee_alert_cornerRadii = self.config.modelCornerRadii;
-        
-    } else {
-        
-        self.alertView.layer.cornerRadius = self.config.modelCornerRadius;
-    }
+    self.alertView.lee_alert_cornerRadii = self.config.modelCornerRadii;
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -2943,15 +2967,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.actionSheetView.scrollEnabled = self.config.modelIsScrollEnabled;
     
-    if (!CornerRadiiEqualTo(self.config.modelCornerRadii, CornerRadiiNull())) {
-        
-        self.containerView.lee_alert_cornerRadii = self.config.modelCornerRadii;
-        self.actionSheetView.lee_alert_cornerRadii = self.config.modelCornerRadii;
-        
-    } else {
-        self.containerView.layer.cornerRadius = self.config.modelCornerRadius;
-        self.actionSheetView.layer.cornerRadius = self.config.modelCornerRadius;
-    }
+    self.containerView.lee_alert_cornerRadii = self.config.modelCornerRadii;
+    
+    self.actionSheetView.lee_alert_cornerRadii = self.config.modelActionSheetHeaderCornerRadii;
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -3112,7 +3130,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
             {
                 [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
-                button.layer.cornerRadius = self.config.modelCornerRadius;
+                button.lee_alert_cornerRadii = self.config.modelActionSheetCancelActionCornerRadii;
                 
                 button.backgroundColor = action.backgroundColor;
                 

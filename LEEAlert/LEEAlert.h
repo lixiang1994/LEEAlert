@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.2.8
+ *  @version    V1.3.0
  */
 
 #import <Foundation/Foundation.h>
@@ -273,6 +273,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface LEEBaseConfigModel(ActionSheet)
+
+/** 设置 ActionSheet头部的圆角半径 -> 格式: .LeeActionSheetHeaderCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f)) */
+@property (nonatomic , copy , readonly ) LEEConfigToCornerRadii LeeActionSheetHeaderCornerRadii;
+
+/** 设置 ActionSheet取消按钮的圆角半径 -> 格式: .LeeActionSheetCancelActionCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))  */
+@property (nonatomic , copy , readonly ) LEEConfigToCornerRadii LeeActionSheetCancelActionCornerRadii;
 
 /** 设置 ActionSheet的背景视图颜色 -> 格式: .LeeActionSheetBackgroundColor(UIColor) */
 @property (nonatomic , copy , readonly ) LEEConfigToColor LeeActionSheetBackgroundColor;
