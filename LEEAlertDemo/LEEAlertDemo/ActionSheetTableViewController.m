@@ -593,7 +593,9 @@
                 };
             })
             .LeeHeaderColor(blueColor)
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -626,7 +628,9 @@
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
             .LeeActionSheetBackgroundColor([UIColor whiteColor]) // 通过设置背景颜色来填充底部间隙
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -660,7 +664,9 @@
                 
                 action.titleColor = [UIColor grayColor];
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -700,7 +706,9 @@
                 
                 return type == LEEScreenOrientationTypeHorizontal ? CGRectGetHeight([[UIScreen mainScreen] bounds]) : CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -755,7 +763,9 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -841,7 +851,9 @@
                 
                 return CGRectGetWidth([[UIScreen mainScreen] bounds]);
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -931,7 +943,9 @@
                 }];
                 
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;

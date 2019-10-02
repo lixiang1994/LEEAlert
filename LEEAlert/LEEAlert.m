@@ -963,12 +963,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return alertManager;
 }
 
-+ (LEEBaseConfig *)alert{
++ (LEEAlertConfig *)alert{
     
     return [[LEEAlertConfig alloc] init];
 }
 
-+ (LEEBaseConfig *)actionsheet{
++ (LEEActionSheetConfig *)actionsheet{
     
     return [[LEEActionSheetConfig alloc] init];
 }

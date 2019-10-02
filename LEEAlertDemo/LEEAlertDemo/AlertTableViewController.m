@@ -783,7 +783,9 @@
                 };
             })
             .LeeHeaderColor(blueColor)
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -815,7 +817,9 @@
                 
                 action.titleColor = [UIColor grayColor];
             })
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -832,7 +836,9 @@
             [LEEAlert alert].config
             .LeeCustomView(view)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -850,7 +856,9 @@
             .LeeCustomView(view)
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderColor([UIColor clearColor])
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -883,7 +891,9 @@
             .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
             .LeeClickBackgroundClose(YES)
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -1007,7 +1017,9 @@
                                         .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                                         .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                                         .LeeClickBackgroundClose(YES)
+                                        #ifdef __IPHONE_13_0
                                         .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+                                        #endif
                                         .LeeShow();
                                     
                                     } else {
@@ -1025,7 +1037,9 @@
                             .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                             .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                             .LeeClickBackgroundClose(YES)
+                            #ifdef __IPHONE_13_0
                             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+                            #endif
                             .LeeShow();
                         
                         } else {
@@ -1043,7 +1057,9 @@
                 .LeeItemInsets(UIEdgeInsetsMake(0, 0, 0, 0))
                 .LeeHeaderInsets(UIEdgeInsetsMake(10, 0, 0, 0))
                 .LeeClickBackgroundClose(YES)
+                #ifdef __IPHONE_13_0
                 .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+                #endif
                 .LeeShow();
             }
             
@@ -1132,7 +1148,9 @@
                 action.cornerRadius = 5.0f;
             })
             .LeeCornerRadius(2.0f)
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
@@ -1195,7 +1213,9 @@
             .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
             .LeeHeaderColor([UIColor colorWithRed:239 / 255.0f green:225 / 255.0f blue:212 / 255.0f alpha:1.0f])
             .LeeClickBackgroundClose(YES)
+            #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
+            #endif
             .LeeShow();
         }
             break;
