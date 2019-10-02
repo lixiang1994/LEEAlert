@@ -4,7 +4,7 @@ xcode_project: Framework/LEEAlert/LEEAlert.xcodeproj # 项目文件相对于.tra
     
 xcode_scheme: LEEAlert #你需要集成测试的scheme
 
-osx_image: xcode10
+osx_image: xcode11
 
 script:
 - xcodebuild clean build -sdk iphonesimulator -project Framework/LEEAlert/LEEAlert.xcodeproj -scheme LEEAlert CODE_SIGNING_REQUIRED=NO
