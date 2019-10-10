@@ -1,6 +1,13 @@
 
 # LEEAlert - 更新日志
 
+V1.3.1
+==============
+```
+/// 查询队列中是否包含某一标识
++ (BOOL)containsQueueWithIdentifier:(NSString *)identifier;
+```
+
 V1.3.0
 ==============
 

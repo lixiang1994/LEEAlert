@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.0
+ *  @version    V1.3.1
  */
 
 #import "LEEAlert.h"
@@ -1017,7 +1017,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     [[LEEAlert shareManager].queueArray removeAllObjects];
 }
 
++ (BOOL)containsQueueWithIdentifier:(NSString *)identifier {
+    
+    for (LEEBaseConfig *config in [LEEAlert shareManager].queueArray) {
+        if ([config.config.modelIdentifier isEqualToString:identifier]) return YES;
+    }
+    
+    return NO;
+}
+
 + (void)closeWithIdentifier:(NSString *)identifier completionBlock:(void (^ _Nullable)(void))completionBlock{
+    
     [self closeWithIdentifier:identifier force:NO completionBlock:completionBlock];
 }
 
