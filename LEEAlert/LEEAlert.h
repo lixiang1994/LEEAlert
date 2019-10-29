@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.1
+ *  @version    V1.3.2
  */
 
 #import <Foundation/Foundation.h>
@@ -78,6 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 清空队列 */
 + (void)clearQueue;
+
+/** 队列是否为空 */
++ (BOOL)isQueueEmpty;
 
 /// 查询队列中是否包含某一标识
 /// @param identifier 标识
