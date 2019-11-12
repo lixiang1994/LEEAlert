@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.2
+ *  @version    V1.3.3
  */
 
 #import "LEEAlert.h"
@@ -1094,6 +1094,18 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 #pragma mark LazyLoading
 
+- (void)setMainWindow:(UIWindow *)mainWindow {
+    _mainWindow = mainWindow;
+    
+    if (@available(iOS 13.0, *)) {
+     
+        if (mainWindow.windowScene && _leeWindow) {
+            
+            _leeWindow.windowScene = mainWindow.windowScene;
+        }
+    }
+}
+
 - (NSMutableArray <LEEBaseConfig *>*)queueArray{
     
     if (!_queueArray) _queueArray = [NSMutableArray array];
@@ -1105,7 +1117,19 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     if (!_leeWindow) {
         
-        _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        if (@available(iOS 13.0, *)) {
+            
+            if (_mainWindow.windowScene) {
+                
+                _leeWindow = [[LEEAlertWindow alloc] initWithWindowScene: _mainWindow.windowScene];
+                
+            } else {
+                _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+            }
+            
+        } else {
+            _leeWindow = [[LEEAlertWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        }
         
         _leeWindow.rootViewController = [[UIViewController alloc] init];
         
@@ -1160,22 +1184,22 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     const CGFloat maxX = CGRectGetMaxX(bounds);
     const CGFloat maxY = CGRectGetMaxY(bounds);
     
-    const CGFloat topLeftCenterX = minX +  cornerRadii.topLeft;
+    const CGFloat topLeftCenterX = minX + cornerRadii.topLeft;
     const CGFloat topLeftCenterY = minY + cornerRadii.topLeft;
     
     const CGFloat topRightCenterX = maxX - cornerRadii.topRight;
     const CGFloat topRightCenterY = minY + cornerRadii.topRight;
     
-    const CGFloat bottomLeftCenterX = minX +  cornerRadii.bottomLeft;
+    const CGFloat bottomLeftCenterX = minX + cornerRadii.bottomLeft;
     const CGFloat bottomLeftCenterY = maxY - cornerRadii.bottomLeft;
     
-    const CGFloat bottomRightCenterX = maxX -  cornerRadii.bottomRight;
+    const CGFloat bottomRightCenterX = maxX - cornerRadii.bottomRight;
     const CGFloat bottomRightCenterY = maxY - cornerRadii.bottomRight;
     // 虽然顺时针参数是YES，在iOS中的UIView中，这里实际是逆时针
     
     CGMutablePathRef path = CGPathCreateMutable();
     // 顶 左
-    CGPathAddArc(path, NULL, topLeftCenterX, topLeftCenterY,cornerRadii.topLeft, M_PI, 3 * M_PI_2, NO);
+    CGPathAddArc(path, NULL, topLeftCenterX, topLeftCenterY, cornerRadii.topLeft, M_PI, 3 * M_PI_2, NO);
     // 顶 右
     CGPathAddArc(path, NULL, topRightCenterX , topRightCenterY, cornerRadii.topRight, 3 * M_PI_2, 0, NO);
     // 底 右

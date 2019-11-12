@@ -1,6 +1,14 @@
 
 # LEEAlert - 更新日志
 
+V1.3.3
+==============
+增加iOS13 windowScene支持,  在 AppDelegate 或 SceneDelegate 中设置主要Window
+
+```
+[LEEAlert configMainWindow:self.window];
+```
+
 V1.3.2
 ==============
 ```

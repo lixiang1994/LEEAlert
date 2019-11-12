@@ -54,8 +54,7 @@
     
     self.window.rootViewController = tbc;
     
-    // 设置主window
-    
+    // ⚠️ 设置主Window
     [LEEAlert configMainWindow:self.window];
     
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];

@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.2
+ *  @version    V1.3.3
  */
 
 #import <Foundation/Foundation.h>
@@ -25,6 +25,12 @@
 
 /*
  *************************简要说明************************
+ 
+ Alert 初始化
+ 在 AppDelegate 或 SceneDelegate 中设置主要Window
+ 
+ [LEEAlert configMainWindow:self.window];
+ 
  
  Alert 使用方法
  
@@ -48,6 +54,7 @@
  - 支持两种背景样式 1.半透明 (支持自定义透明度比例和颜色) 2.毛玻璃 (支持效果类型)
  - 支持自定义UIView动画方法
  - 支持自定义打开关闭动画样式(动画方向 渐变过渡 缩放过渡等)
+ - 支持iOS13 Dark样式
  - 更多特性未来版本中将不断更新.
  
  设置方法结束后在最后请不要忘记使用.LeeShow()方法来显示.
@@ -70,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** 获取Alert窗口 */
 + (nonnull LEEAlertWindow *)getAlertWindow;
 
-/** 设置主窗口 */
+/** 设置主窗口 ⚠️ 必须设置 iOS13 UISecene */
 + (void)configMainWindow:(UIWindow *)window;
 
 /** 继续队列显示 */

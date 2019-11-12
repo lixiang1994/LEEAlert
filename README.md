@@ -299,6 +299,8 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 
 ### 注意事项
 
+- 在 AppDelegate 或 SceneDelegate 中设置主要Window: 
+`[LEEAlert configMainWindow:self.window];`
 - 添加的功能项顺序会决定显示的排列顺序.
 - 当需要很复杂的样式时 如果默认提供的这些功能项无法满足, 建议将其封装成一个UIView对象 添加自定义视图来显示.
 - ActionSheet中 取消类型的Action 显示的位置与原生位置相同 处于底部独立的位置.
