@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.4
+ *  @version    V1.3.5
  */
 
 #import "LEEAlert.h"
@@ -1453,6 +1453,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     if (action.attributedTitle) [self setAttributedTitle:action.attributedTitle forState:UIControlStateNormal];
     
     if (action.attributedHighlight) [self setAttributedTitle:action.attributedHighlight forState:UIControlStateHighlighted];
+    
+    if (action.numberOfLines) [self.titleLabel setNumberOfLines:action.numberOfLines];
     
     if (action.font) [self.titleLabel setFont:action.font];
     

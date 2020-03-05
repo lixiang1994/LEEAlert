@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.4
+ *  @version    V1.3.5
  */
 
 #import <Foundation/Foundation.h>
@@ -340,6 +340,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** action高亮标题(attributed) */
 @property (nonatomic , strong ) NSAttributedString *attributedHighlight;
+
+/** action标题行数 */
+@property (nonatomic , assign ) NSInteger numberOfLines;
 
 /** action字体 */
 @property (nonatomic , strong ) UIFont *font;

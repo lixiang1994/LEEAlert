@@ -1,6 +1,13 @@
 
 # LEEAlert - 更新日志
 
+V1.3.5
+==============
+LEEAction增加 numberOfLines 属性 用于设置title行数
+```
+action.numberOfLines = 2;
+```
+
 V1.3.4
 ==============
 优化圆角内部处理
