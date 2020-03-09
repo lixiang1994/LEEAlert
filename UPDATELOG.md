@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.3.6
+==============
+修复iOS10以下崩溃问题
+
 V1.3.5
 ==============
 LEEAction增加 numberOfLines 属性 用于设置title行数
