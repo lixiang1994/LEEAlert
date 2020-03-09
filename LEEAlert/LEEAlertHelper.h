@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.5
+ *  @version    V1.3.6
  */
 
 #ifndef LEEAlertHelper_h
