@@ -441,18 +441,18 @@
 				TargetAttributes = {
 					9B0BB2241E8E28760087D231 = {
 						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = J3LFY9VS6Z;
+						DevelopmentTeam = B9D8DJR5J5;
 						ProvisioningStyle = Automatic;
 					};
 					9B0BB23D1E8E28760087D231 = {
 						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = 8K4E58U732;
+						DevelopmentTeam = B9D8DJR5J5;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 9B0BB2241E8E28760087D231;
 					};
 					9B0BB2481E8E28760087D231 = {
 						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = 8K4E58U732;
+						DevelopmentTeam = B9D8DJR5J5;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 9B0BB2241E8E28760087D231;
 					};
@@ -707,7 +707,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
-				DEVELOPMENT_TEAM = J3LFY9VS6Z;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -722,7 +722,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
-				DEVELOPMENT_TEAM = J3LFY9VS6Z;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -736,7 +736,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 8K4E58U732;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoTests;
@@ -749,7 +749,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 8K4E58U732;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoTests;
@@ -761,7 +761,7 @@
 		9B0BB2591E8E28760087D231 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 8K4E58U732;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoUITests;
@@ -773,7 +773,7 @@
 		9B0BB25A1E8E28760087D231 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 8K4E58U732;
+				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoUITests;

@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.7
+ *  @version    V1.3.8
  */
 
 #import "LEEAlert.h"
@@ -1219,7 +1219,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
             
-            NSString *leeSelString = [@"lee_alert_" stringByAppendingString:selString];
+            NSString *leeSelString = [@"lee_alert_view_" stringByAppendingString:selString];
             
             Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
             
@@ -1276,9 +1276,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
 }
 
-- (void)lee_alert_layoutSubviews{
+- (void)lee_alert_view_layoutSubviews{
     
-    [self lee_alert_layoutSubviews];
+    [self lee_alert_view_layoutSubviews];
     
     [self lee_alert_updateCornerRadii];
 }
@@ -1325,7 +1325,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         [selStringsArray enumerateObjectsUsingBlock:^(NSString *selString, NSUInteger idx, BOOL *stop) {
             
-            NSString *leeSelString = [@"lee_alert_" stringByAppendingString:selString];
+            NSString *leeSelString = [@"lee_alert_button_" stringByAppendingString:selString];
             
             Method originalMethod = class_getInstanceMethod(self, NSSelectorFromString(selString));
             
@@ -1348,9 +1348,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
 }
 
-- (void)lee_alert_layoutSubviews{
+- (void)lee_alert_button_layoutSubviews{
     
-    [self lee_alert_layoutSubviews];
+    [self lee_alert_button_layoutSubviews];
     
     [self lee_alert_updateCornerRadii];
 }
