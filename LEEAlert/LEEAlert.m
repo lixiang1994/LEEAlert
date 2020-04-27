@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.9
+ *  @version    V1.3.10
  */
 
 #import "LEEAlert.h"
@@ -1245,11 +1245,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 - (void)lee_alert_updateCornerRadii{
     
     if (!CornerRadiiEqualTo([self lee_alert_cornerRadii], CornerRadiiNull())) {
-        
+
         CAShapeLayer *lastLayer = (CAShapeLayer *)self.layer.mask;
-        CGPathRef lastPath = lastLayer.path ? lastLayer.path : CGPathCreateMutable();
+        CGPathRef lastPath = CGPathCreateCopy(lastLayer.path);
         CGPathRef path = LEECGPathCreateWithRoundedRect(self.bounds, [self lee_alert_cornerRadii]);
-        
+
         // 防止相同路径多次设置
         if (!CGPathEqualToPath(lastPath, path)) {
             // 移除原有路径动画
@@ -1269,9 +1269,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 animation.toValue = (__bridge id _Nullable)(path);
                 [maskLayer addAnimation:animation forKey:@"path"];
             }
-            
+
         }
         
+        CGPathRelease(lastPath);
+        
+        CGPathRelease(path);
     }
     
 }
