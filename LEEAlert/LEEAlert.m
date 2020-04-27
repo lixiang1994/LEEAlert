@@ -13,7 +13,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.3.8
+ *  @version    V1.3.9
  */
 
 #import "LEEAlert.h"
@@ -1868,6 +1868,30 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         [self updateContainerFrame:view];
         
         [self.container addSubview:view];
+        
+        // 保证使用AutoLayout的自定义视图在容器视图内的位置正确
+        if (view.translatesAutoresizingMaskIntoConstraints == NO) {
+            {
+                NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                              attribute:NSLayoutAttributeCenterX
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:self.container
+                                                                              attribute:NSLayoutAttributeCenterX
+                                                                             multiplier:1
+                                                                               constant:0];
+                [self.container addConstraint: constraint];
+            }
+            {
+                NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                              attribute:NSLayoutAttributeCenterY
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:self.container
+                                                                              attribute:NSLayoutAttributeCenterY
+                                                                             multiplier:1
+                                                                               constant:0];
+                [self.container addConstraint: constraint];
+            }
+        }
     }
 }
 

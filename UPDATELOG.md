@@ -1,6 +1,16 @@
 
 # LEEAlert - 更新日志
 
+V1.3.9
+==============
+优化自定义视图内部处理 解决iOS10及以下添加AutoLayout布局的自定义视图显示异常的问题.
+```
+// 使用AutoLayout布局的自定义视图 必须设置translatesAutoresizingMaskIntoConstraints=NO
+// 内部会为该视图设置centerXY的约束, 所以请不要为该视图设置关于top left right bottom center等位置相关的约束.
+// 不需要关心该视图位置 只需要保证大小正确即可.
+view.translatesAutoresizingMaskIntoConstraints = NO;
+```
+
 V1.3.8
 ==============
 修复崩溃问题

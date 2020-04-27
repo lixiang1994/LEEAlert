@@ -658,6 +658,10 @@
             UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
             
             view.backgroundColor = [UIColor colorWithRed:43/255.0f green:133/255.0f blue:208/255.0f alpha:1.0f];
+            // 使用AutoLayout布局的自定义视图 必须设置translatesAutoresizingMaskIntoConstraints
+            // 内部会为该视图设置centerXY的约束, 所以请不要为该视图设置关于top left right bottom center等位置相关的约束.
+            // 不需要关心该视图位置 只需要保证大小正确即可.
+            view.translatesAutoresizingMaskIntoConstraints = NO;
             
             [LEEAlert alert].config
             .LeeTitle(@"标题")
@@ -679,7 +683,6 @@
             .LeeShow();
             
             UIView *sub = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
-            
             sub.backgroundColor = [UIColor redColor];
             [view addSubview:sub];
             
@@ -699,6 +702,8 @@
                     make.height.equalTo(@100.0);
                 }];
                 
+                NSLog(@"%@", [NSValue valueWithCGRect:view.frame]);
+                [view layoutIfNeeded];
                 NSLog(@"%@", [NSValue valueWithCGRect:view.frame]);
             });
         }
@@ -869,12 +874,6 @@
             
             view.isSingle = YES;
             
-            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
-                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
-                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
-                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
-                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
-            
             view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                 
                 [LEEAlert closeWithCompletionBlock:^{
@@ -895,6 +894,12 @@
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             #endif
             .LeeShow();
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
         }
             break;
             
@@ -940,8 +945,6 @@
                 
                 view.isSingle = YES;
                 
-                view.array = array;
-                
                 view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                     
                     [LEEAlert closeWithCompletionBlock:^{
@@ -966,8 +969,6 @@
                             SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, 280, 0) style:UITableViewStylePlain];
                             
                             view.isSingle = YES;
-                            
-                            view.array = array;
                             
                             view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                                 
@@ -994,8 +995,6 @@
                                         
                                         view.isSingle = YES;
                                         
-                                        view.array = array;
-                                        
                                         view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                                             
                                             [LEEAlert closeWithCompletionBlock:^{
@@ -1021,6 +1020,8 @@
                                         .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                                         #endif
                                         .LeeShow();
+                                        
+                                        view.array = array;
                                     
                                     } else {
                                         
@@ -1041,6 +1042,8 @@
                             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                             #endif
                             .LeeShow();
+                            
+                            view.array = array;
                         
                         } else {
                             
@@ -1061,6 +1064,8 @@
                 .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
                 #endif
                 .LeeShow();
+                
+                view.array = array;
             }
             
         }

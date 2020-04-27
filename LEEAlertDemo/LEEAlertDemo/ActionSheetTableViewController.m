@@ -682,7 +682,7 @@
             
             view.changeBlock = ^(NSInteger level){
               
-                
+                NSLog(@"字体大小: %d", level);
             };
             
             [LEEAlert actionsheet].config
@@ -723,12 +723,6 @@
             SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] bounds]), 0) style:UITableViewStylePlain];
             
             view.isSingle = YES;
-            
-            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
-                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
-                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
-                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
-                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
             
             view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                 
@@ -772,6 +766,12 @@
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             #endif
             .LeeShow();
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
         }
             break;
             
@@ -782,12 +782,6 @@
             SelectedListView *view = [[SelectedListView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] bounds]), 0) style:UITableViewStylePlain];
             
             view.isSingle = NO;
-            
-            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
-                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
-                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
-                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
-                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
             
             view.selectedBlock = ^(NSArray<SelectedListModel *> *array) {
                 
@@ -860,6 +854,13 @@
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
             #endif
             .LeeShow();
+            
+            
+            view.array = @[[[SelectedListModel alloc] initWithSid:0 Title:@"垃圾广告"] ,
+                           [[SelectedListModel alloc] initWithSid:1 Title:@"淫秽色情"] ,
+                           [[SelectedListModel alloc] initWithSid:2 Title:@"低俗辱骂"] ,
+                           [[SelectedListModel alloc] initWithSid:3 Title:@"涉政涉密"] ,
+                           [[SelectedListModel alloc] initWithSid:4 Title:@"欺诈谣言"] ];
         }
             break;
             
