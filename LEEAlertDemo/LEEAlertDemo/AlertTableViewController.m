@@ -137,7 +137,7 @@
             [LEEAlert alert].config
             .LeeTitle(@"标题")
             .LeeContent(@"内容")
-            .LeeCancelAction(@"取消", ^{
+            .LeeCancelAction(@"取消取消取消取消取消取消取消取消取消", ^{
                 
                 // 取消点击事件Block
             })

@@ -1387,10 +1387,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @implementation LEEAction
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
     if (self) {
         _numberOfLines = 1;
+        _adjustsFontSizeToFitWidth = NO;
+        _lineBreakMode = NSLineBreakByTruncatingMiddle;
     }
     return self;
 }
@@ -1540,9 +1543,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (action.font) [self.titleLabel setFont:action.font];
     
-    self.titleLabel.adjustsFontSizeToFitWidth = action.adjustsFontSizeToFitWidth;
+    [self.titleLabel setAdjustsFontSizeToFitWidth:action.adjustsFontSizeToFitWidth];
     
-    self.titleLabel.textAlignment = action.textAlignment;
+    [self.titleLabel setLineBreakMode:action.lineBreakMode];
     
     if (action.titleColor) [self setTitleColor:action.titleColor forState:UIControlStateNormal];
     
