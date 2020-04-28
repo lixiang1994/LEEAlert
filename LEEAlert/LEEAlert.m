@@ -1509,6 +1509,14 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self.action = self.action;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.titleLabel.adjustsFontSizeToFitWidth = YES;
+    }
+    return self;
+}
+
 + (LEEActionButton *)button{
     
     return [LEEActionButton buttonWithType:UIButtonTypeCustom];;
