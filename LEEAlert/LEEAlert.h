@@ -354,7 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
 // if the height of the text reaches the # of lines or the height of the view is less than the # of lines allowed, the text will be
 // truncated using the line break mode.
 
-@property(nonatomic) NSInteger numberOfLines;
+@property(nonatomic, assign) NSInteger numberOfLines;
 
 /** action标题颜色 */
 @property (nonatomic , strong ) UIColor *titleColor;
