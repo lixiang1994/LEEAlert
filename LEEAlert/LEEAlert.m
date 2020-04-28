@@ -1387,6 +1387,14 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @implementation LEEAction
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _numberOfLines = 1;
+    }
+    return self;
+}
+
 - (void)update{
     
     if (self.updateBlock) self.updateBlock(self);
@@ -1528,9 +1536,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (action.attributedHighlight) [self setAttributedTitle:action.attributedHighlight forState:UIControlStateHighlighted];
     
-    if (action.numberOfLines) [self.titleLabel setNumberOfLines:action.numberOfLines];
+    [self.titleLabel setNumberOfLines:action.numberOfLines];
     
     if (action.font) [self.titleLabel setFont:action.font];
+    
+    self.titleLabel.adjustsFontSizeToFitWidth = action.adjustsFontSizeToFitWidth;
+    
+    self.titleLabel.textAlignment = action.textAlignment;
     
     if (action.titleColor) [self setTitleColor:action.titleColor forState:UIControlStateNormal];
     

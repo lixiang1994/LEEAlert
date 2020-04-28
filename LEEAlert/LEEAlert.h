@@ -341,11 +341,16 @@ NS_ASSUME_NONNULL_BEGIN
 /** action高亮标题(attributed) */
 @property (nonatomic , strong ) NSAttributedString *attributedHighlight;
 
-/** action标题行数 */
+/** action标题行数，default value is 1 (single line) */
 @property (nonatomic , assign ) NSInteger numberOfLines;
 
 /** action字体 */
 @property (nonatomic , strong ) UIFont *font;
+
+// default is NO. if YES, text will shrink to minFontSize along baseline
+@property(nonatomic, assign) BOOL adjustsFontSizeToFitWidth;
+
+@property(nonatomic, assign) NSTextAlignment textAlignment;
 
 /** action标题颜色 */
 @property (nonatomic , strong ) UIColor *titleColor;
