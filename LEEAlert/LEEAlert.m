@@ -1528,7 +1528,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (action.attributedHighlight) [self setAttributedTitle:action.attributedHighlight forState:UIControlStateHighlighted];
     
-    if (action.numberOfLines) [self.titleLabel setNumberOfLines:action.numberOfLines];
+    [self.titleLabel setNumberOfLines:action.numberOfLines];
     
     if (action.font) [self.titleLabel setFont:action.font];
     
