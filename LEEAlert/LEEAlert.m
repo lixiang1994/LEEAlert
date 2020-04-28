@@ -1534,6 +1534,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.titleLabel.adjustsFontSizeToFitWidth = action.adjustsFontSizeToFitWidth;
     
+    self.titleLabel.textAlignment = action.textAlignment;
+    
     if (action.titleColor) [self setTitleColor:action.titleColor forState:UIControlStateNormal];
     
     if (action.highlightColor) [self setTitleColor:action.highlightColor forState:UIControlStateHighlighted];

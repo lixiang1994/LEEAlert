@@ -350,6 +350,8 @@ NS_ASSUME_NONNULL_BEGIN
 // default is NO. if YES, text will shrink to minFontSize along baseline
 @property(nonatomic, assign) BOOL adjustsFontSizeToFitWidth;
 
+@property(nonatomic, assign) NSTextAlignment textAlignment;
+
 /** action标题颜色 */
 @property (nonatomic , strong ) UIColor *titleColor;
 
