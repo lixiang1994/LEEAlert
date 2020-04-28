@@ -341,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** action高亮标题(attributed) */
 @property (nonatomic , strong ) NSAttributedString *attributedHighlight;
 
-/** action标题行数 */
+/** action标题行数，default value is 1 (single line) */
 @property (nonatomic , assign ) NSInteger numberOfLines;
 
 /** action字体 */

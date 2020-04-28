@@ -1387,6 +1387,14 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @implementation LEEAction
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _numberOfLines = 1;
+    }
+    return self;
+}
+
 - (void)update{
     
     if (self.updateBlock) self.updateBlock(self);
