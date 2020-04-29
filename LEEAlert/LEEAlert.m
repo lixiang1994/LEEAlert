@@ -1392,6 +1392,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self = [super init];
     if (self) {
         _numberOfLines = 1;
+        _textAlignment = NSTextAlignmentLeft;
         _adjustsFontSizeToFitWidth = NO;
         _lineBreakMode = NSLineBreakByTruncatingMiddle;
     }
@@ -1540,6 +1541,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     if (action.attributedHighlight) [self setAttributedTitle:action.attributedHighlight forState:UIControlStateHighlighted];
     
     [self.titleLabel setNumberOfLines:action.numberOfLines];
+    
+    [self.titleLabel setTextAlignment:action.textAlignment];
     
     if (action.font) [self.titleLabel setFont:action.font];
     

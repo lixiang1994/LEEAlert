@@ -344,6 +344,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** action标题行数 默认为: 1 */
 @property (nonatomic , assign ) NSInteger numberOfLines;
 
+/** action标题对齐方式 默认为: NSTextAlignmentLeft */
+@property (nonatomic , assign ) NSTextAlignment textAlignment;
+
 /** action字体 */
 @property (nonatomic , strong ) UIFont *font;
 
