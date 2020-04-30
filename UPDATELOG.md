@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.4.0
+==============
+`LEEAction`增加 `numberOfLines`  `textAlignment`  `adjustsFontSizeToFitWidth`  `lineBreakMode`属性. 
+
 V1.3.10
 ==============
 修复内存泄露
