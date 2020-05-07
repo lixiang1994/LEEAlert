@@ -307,6 +307,13 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 - 设置最大宽度高度时如果使用`CGRectGetWidth([[UIScreen mainScreen] bounds])`这类方法 请考虑iOS8以后屏幕旋转 width和height会变化的特性.
 
 
+
+其他问题
+==============
+
+详情请查看[Issues](https://github.com/lixiang1994/LEEAlert/issues?q=is%3Aissue+is%3Aopen+label%3AQ%26A)
+
+
 安装
 ==============
 
