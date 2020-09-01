@@ -62,6 +62,8 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 
 也就是说整个添加的结构是以他们两个展开的 , 这个仅作为了解即可.
 
+![Layout](https://github.com/lixiang1994/LEEAlert/blob/master/Resources/layout.png)
+
 ### Alert
 ```
     // 完整结构
