@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.4.1
+==============
+优化ActionSheet内部视图结构.
+
 V1.4.0
 ==============
 `LEEAction`增加 `numberOfLines`  `textAlignment`  `adjustsFontSizeToFitWidth`  `lineBreakMode`属性. 
