@@ -12,8 +12,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2019年 lee. All rights reserved.
- *  @version    V1.4.0
+ *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
+ *  @version    V1.4.1
  */
 
 #import "LEEAlert.h"
@@ -3025,8 +3025,6 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight - cancelActionTotalHeight ? actionSheetViewMaxHeight - cancelActionTotalHeight : actionSheetViewHeight;
     
-    actionSheetViewFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
-    
     self.actionSheetView.frame = actionSheetViewFrame;
     
     [self.actionSheetView layoutIfNeeded];
@@ -3058,11 +3056,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     CGRect containerFrame = self.containerView.frame;
     
-    containerFrame.size.width = viewWidth;
+    containerFrame.size.width = actionSheetViewMaxWidth;
     
     containerFrame.size.height = actionSheetViewFrame.size.height + cancelActionTotalHeight + VIEWSAFEAREAINSETS(self.view).bottom + self.config.modelActionSheetBottomMargin;
     
-    containerFrame.origin.x = 0;
+    containerFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
     
     if (isShowed) {
         
@@ -3080,21 +3078,31 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     __weak typeof(self) weakSelf = self;
     
+    UIView *shadowView = [UIView new];
+    
+    shadowView.frame = self.view.bounds;
+    
+    shadowView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    shadowView.backgroundColor = [UIColor clearColor];
+    
+    shadowView.layer.shadowOffset = self.config.modelShadowOffset;
+    
+    shadowView.layer.shadowRadius = self.config.modelShadowRadius;
+    
+    shadowView.layer.shadowOpacity = self.config.modelShadowOpacity;
+    
+    shadowView.layer.shadowColor = self.config.modelShadowColor.CGColor;
+    
+    [self.view addSubview: shadowView];
+    
     _containerView = [UIView new];
     
-    [self.view addSubview: _containerView];
+    [shadowView addSubview: _containerView];
     
     [self.containerView addSubview: self.actionSheetView];
     
     self.containerView.backgroundColor = self.config.modelActionSheetBackgroundColor;
-    
-    self.containerView.layer.shadowOffset = self.config.modelShadowOffset;
-    
-    self.containerView.layer.shadowRadius = self.config.modelShadowRadius;
-    
-    self.containerView.layer.shadowOpacity = self.config.modelShadowOpacity;
-    
-    self.containerView.layer.shadowColor = self.config.modelShadowColor.CGColor;
     
     self.actionSheetView.scrollEnabled = self.config.modelIsScrollEnabled;
     

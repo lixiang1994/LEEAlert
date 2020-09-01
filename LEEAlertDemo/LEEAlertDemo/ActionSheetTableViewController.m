@@ -705,6 +705,7 @@
             .LeeActionSheetBottomMargin(0.0f)
             .LeeActionSheetBackgroundColor([UIColor whiteColor])
             .LeeCornerRadius(0.0f)
+            .LeeActionSheetHeaderCornerRadii(CornerRadiiMake(0, 0, 0, 0))
             .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
                 
                 // 这是最大宽度为屏幕宽度 (横屏和竖屏)
