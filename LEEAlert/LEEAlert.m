@@ -1077,6 +1077,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
             
             completionBlock();
         }
+    } else {
+        completionBlock();
     }
 }
 
