@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.4.2
+ *  @version    V1.4.3
  */
 
 #import "LEEAlert.h"
@@ -1075,12 +1075,12 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
         } else {
             
-            completionBlock();
+            if (completionBlock) completionBlock();
         }
         
     } else {
         
-        completionBlock();
+        if (completionBlock) completionBlock();
     }
 }
 
@@ -1094,7 +1094,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         
     } else {
         
-        completionBlock();
+        if (completionBlock) completionBlock();
     }
 }
 
