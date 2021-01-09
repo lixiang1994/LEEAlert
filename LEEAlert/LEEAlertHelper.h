@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
     LEEScreenOrientationTypeVertical
 };
 
-
+/** 这里的加个注释 */
 typedef NS_ENUM(NSInteger, LEEAlertType) {
     
     LEEAlertTypeAlert,
