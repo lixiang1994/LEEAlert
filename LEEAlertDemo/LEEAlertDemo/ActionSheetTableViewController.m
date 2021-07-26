@@ -18,7 +18,9 @@
 
 #import "SelectedListView.h"
 
-@interface ActionSheetTableViewController ()
+@interface ActionSheetTableViewController ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic , strong ) NSMutableArray *dataArray;
 
@@ -26,10 +28,18 @@
 
 @implementation ActionSheetTableViewController
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    self.tableView.frame = self.view.bounds;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.title = @"ActionSheet";
+    
+    self.tableView = [[UITableView alloc] init];
     
     if (@available(iOS 11.0, *)) {
         
@@ -41,6 +51,12 @@
     self.tableView.estimatedSectionHeaderHeight = 0;
     
     self.tableView.estimatedSectionFooterHeight = 0;
+    
+    self.tableView.delegate = self;
+    
+    self.tableView.dataSource = self;
+    
+    [self.view addSubview:self.tableView];
     
     self.dataArray = [NSMutableArray array];
     

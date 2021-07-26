@@ -42,7 +42,7 @@
     [classArray enumerateObjectsUsingBlock:^(id _Nonnull class, NSUInteger idx, BOOL * _Nonnull stop) {
        
         NavigationViewController *nc = [[NavigationViewController alloc] initWithRootViewController:[[NSClassFromString(class) alloc] init]];
-        
+        [nc.navigationBar setTranslucent:NO];
         [ncArray addObject:nc];
         
         nc.tabBarItem.title = titleArray[idx];

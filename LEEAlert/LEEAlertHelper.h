@@ -30,7 +30,8 @@ FOUNDATION_EXPORT const unsigned char LEEAlertVersionString[];
 , LEEAlertWindow
 , LEEAction
 , LEEItem
-, LEECustomView;
+, LEECustomView
+, LEEPresentation;
 
 typedef NS_ENUM(NSInteger, LEEScreenOrientationType) {
     /** 屏幕方向类型 横屏 */
@@ -119,6 +120,8 @@ typedef struct {
     CGFloat bottomRight;
 } CornerRadii;
 
+
+
 NS_ASSUME_NONNULL_BEGIN
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfig)(void);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToAny)(id any);
@@ -131,6 +134,7 @@ typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToColor)(UIColor *color);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToSize)(CGSize size);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToPoint)(CGPoint point);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToEdgeInsets)(UIEdgeInsets insets);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToPresentation)(LEEPresentation *presentation);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToAnimationStyle)(LEEAnimationStyle style);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBlurEffectStyle)(UIBlurEffectStyle style);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToInterfaceOrientationMask)(UIInterfaceOrientationMask);

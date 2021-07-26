@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AlertTableViewController : UITableViewController
+@interface AlertTableViewController : UIViewController
 
 @end

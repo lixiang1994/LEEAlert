@@ -233,6 +233,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface LEEBaseConfigModel(Presentation)
+
+/** 设置 层级 -> 格式: .LeePresentation([LEEPresentation windowLevel:1000] / [LEEPresentation viewController:xxxx]) */
+@property (nonatomic, copy, readonly) LEEConfigToPresentation LeePresentation;
+
+@end
+
 @interface LEEBaseConfigModel(Queue)
 
 /** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
@@ -435,6 +442,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 是否自动适应宽度 (不支持 AutoLayout 布局的视图)*/
 @property (nonatomic, assign) BOOL isAutoWidth;
+
+@end
+
+@interface LEEPresentation: NSObject
+
++ (LEEPresentation *)windowLevel: (UIWindowLevel)level;
+
++ (LEEPresentation *)viewController: (UIViewController *)controller;
 
 @end
 

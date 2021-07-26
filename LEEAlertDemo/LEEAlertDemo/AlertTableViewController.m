@@ -22,18 +22,28 @@
 
 #import "Masonry.h"
 
-@interface AlertTableViewController ()
+@interface AlertTableViewController ()<UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic , strong ) NSMutableArray *dataArray;
+@property (nonatomic, strong) UITableView *tableView;
+
+@property (nonatomic , strong) NSMutableArray *dataArray;
 
 @end
 
 @implementation AlertTableViewController
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    self.tableView.frame = self.view.bounds;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.title = @"Alert";
+    
+    self.tableView = [[UITableView alloc] init];
     
     if (@available(iOS 11.0, *)) {
         
@@ -45,6 +55,12 @@
     self.tableView.estimatedSectionHeaderHeight = 0;
     
     self.tableView.estimatedSectionFooterHeight = 0;
+    
+    self.tableView.delegate = self;
+    
+    self.tableView.dataSource = self;
+    
+    [self.view addSubview:self.tableView];
     
     self.dataArray = [NSMutableArray array];
     
@@ -91,6 +107,8 @@
     [baseArray addObject:@{@"title" : @"显示一个带Masonry布局的自定义视图的 alert 弹框" , @"content" : @"模拟2秒后自定义视图约束发生变化"}];
     
     [baseArray addObject:@{@"title" : @"显示一个mask圆角的 alert 弹框" , @"content" : @"通过CornerRadii指定各个圆角半径"}];
+    
+    [baseArray addObject:@{@"title" : @"显示一个层级在视图控制器的 alert 弹框" , @"content" : @"通过LeePresentation属性设置弹窗所在层级"}];
     
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
@@ -498,6 +516,7 @@
             .LeeAction(@"确认", nil)
 //            .LeeQueue(YES) // 添加到队列
             .LeePriority(1) // 设置优先级
+            .LeePresentation([LEEPresentation viewController:self])
             .LeeShow();
             
             
@@ -727,6 +746,26 @@
             .LeeShow(); // 设置完成后 别忘记调用Show来显示
         }
             break;
+            
+        case 18:
+        {
+            [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"内容")
+            .LeeCancelAction(@"取消", ^{
+                
+                // 取消点击事件Block
+            })
+            .LeeAction(@"确认", ^{
+                
+                // 确认点击事件Block
+            })
+//            .LeePresentation([LEEPresentation windowLevel:UIWindowLevelAlert])
+            .LeePresentation([LEEPresentation viewController:self])
+            .LeeShow(); // 设置完成后 别忘记调用Show来显示
+            
+        }
+            break;;
             
         default:
             break;

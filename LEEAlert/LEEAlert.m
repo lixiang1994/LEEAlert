@@ -98,6 +98,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic, assign) CGFloat modelActionSheetCancelActionSpaceWidth;
 @property (nonatomic, assign) CGFloat modelActionSheetBottomMargin;
 
+@property (nonatomic, strong) LEEPresentation* modelPresentation;
+
 @end
 
 @implementation LEEBaseConfigModel
@@ -195,6 +197,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelShouldActionClickClose = ^(NSInteger index){
             return YES;
         };
+        
+        _modelPresentation = [LEEPresentation windowLevel:UIWindowLevelAlert];
     }
     return self;
 }
@@ -678,6 +682,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(CGFloat number){
         
         self.modelWindowLevel = number;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToPresentation)LeePresentation{
+    
+    return ^(LEEPresentation *presentation){
+        
+        self.modelPresentation = presentation;
         
         return self;
     };
@@ -1924,6 +1939,43 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @end
 
+@interface LEEPresentationWindow: LEEPresentation
+
+@property (nonatomic, assign) UIWindowLevel windowLevel;
+
+@end
+
+@interface LEEPresentationViewController: LEEPresentation
+
+@property (nonatomic, weak) UIViewController *viewController;
+
+@end
+
+@implementation LEEPresentation
+
++ (LEEPresentationWindow *)windowLevel:(UIWindowLevel)level {
+    LEEPresentationWindow *presentation = [[LEEPresentationWindow alloc] init];
+    presentation.windowLevel = level;
+    return presentation;
+}
+
++ (LEEPresentationViewController *)viewController:(UIViewController *)controller {
+    LEEPresentationViewController *presentation = [[LEEPresentationViewController alloc] init];
+    presentation.viewController = controller;
+    return presentation;
+}
+
+@end
+
+@implementation LEEPresentationWindow
+
+@end
+
+@implementation LEEPresentationViewController
+
+@end
+
+
 @interface LEEBaseViewController ()<UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) LEEBaseConfigModel *config;
@@ -2009,6 +2061,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     [self.currentKeyWindow endEditing:YES];
     
     [self.view setUserInteractionEnabled:NO];
+    
+    [self.view layoutIfNeeded];
 }
 
 #pragma mark close animations
@@ -2104,9 +2158,18 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notify{
     
-    if (self.config.modelIsAvoidKeyboard) {
+    BOOL local = YES;
+    
+    if (@available(iOS 9.0, *)) {
+        
+        local = [[[notify userInfo] objectForKey:UIKeyboardIsLocalUserInfoKey] boolValue];
+    }
+    
+    if (self.config.modelIsAvoidKeyboard && local) {
         
         double duration = [[[notify userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        
+        UIViewAnimationCurve curve = [[[notify userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
         
         keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
         
@@ -2115,6 +2178,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         [UIView beginAnimations:@"keyboardWillChangeFrame" context:NULL];
         
         [UIView setAnimationDuration:duration];
+        
+        [UIView setAnimationCurve:curve];
         
         [self updateAlertLayout];
         
@@ -2127,7 +2192,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     [super viewDidLayoutSubviews];
     
-    if (!self.isShowing && !self.isClosing) [self updateAlertLayout];
+    [self updateAlertLayout];
 }
 
 - (void)viewSafeAreaInsetsDidChange{
@@ -2150,17 +2215,27 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     CGPoint offset = self.config.modelAlertCenterOffset;
     
+    // 解决设置 transform 导致触发layoutsubviews的问题 (动画效果异常)
+    CGAffineTransform transform = self.containerView.transform;
+    
+    self.containerView.transform = CGAffineTransformIdentity;
+    
     if (isShowingKeyboard) {
         
         if (keyboardFrame.size.height) {
             
             CGFloat alertViewHeight = [self updateAlertItemsLayout];
             
-            CGFloat keyboardY = keyboardFrame.origin.y;
+            // 处理非全屏时当前视图在窗口中的位置 解决键盘遮挡范围计算问题
+            CGRect current = [self.view convertRect:self.view.bounds toView:self.view.window];
+            
+            CGFloat keyboardY = keyboardFrame.origin.y - current.origin.y;
             
             CGRect alertViewFrame = self.alertView.frame;
             
             CGFloat tempAlertViewHeight = keyboardY - alertViewHeight < 20 ? keyboardY - 20 : alertViewHeight;
+            
+            tempAlertViewHeight = tempAlertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : tempAlertViewHeight;
             
             CGFloat tempAlertViewY = keyboardY - tempAlertViewHeight - 10;
             
@@ -2215,6 +2290,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         self.containerView.frame = containerFrame;
     }
+    
+    self.containerView.transform = transform;
 }
 
 - (CGFloat)updateAlertItemsLayout{
@@ -2909,7 +2986,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     [super viewDidLayoutSubviews];
     
-    if (!self.isShowing && !self.isClosing) [self updateActionSheetLayout];
+    [self updateActionSheetLayout];
 }
 
 - (void)viewSafeAreaInsetsDidChange{
@@ -3660,7 +3737,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 if (!strongSelf.config.modelIsQueue && last.config.modelQueuePriority > strongSelf.config.modelQueuePriority) return;
                 
-                if (!last.config.modelIsQueue && last.config.modelQueuePriority <= strongSelf.config.modelQueuePriority) [[LEEAlert shareManager].queueArray removeObject:last];
+                if (!last.config.modelIsQueue && last.config.modelQueuePriority <= strongSelf.config.modelQueuePriority) {
+                    
+                    [last close];
+                    
+                    [[LEEAlert shareManager].queueArray removeObject:last];
+                }
                 
                 if (![[LEEAlert shareManager].queueArray containsObject:strongSelf]) {
                     
@@ -3696,17 +3778,43 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     [LEEAlert shareManager].viewController.config = self.config;
     
-    [LEEAlert shareManager].leeWindow.rootViewController = [LEEAlert shareManager].viewController;
-    
-    [LEEAlert shareManager].leeWindow.windowLevel = self.config.modelWindowLevel;
-    
-    [LEEAlert shareManager].leeWindow.hidden = NO;
-    
-    if (@available(iOS 13.0, *)) {
-        [LEEAlert shareManager].leeWindow.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
+    if ([self.config.modelPresentation isKindOfClass:LEEPresentationWindow.class]) {
+        
+        LEEPresentationWindow *presentation = (LEEPresentationWindow *)self.config.modelPresentation;
+        
+        [LEEAlert shareManager].leeWindow.rootViewController = [LEEAlert shareManager].viewController;
+        
+        [LEEAlert shareManager].leeWindow.windowLevel = presentation.windowLevel;
+        
+        [LEEAlert shareManager].leeWindow.hidden = NO;
+        
+        if (@available(iOS 13.0, *)) {
+            [LEEAlert shareManager].leeWindow.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
+        }
+        
+        [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
     }
     
-    [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
+    if ([self.config.modelPresentation isKindOfClass:LEEPresentationViewController.class]) {
+        
+        LEEPresentationViewController *presentation = (LEEPresentationViewController *)self.config.modelPresentation;
+        
+        if (!presentation.viewController) return;
+        
+        [presentation.viewController addChildViewController:[LEEAlert shareManager].viewController];
+        
+        [presentation.viewController.view addSubview:[LEEAlert shareManager].viewController.view];
+        
+        if (@available(iOS 13.0, *)) {
+            [LEEAlert shareManager].viewController.view.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
+        }
+        
+        [LEEAlert shareManager].viewController.view.frame = presentation.viewController.view.bounds;
+        
+        [LEEAlert shareManager].viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        
+        [[LEEAlert shareManager].viewController didMoveToParentViewController:presentation.viewController];
+    }
     
     __weak typeof(self) weakSelf = self;
     
@@ -3722,13 +3830,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if ([LEEAlert shareManager].queueArray.lastObject == strongSelf) {
             
-            [LEEAlert shareManager].leeWindow.hidden = YES;
-            
-            [[LEEAlert shareManager].leeWindow resignKeyWindow];
-            
-            [LEEAlert shareManager].leeWindow.rootViewController = nil;
-            
-            [LEEAlert shareManager].viewController = nil;
+            [strongSelf close];
             
             [[LEEAlert shareManager].queueArray removeObject:strongSelf];
             
@@ -3742,6 +3844,29 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         if (strongSelf.config.modelCloseComplete) strongSelf.config.modelCloseComplete();
     };
     
+}
+
+- (void)close{
+    
+    if ([self.config.modelPresentation isKindOfClass:LEEPresentationWindow.class]) {
+        
+        [LEEAlert shareManager].leeWindow.hidden = YES;
+        
+        [[LEEAlert shareManager].leeWindow resignKeyWindow];
+        
+        [LEEAlert shareManager].leeWindow.rootViewController = nil;
+    }
+    
+    if ([self.config.modelPresentation isKindOfClass:LEEPresentationViewController.class]) {
+        
+        [[LEEAlert shareManager].viewController willMoveToParentViewController:nil];
+        
+        [[LEEAlert shareManager].viewController.view removeFromSuperview];
+        
+        [[LEEAlert shareManager].viewController removeFromParentViewController];
+    }
+    
+    [LEEAlert shareManager].viewController = nil;
 }
 
 - (void)closeWithCompletionBlock:(void (^)(void))completionBlock{
