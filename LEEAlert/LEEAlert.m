@@ -40,9 +40,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface LEEBaseConfigModel ()
 
-@property (nonatomic , strong ) NSMutableArray *modelActionArray;
-@property (nonatomic , strong ) NSMutableArray *modelItemArray;
-@property (nonatomic , strong ) NSMutableDictionary *modelItemInsetsInfo;
+@property (nonatomic , strong) NSMutableArray *modelActionArray;
+@property (nonatomic , strong) NSMutableArray *modelItemArray;
+@property (nonatomic , strong) NSMutableDictionary *modelItemInsetsInfo;
 
 @property (nonatomic , assign ) CGFloat modelShadowOpacity;
 @property (nonatomic , assign ) CGFloat modelShadowRadius;
@@ -53,8 +53,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) NSInteger modelQueuePriority;
 
 @property (nonatomic , assign ) UIColor *modelShadowColor;
-@property (nonatomic , strong ) UIColor *modelHeaderColor;
-@property (nonatomic , strong ) UIColor *modelBackgroundColor;
+@property (nonatomic , strong) UIColor *modelHeaderColor;
+@property (nonatomic , strong) UIColor *modelBackgroundColor;
 
 @property (nonatomic , assign ) BOOL modelIsClickHeaderClose;
 @property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
@@ -93,8 +93,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic , assign ) CornerRadii modelActionSheetHeaderCornerRadii;
 @property (nonatomic , assign ) CornerRadii modelActionSheetCancelActionCornerRadii;
 
-@property (nonatomic , strong ) UIColor *modelActionSheetBackgroundColor;
-@property (nonatomic , strong ) UIColor *modelActionSheetCancelActionSpaceColor;
+@property (nonatomic , strong) UIColor *modelActionSheetBackgroundColor;
+@property (nonatomic , strong) UIColor *modelActionSheetCancelActionSpaceColor;
 @property (nonatomic , assign ) CGFloat modelActionSheetCancelActionSpaceWidth;
 @property (nonatomic , assign ) CGFloat modelActionSheetBottomMargin;
 
@@ -956,13 +956,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface LEEAlert ()
 
-@property (nonatomic , strong ) UIWindow *mainWindow;
+@property (nonatomic , strong) UIWindow *mainWindow;
 
-@property (nonatomic , strong ) LEEAlertWindow *leeWindow;
+@property (nonatomic , strong) LEEAlertWindow *leeWindow;
 
-@property (nonatomic , strong ) NSMutableArray <LEEBaseConfig *>*queueArray;
+@property (nonatomic , strong) NSMutableArray <LEEBaseConfig *>*queueArray;
 
-@property (nonatomic , strong ) LEEBaseViewController *viewController;
+@property (nonatomic , strong) LEEBaseViewController *viewController;
 
 @end
 
@@ -1414,7 +1414,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemView : UIView
 
-@property (nonatomic , strong ) LEEItem *item;
+@property (nonatomic , strong) LEEItem *item;
 
 + (LEEItemView *)view;
 
@@ -1431,7 +1431,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemLabel : UILabel
 
-@property (nonatomic , strong ) LEEItem *item;
+@property (nonatomic , strong) LEEItem *item;
 
 @property (nonatomic , copy ) void (^textChangedBlock)(void);
 
@@ -1478,7 +1478,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemTextField : UITextField
 
-@property (nonatomic , strong ) LEEItem *item;
+@property (nonatomic , strong) LEEItem *item;
 
 + (LEEItemTextField *)textField;
 
@@ -1495,7 +1495,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionButton : UIButton
 
-@property (nonatomic , strong ) LEEAction *action;
+@property (nonatomic , strong) LEEAction *action;
 
 @property (nonatomic , copy ) void (^heightChangedBlock)(void);
 
@@ -1505,17 +1505,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionButton ()
 
-@property (nonatomic , strong ) UIColor *borderColor;
+@property (nonatomic , strong) UIColor *borderColor;
 
 @property (nonatomic , assign ) CGFloat borderWidth;
 
-@property (nonatomic , strong ) CALayer *topLayer;
+@property (nonatomic , strong) CALayer *topLayer;
 
-@property (nonatomic , strong ) CALayer *bottomLayer;
+@property (nonatomic , strong) CALayer *bottomLayer;
 
-@property (nonatomic , strong ) CALayer *leftLayer;
+@property (nonatomic , strong) CALayer *leftLayer;
 
-@property (nonatomic , strong ) CALayer *rightLayer;
+@property (nonatomic , strong) CALayer *rightLayer;
 
 @end
 
@@ -1760,9 +1760,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEECustomView ()
 
-@property (nonatomic , strong ) LEEItem *item;
+@property (nonatomic , strong) LEEItem *item;
 
-@property (nonatomic , strong ) UIView *container;
+@property (nonatomic , strong) UIView *container;
 
 @property (nonatomic , assign ) CGSize size;
 
@@ -1926,11 +1926,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEBaseViewController ()<UIGestureRecognizerDelegate>
 
-@property (nonatomic , strong ) LEEBaseConfigModel *config;
+@property (nonatomic , strong) LEEBaseConfigModel *config;
 
-@property (nonatomic , strong ) UIWindow *currentKeyWindow;
+@property (nonatomic , strong) UIWindow *currentKeyWindow;
 
-@property (nonatomic , strong ) UIVisualEffectView *backgroundVisualEffectView;
+@property (nonatomic , strong) UIVisualEffectView *backgroundVisualEffectView;
 
 @property (nonatomic , assign ) LEEScreenOrientationType orientationType;
 
@@ -2063,13 +2063,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEAlertViewController ()
 
-@property (nonatomic , strong ) UIView *containerView;
+@property (nonatomic , strong) UIView *containerView;
 
-@property (nonatomic , strong ) UIScrollView *alertView;
+@property (nonatomic , strong) UIScrollView *alertView;
 
-@property (nonatomic , strong ) NSMutableArray <id>*alertItemArray;
+@property (nonatomic , strong) NSMutableArray <id>*alertItemArray;
 
-@property (nonatomic , strong ) NSMutableArray <LEEActionButton *>*alertActionArray;
+@property (nonatomic , strong) NSMutableArray <LEEActionButton *>*alertActionArray;
 
 @end
 
@@ -2870,17 +2870,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionSheetViewController ()
 
-@property (nonatomic , strong ) UIView *containerView;
+@property (nonatomic , strong) UIView *containerView;
 
-@property (nonatomic , strong ) UIScrollView *actionSheetView;
+@property (nonatomic , strong) UIScrollView *actionSheetView;
 
-@property (nonatomic , strong ) NSMutableArray <id>*actionSheetItemArray;
+@property (nonatomic , strong) NSMutableArray <id>*actionSheetItemArray;
 
-@property (nonatomic , strong ) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
+@property (nonatomic , strong) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
 
-@property (nonatomic , strong ) UIView *actionSheetCancelActionSpaceView;
+@property (nonatomic , strong) UIView *actionSheetCancelActionSpaceView;
 
-@property (nonatomic , strong ) LEEActionButton *actionSheetCancelAction;
+@property (nonatomic , strong) LEEActionButton *actionSheetCancelAction;
 
 @end
 

@@ -121,6 +121,7 @@ typedef struct {
 
 NS_ASSUME_NONNULL_BEGIN
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfig)(void);
+typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToAny)(id any);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToBool)(BOOL is);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToInteger)(NSInteger number);
 typedef LEEBaseConfigModel * _Nonnull (^LEEConfigToFloat)(CGFloat number);
