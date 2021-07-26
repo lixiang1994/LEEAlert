@@ -40,63 +40,63 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface LEEBaseConfigModel ()
 
-@property (nonatomic , strong) NSMutableArray *modelActionArray;
-@property (nonatomic , strong) NSMutableArray *modelItemArray;
-@property (nonatomic , strong) NSMutableDictionary *modelItemInsetsInfo;
+@property (nonatomic, strong) NSMutableArray *modelActionArray;
+@property (nonatomic, strong) NSMutableArray *modelItemArray;
+@property (nonatomic, strong) NSMutableDictionary *modelItemInsetsInfo;
 
-@property (nonatomic , assign ) CGFloat modelShadowOpacity;
-@property (nonatomic , assign ) CGFloat modelShadowRadius;
-@property (nonatomic , assign ) CGFloat modelOpenAnimationDuration;
-@property (nonatomic , assign ) CGFloat modelCloseAnimationDuration;
-@property (nonatomic , assign ) CGFloat modelBackgroundStyleColorAlpha;
-@property (nonatomic , assign ) CGFloat modelWindowLevel;
-@property (nonatomic , assign ) NSInteger modelQueuePriority;
+@property (nonatomic, assign) CGFloat modelShadowOpacity;
+@property (nonatomic, assign) CGFloat modelShadowRadius;
+@property (nonatomic, assign) CGFloat modelOpenAnimationDuration;
+@property (nonatomic, assign) CGFloat modelCloseAnimationDuration;
+@property (nonatomic, assign) CGFloat modelBackgroundStyleColorAlpha;
+@property (nonatomic, assign) CGFloat modelWindowLevel;
+@property (nonatomic, assign) NSInteger modelQueuePriority;
 
-@property (nonatomic , assign ) UIColor *modelShadowColor;
-@property (nonatomic , strong) UIColor *modelHeaderColor;
-@property (nonatomic , strong) UIColor *modelBackgroundColor;
+@property (nonatomic, assign) UIColor *modelShadowColor;
+@property (nonatomic, strong) UIColor *modelHeaderColor;
+@property (nonatomic, strong) UIColor *modelBackgroundColor;
 
-@property (nonatomic , assign ) BOOL modelIsClickHeaderClose;
-@property (nonatomic , assign ) BOOL modelIsClickBackgroundClose;
-@property (nonatomic , assign ) BOOL modelIsShouldAutorotate;
-@property (nonatomic , assign ) BOOL modelIsQueue;
-@property (nonatomic , assign ) BOOL modelIsContinueQueueDisplay;
-@property (nonatomic , assign ) BOOL modelIsAvoidKeyboard;
-@property (nonatomic , assign ) BOOL modelIsScrollEnabled;
+@property (nonatomic, assign) BOOL modelIsClickHeaderClose;
+@property (nonatomic, assign) BOOL modelIsClickBackgroundClose;
+@property (nonatomic, assign) BOOL modelIsShouldAutorotate;
+@property (nonatomic, assign) BOOL modelIsQueue;
+@property (nonatomic, assign) BOOL modelIsContinueQueueDisplay;
+@property (nonatomic, assign) BOOL modelIsAvoidKeyboard;
+@property (nonatomic, assign) BOOL modelIsScrollEnabled;
 
-@property (nonatomic , assign ) CGSize modelShadowOffset;
-@property (nonatomic , assign ) CGPoint modelAlertCenterOffset;
-@property (nonatomic , assign ) UIEdgeInsets modelHeaderInsets;
+@property (nonatomic, assign) CGSize modelShadowOffset;
+@property (nonatomic, assign) CGPoint modelAlertCenterOffset;
+@property (nonatomic, assign) UIEdgeInsets modelHeaderInsets;
 
-@property (nonatomic , copy ) NSString *modelIdentifier;
+@property (nonatomic, copy) NSString *modelIdentifier;
 
-@property (nonatomic , copy ) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType);
-@property (nonatomic , copy ) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType);
+@property (nonatomic, copy) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType);
+@property (nonatomic, copy) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType);
 
-@property (nonatomic , copy ) void(^modelOpenAnimationConfigBlock)(void (^animatingBlock)(void) , void (^animatedBlock)(void));
-@property (nonatomic , copy ) void(^modelCloseAnimationConfigBlock)(void (^animatingBlock)(void) , void (^animatedBlock)(void));
-@property (nonatomic , copy ) void (^modelFinishConfig)(void);
-@property (nonatomic , copy ) BOOL (^modelShouldClose)(void);
-@property (nonatomic , copy ) BOOL (^modelShouldActionClickClose)(NSInteger);
-@property (nonatomic , copy ) void (^modelCloseComplete)(void);
+@property (nonatomic, copy) void(^modelOpenAnimationConfigBlock)(void (^animatingBlock)(void), void (^animatedBlock)(void));
+@property (nonatomic, copy) void(^modelCloseAnimationConfigBlock)(void (^animatingBlock)(void), void (^animatedBlock)(void));
+@property (nonatomic, copy) void (^modelFinishConfig)(void);
+@property (nonatomic, copy) BOOL (^modelShouldClose)(void);
+@property (nonatomic, copy) BOOL (^modelShouldActionClickClose)(NSInteger);
+@property (nonatomic, copy) void (^modelCloseComplete)(void);
 
-@property (nonatomic , assign ) LEEBackgroundStyle modelBackgroundStyle;
-@property (nonatomic , assign ) LEEAnimationStyle modelOpenAnimationStyle;
-@property (nonatomic , assign ) LEEAnimationStyle modelCloseAnimationStyle;
+@property (nonatomic, assign) LEEBackgroundStyle modelBackgroundStyle;
+@property (nonatomic, assign) LEEAnimationStyle modelOpenAnimationStyle;
+@property (nonatomic, assign) LEEAnimationStyle modelCloseAnimationStyle;
 
-@property (nonatomic , assign ) UIStatusBarStyle modelStatusBarStyle;
-@property (nonatomic , assign ) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
-@property (nonatomic , assign ) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
-@property (nonatomic , assign ) UIUserInterfaceStyle modelUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
+@property (nonatomic, assign) UIStatusBarStyle modelStatusBarStyle;
+@property (nonatomic, assign) UIBlurEffectStyle modelBackgroundBlurEffectStyle;
+@property (nonatomic, assign) UIInterfaceOrientationMask modelSupportedInterfaceOrientations;
+@property (nonatomic, assign) UIUserInterfaceStyle modelUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
 
-@property (nonatomic , assign ) CornerRadii modelCornerRadii;
-@property (nonatomic , assign ) CornerRadii modelActionSheetHeaderCornerRadii;
-@property (nonatomic , assign ) CornerRadii modelActionSheetCancelActionCornerRadii;
+@property (nonatomic, assign) CornerRadii modelCornerRadii;
+@property (nonatomic, assign) CornerRadii modelActionSheetHeaderCornerRadii;
+@property (nonatomic, assign) CornerRadii modelActionSheetCancelActionCornerRadii;
 
-@property (nonatomic , strong) UIColor *modelActionSheetBackgroundColor;
-@property (nonatomic , strong) UIColor *modelActionSheetCancelActionSpaceColor;
-@property (nonatomic , assign ) CGFloat modelActionSheetCancelActionSpaceWidth;
-@property (nonatomic , assign ) CGFloat modelActionSheetBottomMargin;
+@property (nonatomic, strong) UIColor *modelActionSheetBackgroundColor;
+@property (nonatomic, strong) UIColor *modelActionSheetCancelActionSpaceColor;
+@property (nonatomic, assign) CGFloat modelActionSheetCancelActionSpaceWidth;
+@property (nonatomic, assign) CGFloat modelActionSheetBottomMargin;
 
 @end
 
@@ -241,7 +241,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (LEEConfigToStringAndBlock)LeeAction{
     
-    return ^(NSString *title , void(^block)(void)){
+    return ^(NSString *title, void(^block)(void)){
         
         return self.LeeAddAction(^(LEEAction *action) {
             
@@ -258,7 +258,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (LEEConfigToStringAndBlock)LeeCancelAction{
     
-    return ^(NSString *title , void(^block)(void)){
+    return ^(NSString *title, void(^block)(void)){
         
         return self.LeeAddAction(^(LEEAction *action) {
             
@@ -277,7 +277,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (LEEConfigToStringAndBlock)LeeDestructiveAction{
     
-    return ^(NSString *title , void(^block)(void)){
+    return ^(NSString *title, void(^block)(void)){
         
         return self.LeeAddAction(^(LEEAction *action) {
             
@@ -708,7 +708,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (LEEConfigToBlockAndBlock)LeeOpenAnimationConfig{
     
-    return ^(void(^block)(void (^animatingBlock)(void) , void (^animatedBlock)(void))){
+    return ^(void(^block)(void (^animatingBlock)(void), void (^animatedBlock)(void))){
         
         self.modelOpenAnimationConfigBlock = block;
         
@@ -719,7 +719,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 - (LEEConfigToBlockAndBlock)LeeCloseAnimationConfig{
     
-    return ^(void(^block)(void (^animatingBlock)(void) , void (^animatedBlock)(void))){
+    return ^(void(^block)(void (^animatingBlock)(void), void (^animatedBlock)(void))){
         
         self.modelCloseAnimationConfigBlock = block;
         
@@ -956,13 +956,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface LEEAlert ()
 
-@property (nonatomic , strong) UIWindow *mainWindow;
+@property (nonatomic, strong) UIWindow *mainWindow;
 
-@property (nonatomic , strong) LEEAlertWindow *leeWindow;
+@property (nonatomic, strong) LEEAlertWindow *leeWindow;
 
-@property (nonatomic , strong) NSMutableArray <LEEBaseConfig *>*queueArray;
+@property (nonatomic, strong) NSMutableArray <LEEBaseConfig *>*queueArray;
 
-@property (nonatomic , strong) LEEBaseViewController *viewController;
+@property (nonatomic, strong) LEEBaseViewController *viewController;
 
 @end
 
@@ -1153,7 +1153,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @interface UIView (LEEAlertExtension)
 
-@property (nonatomic , assign ) CornerRadii lee_alert_cornerRadii;
+@property (nonatomic, assign) CornerRadii lee_alert_cornerRadii;
 
 @end
 
@@ -1207,7 +1207,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     // 顶 左
     CGPathAddArc(path, NULL, topLeftCenterX, topLeftCenterY, cornerRadii.topLeft, M_PI, 3 * M_PI_2, NO);
     // 顶 右
-    CGPathAddArc(path, NULL, topRightCenterX , topRightCenterY, cornerRadii.topRight, 3 * M_PI_2, 0, NO);
+    CGPathAddArc(path, NULL, topRightCenterX, topRightCenterY, cornerRadii.topRight, 3 * M_PI_2, 0, NO);
     // 底 右
     CGPathAddArc(path, NULL, bottomRightCenterX, bottomRightCenterY, cornerRadii.bottomRight, 0, M_PI_2, NO);
     // 底 左
@@ -1314,7 +1314,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     NSValue *value = [NSValue valueWithBytes:&cornerRadii objCType:@encode(CornerRadii)];
     
-    objc_setAssociatedObject(self, @selector(lee_alert_cornerRadii), value , OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(lee_alert_cornerRadii), value, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -1372,7 +1372,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItem ()
 
-@property (nonatomic , copy ) void (^updateBlock)(LEEItem *);
+@property (nonatomic, copy) void (^updateBlock)(LEEItem *);
 
 @end
 
@@ -1387,7 +1387,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEAction ()
 
-@property (nonatomic , copy ) void (^updateBlock)(LEEAction *);
+@property (nonatomic, copy) void (^updateBlock)(LEEAction *);
 
 @end
 
@@ -1414,7 +1414,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemView : UIView
 
-@property (nonatomic , strong) LEEItem *item;
+@property (nonatomic, strong) LEEItem *item;
 
 + (LEEItemView *)view;
 
@@ -1431,9 +1431,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemLabel : UILabel
 
-@property (nonatomic , strong) LEEItem *item;
+@property (nonatomic, strong) LEEItem *item;
 
-@property (nonatomic , copy ) void (^textChangedBlock)(void);
+@property (nonatomic, copy) void (^textChangedBlock)(void);
 
 + (LEEItemLabel *)label;
 
@@ -1478,7 +1478,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEItemTextField : UITextField
 
-@property (nonatomic , strong) LEEItem *item;
+@property (nonatomic, strong) LEEItem *item;
 
 + (LEEItemTextField *)textField;
 
@@ -1495,9 +1495,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionButton : UIButton
 
-@property (nonatomic , strong) LEEAction *action;
+@property (nonatomic, strong) LEEAction *action;
 
-@property (nonatomic , copy ) void (^heightChangedBlock)(void);
+@property (nonatomic, copy) void (^heightChangedBlock)(void);
 
 + (LEEActionButton *)button;
 
@@ -1505,17 +1505,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionButton ()
 
-@property (nonatomic , strong) UIColor *borderColor;
+@property (nonatomic, strong) UIColor *borderColor;
 
-@property (nonatomic , assign ) CGFloat borderWidth;
+@property (nonatomic, assign) CGFloat borderWidth;
 
-@property (nonatomic , strong) CALayer *topLayer;
+@property (nonatomic, strong) CALayer *topLayer;
 
-@property (nonatomic , strong) CALayer *bottomLayer;
+@property (nonatomic, strong) CALayer *bottomLayer;
 
-@property (nonatomic , strong) CALayer *leftLayer;
+@property (nonatomic, strong) CALayer *leftLayer;
 
-@property (nonatomic , strong) CALayer *rightLayer;
+@property (nonatomic, strong) CALayer *rightLayer;
 
 @end
 
@@ -1760,13 +1760,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEECustomView ()
 
-@property (nonatomic , strong) LEEItem *item;
+@property (nonatomic, strong) LEEItem *item;
 
-@property (nonatomic , strong) UIView *container;
+@property (nonatomic, strong) UIView *container;
 
-@property (nonatomic , assign ) CGSize size;
+@property (nonatomic, assign) CGSize size;
 
-@property (nonatomic , copy ) void (^sizeChangedBlock)(void);
+@property (nonatomic, copy) void (^sizeChangedBlock)(void);
 
 @end
 
@@ -1926,21 +1926,21 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEBaseViewController ()<UIGestureRecognizerDelegate>
 
-@property (nonatomic , strong) LEEBaseConfigModel *config;
+@property (nonatomic, strong) LEEBaseConfigModel *config;
 
-@property (nonatomic , strong) UIWindow *currentKeyWindow;
+@property (nonatomic, strong) UIWindow *currentKeyWindow;
 
-@property (nonatomic , strong) UIVisualEffectView *backgroundVisualEffectView;
+@property (nonatomic, strong) UIVisualEffectView *backgroundVisualEffectView;
 
-@property (nonatomic , assign ) LEEScreenOrientationType orientationType;
+@property (nonatomic, assign) LEEScreenOrientationType orientationType;
 
-@property (nonatomic , assign ) BOOL isShowing;
+@property (nonatomic, assign) BOOL isShowing;
 
-@property (nonatomic , assign ) BOOL isClosing;
+@property (nonatomic, assign) BOOL isClosing;
 
-@property (nonatomic , copy ) void (^openFinishBlock)(void);
+@property (nonatomic, copy) void (^openFinishBlock)(void);
 
-@property (nonatomic , copy ) void (^closeFinishBlock)(void);
+@property (nonatomic, copy) void (^closeFinishBlock)(void);
 
 @end
 
@@ -2028,7 +2028,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (_currentKeyWindow.windowLevel != UIWindowLevelNormal) {
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"windowLevel == %ld AND hidden == 0 " , UIWindowLevelNormal];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"windowLevel == %ld AND hidden == 0 ", UIWindowLevelNormal];
         
         _currentKeyWindow = [[UIApplication sharedApplication].windows filteredArrayUsingPredicate:predicate].firstObject;
     }
@@ -2063,13 +2063,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEAlertViewController ()
 
-@property (nonatomic , strong) UIView *containerView;
+@property (nonatomic, strong) UIView *containerView;
 
-@property (nonatomic , strong) UIScrollView *alertView;
+@property (nonatomic, strong) UIScrollView *alertView;
 
-@property (nonatomic , strong) NSMutableArray <id>*alertItemArray;
+@property (nonatomic, strong) NSMutableArray <id>*alertItemArray;
 
-@property (nonatomic , strong) NSMutableArray <LEEActionButton *>*alertActionArray;
+@property (nonatomic, strong) NSMutableArray <LEEActionButton *>*alertActionArray;
 
 @end
 
@@ -2669,9 +2669,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (self.config.modelOpenAnimationStyle & LEEAnimationStyleFade) self.containerView.alpha = 0.0f;
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f, 0.6f);
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f, 1.2f);
     
     __weak typeof(self) weakSelf = self;
     
@@ -2782,9 +2782,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 0.0f;
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f, 1.2f);
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f, 0.6f);
         
     }, ^{
         
@@ -2870,17 +2870,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEActionSheetViewController ()
 
-@property (nonatomic , strong) UIView *containerView;
+@property (nonatomic, strong) UIView *containerView;
 
-@property (nonatomic , strong) UIScrollView *actionSheetView;
+@property (nonatomic, strong) UIScrollView *actionSheetView;
 
-@property (nonatomic , strong) NSMutableArray <id>*actionSheetItemArray;
+@property (nonatomic, strong) NSMutableArray <id>*actionSheetItemArray;
 
-@property (nonatomic , strong) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
+@property (nonatomic, strong) NSMutableArray <LEEActionButton *>*actionSheetActionArray;
 
-@property (nonatomic , strong) UIView *actionSheetCancelActionSpaceView;
+@property (nonatomic, strong) UIView *actionSheetCancelActionSpaceView;
 
-@property (nonatomic , strong) LEEActionButton *actionSheetCancelAction;
+@property (nonatomic, strong) LEEActionButton *actionSheetCancelAction;
 
 @end
 
@@ -3434,9 +3434,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (self.config.modelOpenAnimationStyle & LEEAnimationStyleFade) self.containerView.alpha = 0.0f;
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomEnlarge) self.containerView.transform = CGAffineTransformMakeScale(0.6f, 0.6f);
     
-    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+    if (self.config.modelOpenAnimationStyle & LEEAnimationStyleZoomShrink) self.containerView.transform = CGAffineTransformMakeScale(1.2f, 1.2f);
     
     __weak typeof(self) weakSelf = self;
     
@@ -3559,9 +3559,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleFade) weakSelf.containerView.alpha = 0.0f;
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f , 1.2f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomEnlarge) weakSelf.containerView.transform = CGAffineTransformMakeScale(1.2f, 1.2f);
         
-        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f , 0.6f);
+        if (weakSelf.config.modelCloseAnimationStyle & LEEAnimationStyleZoomShrink) weakSelf.containerView.transform = CGAffineTransformMakeScale(0.6f, 0.6f);
         
     }, ^{
         

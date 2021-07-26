@@ -123,143 +123,155 @@ NS_ASSUME_NONNULL_BEGIN
 /** ✨通用设置 */
 
 /** 设置 标题 -> 格式: .LeeTitle(@@"") */
-@property (nonatomic , copy , readonly) LEEConfigToString LeeTitle;
+@property (nonatomic, copy, readonly) LEEConfigToString LeeTitle;
 
 /** 设置 内容 -> 格式: .LeeContent(@@"") */
-@property (nonatomic , copy , readonly) LEEConfigToString LeeContent;
+@property (nonatomic, copy, readonly) LEEConfigToString LeeContent;
 
 /** 设置 自定义视图 -> 格式: .LeeCustomView(UIView) */
-@property (nonatomic , copy , readonly) LEEConfigToView LeeCustomView;
+@property (nonatomic, copy, readonly) LEEConfigToView LeeCustomView;
 
-/** 设置 动作 -> 格式: .LeeAction(@"name" , ^{ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToStringAndBlock LeeAction;
+/** 设置 动作 -> 格式: .LeeAction(@"name", ^{ //code.. }) */
+@property (nonatomic, copy, readonly) LEEConfigToStringAndBlock LeeAction;
 
-/** 设置 取消动作 -> 格式: .LeeCancelAction(@"name" , ^{ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToStringAndBlock LeeCancelAction;
+/** 设置 取消动作 -> 格式: .LeeCancelAction(@"name", ^{ //code.. }) */
+@property (nonatomic, copy, readonly) LEEConfigToStringAndBlock LeeCancelAction;
 
-/** 设置 取消动作 -> 格式: .LeeDestructiveAction(@"name" , ^{ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToStringAndBlock LeeDestructiveAction;
+/** 设置 取消动作 -> 格式: .LeeDestructiveAction(@"name", ^{ //code.. }) */
+@property (nonatomic, copy, readonly) LEEConfigToStringAndBlock LeeDestructiveAction;
 
 /** 设置 添加标题 -> 格式: .LeeConfigTitle(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToConfigLabel LeeAddTitle;
+@property (nonatomic, copy, readonly) LEEConfigToConfigLabel LeeAddTitle;
 
 /** 设置 添加内容 -> 格式: .LeeConfigContent(^(UILabel *label){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToConfigLabel LeeAddContent;
+@property (nonatomic, copy, readonly) LEEConfigToConfigLabel LeeAddContent;
 
 /** 设置 添加自定义视图 -> 格式: .LeeAddCustomView(^(LEECustomView *){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToCustomView LeeAddCustomView;
+@property (nonatomic, copy, readonly) LEEConfigToCustomView LeeAddCustomView;
 
 /** 设置 添加一项 -> 格式: .LeeAddItem(^(LEEItem *){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToItem LeeAddItem;
+@property (nonatomic, copy, readonly) LEEConfigToItem LeeAddItem;
 
 /** 设置 添加动作 -> 格式: .LeeAddAction(^(LEEAction *){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToAction LeeAddAction;
+@property (nonatomic, copy, readonly) LEEConfigToAction LeeAddAction;
 
 /** 设置 头部内的间距 -> 格式: .LeeHeaderInsets(UIEdgeInsetsMake(20, 20, 20, 20)) */
-@property (nonatomic , copy , readonly) LEEConfigToEdgeInsets LeeHeaderInsets;
+@property (nonatomic, copy, readonly) LEEConfigToEdgeInsets LeeHeaderInsets;
 
 /** 设置 上一项的间距 (在它之前添加的项的间距) -> 格式: .LeeItemInsets(UIEdgeInsetsMake(5, 0, 5, 0)) */
-@property (nonatomic , copy , readonly) LEEConfigToEdgeInsets LeeItemInsets;
+@property (nonatomic, copy, readonly) LEEConfigToEdgeInsets LeeItemInsets;
 
 /** 设置 最大宽度 -> 格式: .LeeMaxWidth(280.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeMaxWidth;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxWidth;
 
 /** 设置 最大高度 -> 格式: .LeeMaxHeight(400.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeMaxHeight;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxHeight;
 
 /** 设置 设置最大宽度 -> 格式: .LeeConfigMaxWidth(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 280.0f; }) */
-@property (nonatomic , copy , readonly) LEEConfigToFloatBlock LeeConfigMaxWidth;
+@property (nonatomic, copy, readonly) LEEConfigToFloatBlock LeeConfigMaxWidth;
 
 /** 设置 设置最大高度 -> 格式: .LeeConfigMaxHeight(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 600.0f; }) */
-@property (nonatomic , copy , readonly) LEEConfigToFloatBlock LeeConfigMaxHeight;
+@property (nonatomic, copy, readonly) LEEConfigToFloatBlock LeeConfigMaxHeight;
 
 /** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeCornerRadius;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeCornerRadius;
 
 /** 设置 圆角半径 -> 格式: .LeeCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))  注意: 该方法优先级高于LeeCornerRadius  */
-@property (nonatomic , copy , readonly) LEEConfigToCornerRadii LeeCornerRadii;
-
-/** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.3f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeOpenAnimationDuration;
-
-/** 设置 关闭动画时长 -> 格式: .LeeCloseAnimationDuration(0.2f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeCloseAnimationDuration;
+@property (nonatomic, copy, readonly) LEEConfigToCornerRadii LeeCornerRadii;
 
 /** 设置 颜色 -> 格式: .LeeHeaderColor(UIColor) */
-@property (nonatomic , copy , readonly) LEEConfigToColor LeeHeaderColor;
+@property (nonatomic, copy, readonly) LEEConfigToColor LeeHeaderColor;
 
 /** 设置 背景颜色 -> 格式: .LeeBackGroundColor(UIColor) */
-@property (nonatomic , copy , readonly) LEEConfigToColor LeeBackGroundColor;
+@property (nonatomic, copy, readonly) LEEConfigToColor LeeBackGroundColor;
 
 /** 设置 半透明背景样式及透明度 [默认] -> 格式: .LeeBackgroundStyleTranslucent(0.45f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeBackgroundStyleTranslucent;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeBackgroundStyleTranslucent;
 
 /** 设置 模糊背景样式及类型 -> 格式: .LeeBackgroundStyleBlur(UIBlurEffectStyleDark) */
-@property (nonatomic , copy , readonly) LEEConfigToBlurEffectStyle LeeBackgroundStyleBlur;
+@property (nonatomic, copy, readonly) LEEConfigToBlurEffectStyle LeeBackgroundStyleBlur;
 
 /** 设置 点击头部关闭 -> 格式: .LeeClickHeaderClose(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeClickHeaderClose;
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeClickHeaderClose;
 
 /** 设置 点击背景关闭 -> 格式: .LeeClickBackgroundClose(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeClickBackgroundClose;
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeClickBackgroundClose;
 
 /** 设置 是否可滑动 -> 格式: .LeeIsScrollEnabled(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeIsScrollEnabled;
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeIsScrollEnabled;
 
 /** 设置 阴影偏移 -> 格式: .LeeShadowOffset(CGSizeMake(0.0f, 2.0f)) */
-@property (nonatomic , copy , readonly) LEEConfigToSize LeeShadowOffset;
+@property (nonatomic, copy, readonly) LEEConfigToSize LeeShadowOffset;
 
 /** 设置 阴影不透明度 -> 格式: .LeeShadowOpacity(0.3f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeShadowOpacity;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeShadowOpacity;
 
 /** 设置 阴影半径 -> 格式: .LeeShadowRadius(5.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeShadowRadius;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeShadowRadius;
 
 /** 设置 阴影颜色 -> 格式: .LeeShadowOpacity(UIColor) */
-@property (nonatomic , copy , readonly) LEEConfigToColor LeeShadowColor;
-
-/** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
-@property (nonatomic , copy , readonly) LEEConfigToString LeeIdentifier;
-
-/** 设置 是否加入到队列 -> 格式: .LeeQueue(YES)  默认不加入*/
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeQueue;
-
-/** 设置 优先级 -> 格式: .LeePriority(1000) */
-@property (nonatomic , copy , readonly) LEEConfigToInteger LeePriority;
-
-/** 设置 是否继续队列显示 -> 格式: .LeeContinueQueue(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeContinueQueueDisplay;
+@property (nonatomic, copy, readonly) LEEConfigToColor LeeShadowColor;
 
 /** 设置 window等级 -> 格式: .LeeWindowLevel(UIWindowLevel) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeWindowLevel;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeWindowLevel;
 
 /** 设置 是否支持自动旋转 -> 格式: .LeeShouldAutorotate(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeShouldAutorotate;
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeShouldAutorotate;
 
 /** 设置 是否支持显示方向 -> 格式: .LeeShouldAutorotate(UIInterfaceOrientationMaskAll) */
-@property (nonatomic , copy , readonly) LEEConfigToInterfaceOrientationMask LeeSupportedInterfaceOrientations;
-
-/** 设置 打开动画配置 -> 格式: .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToBlockAndBlock LeeOpenAnimationConfig;
-
-/** 设置 关闭动画配置 -> 格式: .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToBlockAndBlock LeeCloseAnimationConfig;
-
-/** 设置 打开动画样式 -> 格式: .LeeOpenAnimationStyle() */
-@property (nonatomic , copy , readonly) LEEConfigToAnimationStyle LeeOpenAnimationStyle;
-
-/** 设置 关闭动画样式 -> 格式: .LeeCloseAnimationStyle() */
-@property (nonatomic , copy , readonly) LEEConfigToAnimationStyle LeeCloseAnimationStyle;
+@property (nonatomic, copy, readonly) LEEConfigToInterfaceOrientationMask LeeSupportedInterfaceOrientations;
 
 /** 设置 状态栏样式 -> 格式: .LeeStatusBarStyle(UIStatusBarStyleDefault) */
-@property (nonatomic , copy , readonly) LEEConfigToStatusBarStyle LeeStatusBarStyle;
+@property (nonatomic, copy, readonly) LEEConfigToStatusBarStyle LeeStatusBarStyle;
 
 /** 设置 系统界面样式 -> 格式: .LeeUserInterfaceStyle(UIUserInterfaceStyleUnspecified) */
-@property (nonatomic , copy , readonly) LEEConfigToUserInterfaceStyle LeeUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
+@property (nonatomic, copy, readonly) LEEConfigToUserInterfaceStyle LeeUserInterfaceStyle API_AVAILABLE(ios(13.0), tvos(13.0));
 
 
 /** 显示  -> 格式: .LeeShow() */
-@property (nonatomic , copy , readonly) LEEConfig LeeShow;
+@property (nonatomic, copy, readonly) LEEConfig LeeShow;
+
+@end
+
+@interface LEEBaseConfigModel(Queue)
+
+/** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
+@property (nonatomic, copy, readonly) LEEConfigToString LeeIdentifier;
+
+/** 设置 是否加入到队列 -> 格式: .LeeQueue(YES)  默认不加入*/
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeQueue;
+
+/** 设置 优先级 -> 格式: .LeePriority(1000) */
+@property (nonatomic, copy, readonly) LEEConfigToInteger LeePriority;
+
+/** 设置 是否继续队列显示 -> 格式: .LeeContinueQueue(YES) */
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeContinueQueueDisplay;
+
+@end
+
+@interface LEEBaseConfigModel(Animation)
+
+/** 设置 开启动画时长 -> 格式: .LeeOpenAnimationDuration(0.3f) */
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeOpenAnimationDuration;
+
+/** 设置 关闭动画时长 -> 格式: .LeeCloseAnimationDuration(0.2f) */
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeCloseAnimationDuration;
+
+/** 设置 打开动画配置 -> 格式: .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
+@property (nonatomic, copy, readonly) LEEConfigToBlockAndBlock LeeOpenAnimationConfig;
+
+/** 设置 关闭动画配置 -> 格式: .LeeCloseAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) { //code.. }) */
+@property (nonatomic, copy, readonly) LEEConfigToBlockAndBlock LeeCloseAnimationConfig;
+
+/** 设置 打开动画样式 -> 格式: .LeeOpenAnimationStyle() */
+@property (nonatomic, copy, readonly) LEEConfigToAnimationStyle LeeOpenAnimationStyle;
+
+/** 设置 关闭动画样式 -> 格式: .LeeCloseAnimationStyle() */
+@property (nonatomic, copy, readonly) LEEConfigToAnimationStyle LeeCloseAnimationStyle;
+
+@end
+
+@interface LEEBaseConfigModel(Callback)
 
 /** 设置 是否可以关闭 -> 格式: .leeShouldClose(^{ return YES; }) */
 @property (nonatomic, copy, readonly) LEEConfigToBlockReturnBool leeShouldClose;
@@ -268,42 +280,42 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) LEEConfigToBlockIntegerReturnBool leeShouldActionClickClose;
 
 /** 设置 当前关闭回调 -> 格式: .LeeCloseComplete(^{ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToBlock LeeCloseComplete;
+@property (nonatomic, copy, readonly) LEEConfigToBlock LeeCloseComplete;
 
 @end
 
 @interface LEEBaseConfigModel(Alert)
 
 /** 设置 添加输入框 -> 格式: .LeeAddTextField(^(UITextField *){ //code.. }) */
-@property (nonatomic , copy , readonly) LEEConfigToConfigTextField LeeAddTextField;
+@property (nonatomic, copy, readonly) LEEConfigToConfigTextField LeeAddTextField;
 
 /** 设置 中心点偏移 -> 格式: .LeeCenterOffset(CGPointMake(0, 0)) */
-@property (nonatomic , copy , readonly) LEEConfigToPoint LeeAlertCenterOffset;
+@property (nonatomic, copy, readonly) LEEConfigToPoint LeeAlertCenterOffset;
 
 /** 设置 是否闪避键盘 -> 格式: .LeeAvoidKeyboard(YES) */
-@property (nonatomic , copy , readonly) LEEConfigToBool LeeAvoidKeyboard;
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeAvoidKeyboard;
 
 @end
 
 @interface LEEBaseConfigModel(ActionSheet)
 
 /** 设置 ActionSheet头部的圆角半径 -> 格式: .LeeActionSheetHeaderCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f)) */
-@property (nonatomic , copy , readonly) LEEConfigToCornerRadii LeeActionSheetHeaderCornerRadii;
+@property (nonatomic, copy, readonly) LEEConfigToCornerRadii LeeActionSheetHeaderCornerRadii;
 
 /** 设置 ActionSheet取消按钮的圆角半径 -> 格式: .LeeActionSheetCancelActionCornerRadii(CornerRadiiMake(13.0f, 13.0f, 13.0f, 13.0f))  */
-@property (nonatomic , copy , readonly) LEEConfigToCornerRadii LeeActionSheetCancelActionCornerRadii;
+@property (nonatomic, copy, readonly) LEEConfigToCornerRadii LeeActionSheetCancelActionCornerRadii;
 
 /** 设置 ActionSheet的背景视图颜色 -> 格式: .LeeActionSheetBackgroundColor(UIColor) */
-@property (nonatomic , copy , readonly) LEEConfigToColor LeeActionSheetBackgroundColor;
+@property (nonatomic, copy, readonly) LEEConfigToColor LeeActionSheetBackgroundColor;
 
 /** 设置 取消动作的间隔宽度 -> 格式: .LeeActionSheetCancelActionSpaceWidth(10.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeActionSheetCancelActionSpaceWidth;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeActionSheetCancelActionSpaceWidth;
 
 /** 设置 取消动作的间隔颜色 -> 格式: .LeeActionSheetCancelActionSpaceColor(UIColor) */
-@property (nonatomic , copy , readonly) LEEConfigToColor LeeActionSheetCancelActionSpaceColor;
+@property (nonatomic, copy, readonly) LEEConfigToColor LeeActionSheetCancelActionSpaceColor;
 
 /** 设置 ActionSheet距离屏幕底部的间距 -> 格式: .LeeActionSheetBottomMargin(10.0f) */
-@property (nonatomic , copy , readonly) LEEConfigToFloat LeeActionSheetBottomMargin;
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeActionSheetBottomMargin;
 
 @end
 
@@ -311,13 +323,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LEEItem: NSObject
 
 /** item类型 */
-@property (nonatomic , assign) LEEItemType type;
+@property (nonatomic, assign) LEEItemType type;
 
 /** item间距范围 */
-@property (nonatomic , assign) UIEdgeInsets insets;
+@property (nonatomic, assign) UIEdgeInsets insets;
 
 /** item设置视图Block */
-@property (nonatomic , copy) void (^block)(id view);
+@property (nonatomic, copy) void (^block)(id view);
 
 - (void)update;
 
@@ -326,88 +338,88 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LEEAction: NSObject
 
 /** action类型 */
-@property (nonatomic , assign) LEEActionType type;
+@property (nonatomic, assign) LEEActionType type;
 
 /** action标题 */
-@property (nonatomic , strong) NSString *title;
+@property (nonatomic, strong) NSString *title;
 
 /** action高亮标题 */
-@property (nonatomic , strong) NSString *highlight;
+@property (nonatomic, strong) NSString *highlight;
 
 /** action标题(attributed) */
-@property (nonatomic , strong) NSAttributedString *attributedTitle;
+@property (nonatomic, strong) NSAttributedString *attributedTitle;
 
 /** action高亮标题(attributed) */
-@property (nonatomic , strong) NSAttributedString *attributedHighlight;
+@property (nonatomic, strong) NSAttributedString *attributedHighlight;
 
 /** action标题行数 默认为: 1 */
-@property (nonatomic , assign) NSInteger numberOfLines;
+@property (nonatomic, assign) NSInteger numberOfLines;
 
 /** action标题对齐方式 默认为: NSTextAlignmentLeft */
-@property (nonatomic , assign) NSTextAlignment textAlignment;
+@property (nonatomic, assign) NSTextAlignment textAlignment;
 
 /** action字体 */
-@property (nonatomic , strong) UIFont *font;
+@property (nonatomic, strong) UIFont *font;
 
 /** action字体大小随宽度变化 默认为: NO */
-@property (nonatomic , assign) BOOL adjustsFontSizeToFitWidth;
+@property (nonatomic, assign) BOOL adjustsFontSizeToFitWidth;
 
 /** action断行模式 默认为: NSLineBreakByTruncatingMiddle */
-@property (nonatomic , assign) NSLineBreakMode lineBreakMode;
+@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 
 /** action标题颜色 */
-@property (nonatomic , strong) UIColor *titleColor;
+@property (nonatomic, strong) UIColor *titleColor;
 
 /** action高亮标题颜色 */
-@property (nonatomic , strong) UIColor *highlightColor;
+@property (nonatomic, strong) UIColor *highlightColor;
 
 /** action背景颜色 (与 backgroundImage 相同) */
-@property (nonatomic , strong) UIColor *backgroundColor;
+@property (nonatomic, strong) UIColor *backgroundColor;
 
 /** action高亮背景颜色 */
-@property (nonatomic , strong) UIColor *backgroundHighlightColor;
+@property (nonatomic, strong) UIColor *backgroundHighlightColor;
 
 /** action背景图片 (与 backgroundColor 相同) */
-@property (nonatomic , strong) UIImage *backgroundImage;
+@property (nonatomic, strong) UIImage *backgroundImage;
 
 /** action高亮背景图片 */
-@property (nonatomic , strong) UIImage *backgroundHighlightImage;
+@property (nonatomic, strong) UIImage *backgroundHighlightImage;
 
 /** action图片 */
-@property (nonatomic , strong) UIImage *image;
+@property (nonatomic, strong) UIImage *image;
 
 /** action高亮图片 */
-@property (nonatomic , strong) UIImage *highlightImage;
+@property (nonatomic, strong) UIImage *highlightImage;
 
 /** action间距范围 */
-@property (nonatomic , assign) UIEdgeInsets insets;
+@property (nonatomic, assign) UIEdgeInsets insets;
 
 /** action图片的间距范围 */
-@property (nonatomic , assign) UIEdgeInsets imageEdgeInsets;
+@property (nonatomic, assign) UIEdgeInsets imageEdgeInsets;
 
 /** action标题的间距范围 */
-@property (nonatomic , assign) UIEdgeInsets titleEdgeInsets;
+@property (nonatomic, assign) UIEdgeInsets titleEdgeInsets;
 
 /** action圆角曲率 */
-@property (nonatomic , assign) CGFloat cornerRadius;
+@property (nonatomic, assign) CGFloat cornerRadius;
 
 /** action高度 */
-@property (nonatomic , assign) CGFloat height;
+@property (nonatomic, assign) CGFloat height;
 
 /** action边框宽度 */
-@property (nonatomic , assign) CGFloat borderWidth;
+@property (nonatomic, assign) CGFloat borderWidth;
 
 /** action边框颜色 */
-@property (nonatomic , strong) UIColor *borderColor;
+@property (nonatomic, strong) UIColor *borderColor;
 
 /** action边框位置 */
-@property (nonatomic , assign) LEEActionBorderPosition borderPosition;
+@property (nonatomic, assign) LEEActionBorderPosition borderPosition;
 
 /** action点击不关闭 (仅适用于默认类型) */
-@property (nonatomic , assign) BOOL isClickNotClose;
+@property (nonatomic, assign) BOOL isClickNotClose;
 
 /** action点击事件回调Block */
-@property (nonatomic , copy) void (^ _Nullable clickBlock)(void);
+@property (nonatomic, copy) void (^ _Nullable clickBlock)(void);
 
 - (void)update;
 
@@ -416,19 +428,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LEECustomView: NSObject
 
 /** 自定义视图对象 */
-@property (nonatomic , strong, nullable) UIView *view;
+@property (nonatomic, strong, nullable) UIView *view;
 
 /** 自定义视图位置类型 (默认为居中) */
-@property (nonatomic , assign) LEECustomViewPositionType positionType;
+@property (nonatomic, assign) LEECustomViewPositionType positionType;
 
 /** 是否自动适应宽度 (不支持 AutoLayout 布局的视图)*/
-@property (nonatomic , assign) BOOL isAutoWidth;
+@property (nonatomic, assign) BOOL isAutoWidth;
 
 @end
 
 @interface LEEBaseConfig: NSObject
 
-@property (nonatomic , strong, nonnull) LEEBaseConfigModel *config;
+@property (nonatomic, strong, nonnull) LEEBaseConfigModel *config;
 
 @end
 
