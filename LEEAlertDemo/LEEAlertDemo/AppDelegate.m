@@ -39,7 +39,7 @@
     
     NSMutableArray *ncArray = [NSMutableArray array];
     
-    [classArray enumerateObjectsUsingBlock:^(id  _Nonnull class, NSUInteger idx, BOOL * _Nonnull stop) {
+    [classArray enumerateObjectsUsingBlock:^(id _Nonnull class, NSUInteger idx, BOOL * _Nonnull stop) {
        
         NavigationViewController *nc = [[NavigationViewController alloc] initWithRootViewController:[[NSClassFromString(class) alloc] init]];
         
