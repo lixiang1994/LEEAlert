@@ -172,7 +172,7 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
     .LeeHeaderInsets(UIEdgeInsetsMake(10, 10, 10, 10)) 		// 头部内间距设置 等于内部项的范围
     .LeeMaxWidth(280.0f) // 设置最大宽度 (固定数值 横竖屏相同)
     .LeeMaxHeight(400.0f) // 设置最大高度 (固定数值 横竖屏相同)
-    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) { 	// 设置最大宽度 (根据横竖屏类型进行设置 最大高度同理)
+    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) { 	// 设置最大宽度 (根据横竖屏类型进行设置 最大高度同理)
         
         if (type == LEEScreenOrientationTypeVertical) {
             
@@ -272,7 +272,7 @@ Action一般分为3种类型 1. 默认类型 2. 销毁类型(Destructive) 3.取�
 
 ```
     [LEEAlert alert].config
-    .LeeWindowLevel(UIWindowLevelAlert) // 弹框window层级 默认UIWindowLevelAlert
+    .LeePresentation([LEEPresentation windowLevel:UIWindowLevelAlert]) // 弹框window层级 默认UIWindowLevelAlert
     .LeeShouldAutorotate(YES) // 是否支持自动旋转 默认为NO
     .LeeSupportedInterfaceOrientations(UIInterfaceOrientationMaskAll) // 支持的旋转方向 默认为UIInterfaceOrientationMaskAll
     .LeeClickHeaderClose(YES) // 点击弹框进行关闭 默认为NO
