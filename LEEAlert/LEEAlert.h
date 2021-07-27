@@ -161,18 +161,6 @@ NS_ASSUME_NONNULL_BEGIN
 /** 设置 上一项的间距 (在它之前添加的项的间距) -> 格式: .LeeItemInsets(UIEdgeInsetsMake(5, 0, 5, 0)) */
 @property (nonatomic, copy, readonly) LEEConfigToEdgeInsets LeeItemInsets;
 
-/** 设置 最大宽度 -> 格式: .LeeMaxWidth(280.0f) */
-@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxWidth;
-
-/** 设置 最大高度 -> 格式: .LeeMaxHeight(400.0f) */
-@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxHeight;
-
-/** 设置 设置最大宽度 -> 格式: .LeeConfigMaxWidth(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 280.0f; }) */
-@property (nonatomic, copy, readonly) LEEConfigToFloatBlock LeeConfigMaxWidth;
-
-/** 设置 设置最大高度 -> 格式: .LeeConfigMaxHeight(CGFloat(^)(^CGFloat(LEEScreenOrientationType type) { return 600.0f; }) */
-@property (nonatomic, copy, readonly) LEEConfigToFloatBlock LeeConfigMaxHeight;
-
 /** 设置 圆角半径 -> 格式: .LeeCornerRadius(13.0f) */
 @property (nonatomic, copy, readonly) LEEConfigToFloat LeeCornerRadius;
 
@@ -212,9 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
 /** 设置 阴影颜色 -> 格式: .LeeShadowOpacity(UIColor) */
 @property (nonatomic, copy, readonly) LEEConfigToColor LeeShadowColor;
 
-/** 设置 window等级 -> 格式: .LeeWindowLevel(UIWindowLevel) */
-@property (nonatomic, copy, readonly) LEEConfigToFloat LeeWindowLevel;
-
 /** 设置 是否支持自动旋转 -> 格式: .LeeShouldAutorotate(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeShouldAutorotate;
 
@@ -253,6 +238,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 是否继续队列显示 -> 格式: .LeeContinueQueue(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeContinueQueueDisplay;
+
+@end
+
+@interface LEEBaseConfigModel(Layout)
+
+/** 设置 最大宽度 -> 格式: .LeeMaxWidth(280.0f) */
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxWidth;
+
+/** 设置 最大高度 -> 格式: .LeeMaxHeight(400.0f) */
+@property (nonatomic, copy, readonly) LEEConfigToFloat LeeMaxHeight;
+
+/** 设置 设置最大宽度 -> 格式: .LeeConfigMaxWidth(CGFloat(^)(^CGFloat(LEEScreenOrientationType type, CGSize size) { return 280.0f; }) */
+@property (nonatomic, copy, readonly) LEEConfigToReturnMaxSize LeeConfigMaxWidth;
+
+/** 设置 设置最大高度 -> 格式: .LeeConfigMaxHeight(CGFloat(^)(^CGFloat(LEEScreenOrientationType type, CGSize size) { return 600.0f; }) */
+@property (nonatomic, copy, readonly) LEEConfigToReturnMaxSize LeeConfigMaxHeight;
 
 @end
 

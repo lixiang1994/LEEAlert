@@ -220,7 +220,7 @@
             .LeeAction(@"确认", nil)
             .LeeCancelAction(@"取消", nil)
             //.LeeMaxWidth(280) // LeeMaxWidth设置的最大宽度为固定数值 横屏竖屏都会采用这个宽度 (高度同理)
-            .LeeConfigMaxWidth(^CGFloat (LEEScreenOrientationType type) { // LeeConfigMaxWidth可以单独对横屏竖屏情况进行设置
+            .LeeConfigMaxWidth(^CGFloat (LEEScreenOrientationType type, CGSize size) { // LeeConfigMaxWidth可以单独对横屏竖屏情况进行设置
                 
                 switch (type) {
                         
@@ -228,7 +228,7 @@
                         
                         // 横屏时最大宽度
                         
-                        return CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.7f;
+                        return size.width * 0.7f;
                         
                         break;
                         
@@ -236,7 +236,7 @@
                         
                         // 竖屏时最大宽度
                         
-                        return CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.9f;
+                        return size.width * 0.9f;
                         
                         break;
                         
@@ -642,11 +642,11 @@
             .LeeCornerRadii(CornerRadiiMake(10, 10, 0, 0))   // 指定整体圆角半径
             .LeeActionSheetHeaderCornerRadii(CornerRadiiZero()) // 指定头部圆角半径
             .LeeActionSheetCancelActionCornerRadii(CornerRadiiZero()) // 指定取消按钮圆角半径
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
                 
                 // 这是最大宽度为屏幕宽度 (横屏和竖屏)
                 
-                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+                return size.width;
             })
             .LeeActionSheetBackgroundColor([UIColor whiteColor]) // 通过设置背景颜色来填充底部间隙
             #ifdef __IPHONE_13_0
@@ -722,11 +722,11 @@
             .LeeActionSheetBackgroundColor([UIColor whiteColor])
             .LeeCornerRadius(0.0f)
             .LeeActionSheetHeaderCornerRadii(CornerRadiiMake(0, 0, 0, 0))
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
                 
-                // 这是最大宽度为屏幕宽度 (横屏和竖屏)
+                // 这是最大宽度为屏幕宽度(竖屏) 屏幕高度(横屏)
                 
-                return type == LEEScreenOrientationTypeHorizontal ? CGRectGetHeight([[UIScreen mainScreen] bounds]) : CGRectGetWidth([[UIScreen mainScreen] bounds]);
+                return type == LEEScreenOrientationTypeHorizontal ? size.height : size.width;
             })
             #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
@@ -773,11 +773,11 @@
             .LeeActionSheetBottomMargin(0.0f) // 设置底部距离屏幕的边距为0
             .LeeActionSheetBackgroundColor([UIColor whiteColor])
             .LeeCornerRadius(0.0f) // 设置圆角曲率为0
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
                 
                 // 这是最大宽度为屏幕宽度 (横屏和竖屏)
                 
-                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+                return size.width;
             })
             #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
@@ -861,11 +861,11 @@
             .LeeActionSheetBottomMargin(0.0f) // 设置底部距离屏幕的边距为0
             .LeeActionSheetBackgroundColor([UIColor whiteColor])
             .LeeCornerRadius(0.0f) // 设置圆角曲率为0
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
                 
                 // 这是最大宽度为屏幕宽度 (横屏和竖屏)
                 
-                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+                return size.width;
             })
             #ifdef __IPHONE_13_0
             .LeeUserInterfaceStyle(UIUserInterfaceStyleLight)
@@ -948,11 +948,11 @@
             .LeeActionSheetBottomMargin(0.0f)
             .LeeActionSheetBackgroundColor([UIColor whiteColor])
             .LeeCornerRadius(0.0f)
-            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
                 
                 // 这是最大宽度为屏幕宽度 (横屏和竖屏)
                 
-                return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+                return size.width;
             })
             .LeeOpenAnimationConfig(^(void (^animatingBlock)(void), void (^animatedBlock)(void)) {
                 

@@ -1,6 +1,40 @@
 
 # LEEAlert - 更新日志
 
+V1.5.0
+==============
+移除`.LeeWindowLevel(UIWindowLevel)`设置
+
+增加`.LeePresentation(LEEPresentation)`设置弹窗显示层级
+
+```
+// 在指定窗口层级显示
+[LEEPresentation windowLevel:UIWindowLevelAlert]
+// 在指定控制器上显示
+[LEEPresentation viewController:xxxx]
+```
+
+旧版本:
+
+```
+.LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+
+    // 最大宽度为屏幕宽度 (横屏和竖屏)
+    return CGRectGetWidth([[UIScreen mainScreen] bounds]);
+}
+```
+
+新版本:
+
+```
+.LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
+    
+    // 最大宽度为屏幕宽度 (横屏和竖屏)
+    // size 为当前弹窗容器最大尺寸
+    return size.width;
+})
+```
+
 V1.4.3
 ==============
 补充block非空判断

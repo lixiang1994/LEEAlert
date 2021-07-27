@@ -49,7 +49,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic, assign) CGFloat modelOpenAnimationDuration;
 @property (nonatomic, assign) CGFloat modelCloseAnimationDuration;
 @property (nonatomic, assign) CGFloat modelBackgroundStyleColorAlpha;
-@property (nonatomic, assign) CGFloat modelWindowLevel;
 @property (nonatomic, assign) NSInteger modelQueuePriority;
 
 @property (nonatomic, assign) UIColor *modelShadowColor;
@@ -70,8 +69,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 
 @property (nonatomic, copy) NSString *modelIdentifier;
 
-@property (nonatomic, copy) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType);
-@property (nonatomic, copy) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType);
+@property (nonatomic, copy) CGFloat (^modelMaxWidthBlock)(LEEScreenOrientationType, CGSize);
+@property (nonatomic, copy) CGFloat (^modelMaxHeightBlock)(LEEScreenOrientationType, CGSize);
 
 @property (nonatomic, copy) void(^modelOpenAnimationConfigBlock)(void (^animatingBlock)(void), void (^animatedBlock)(void));
 @property (nonatomic, copy) void(^modelCloseAnimationConfigBlock)(void (^animatingBlock)(void), void (^animatedBlock)(void));
@@ -124,7 +123,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelOpenAnimationDuration = 0.3f; //默认打开动画时长
         _modelCloseAnimationDuration = 0.2f; //默认关闭动画时长
         _modelBackgroundStyleColorAlpha = 0.45f; //自定义背景样式颜色透明度 默认为半透明背景样式 透明度为0.45f
-        _modelWindowLevel = UIWindowLevelAlert;
         _modelQueuePriority = 0; //默认队列优先级 (大于0时才会加入队列)
         
         
@@ -421,7 +419,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(CGFloat number){
         
-        return self.LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+        return self.LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
             
             return number;
         });
@@ -434,7 +432,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
     return ^(CGFloat number){
         
-        return self.LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+        return self.LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type, CGSize size) {
             
             return number;
         });
@@ -443,9 +441,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (LEEConfigToFloatBlock)LeeConfigMaxWidth{
+- (LEEConfigToReturnMaxSize)LeeConfigMaxWidth{
     
-    return ^(CGFloat(^block)(LEEScreenOrientationType type)){
+    return ^(CGFloat(^block)(LEEScreenOrientationType type, CGSize size)){
         
         if (block) self.modelMaxWidthBlock = block;
         
@@ -454,9 +452,9 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     
 }
 
-- (LEEConfigToFloatBlock)LeeConfigMaxHeight{
+- (LEEConfigToReturnMaxSize)LeeConfigMaxHeight{
     
-    return ^(CGFloat(^block)(LEEScreenOrientationType type)){
+    return ^(CGFloat(^block)(LEEScreenOrientationType type, CGSize size)){
         
         if (block) self.modelMaxHeightBlock = block;
         
@@ -671,17 +669,6 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsContinueQueueDisplay = is;
-        
-        return self;
-    };
-    
-}
-
-- (LEEConfigToFloat)LeeWindowLevel{
-    
-    return ^(CGFloat number){
-        
-        self.modelWindowLevel = number;
         
         return self;
     };
@@ -2209,9 +2196,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (void)updateAlertLayoutWithViewWidth:(CGFloat)viewWidth ViewHeight:(CGFloat)viewHeight{
     
-    CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
+    CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType, CGSizeMake(viewWidth, viewHeight));
     
-    CGFloat alertViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
+    CGFloat alertViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType, CGSizeMake(viewWidth, viewHeight));
     
     CGPoint offset = self.config.modelAlertCenterOffset;
     
@@ -2224,7 +2211,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (keyboardFrame.size.height) {
             
-            CGFloat alertViewHeight = [self updateAlertItemsLayout];
+            CGFloat alertViewHeight = [self updateAlertItemsLayoutWithMaxWidth:alertViewMaxWidth];
             
             // 处理非全屏时当前视图在窗口中的位置 解决键盘遮挡范围计算问题
             CGRect current = [self.view convertRect:self.view.bounds toView:self.view.window];
@@ -2266,7 +2253,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
     } else {
         
-        CGFloat alertViewHeight = [self updateAlertItemsLayout];
+        CGFloat alertViewHeight = [self updateAlertItemsLayoutWithMaxWidth:alertViewMaxWidth];
         
         alertViewMaxHeight -= ABS(offset.y);
         
@@ -2294,14 +2281,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self.containerView.transform = transform;
 }
 
-- (CGFloat)updateAlertItemsLayout{
+- (CGFloat)updateAlertItemsLayoutWithMaxWidth:(CGFloat)alertViewMaxWidth{
     
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     
     __block CGFloat alertViewHeight = 0.0f;
-    
-    CGFloat alertViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
     
     [self.alertItemArray enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -3003,9 +2988,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (void)updateActionSheetLayoutWithViewWidth:(CGFloat)viewWidth ViewHeight:(CGFloat)viewHeight{
     
-    CGFloat actionSheetViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType);
+    CGFloat actionSheetViewMaxWidth = self.config.modelMaxWidthBlock(self.orientationType, CGSizeMake(viewWidth, viewHeight));
     
-    CGFloat actionSheetViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType);
+    CGFloat actionSheetViewMaxHeight = self.config.modelMaxHeightBlock(self.orientationType, CGSizeMake(viewWidth, viewHeight));
     
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
@@ -3893,13 +3878,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     if (self) {
         
         self.config
-        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
             
             return 280.0f;
         })
-        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
-            
-            return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
+        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type, CGSize size) {
+           
+            return size.height - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
         })
         .LeeOpenAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomEnlarge)
         .LeeCloseAnimationStyle(LEEAnimationStyleOrientationNone | LEEAnimationStyleFade | LEEAnimationStyleZoomShrink);
@@ -3923,13 +3908,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self = [super init];
     if (self) {
         self.config
-        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+        .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
             
-            return type == LEEScreenOrientationTypeHorizontal ? SCREEN_HEIGHT - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom - 20.0f : SCREEN_WIDTH - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).left - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).right - 20.0f;
+            return type == LEEScreenOrientationTypeHorizontal ? size.height - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom - 20.0f : size.width - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).left - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).right - 20.0f;
         })
-        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type) {
+        .LeeConfigMaxHeight(^CGFloat(LEEScreenOrientationType type, CGSize size) {
             
-            return SCREEN_HEIGHT - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
+            return size.height - 40.0f - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).top - VIEWSAFEAREAINSETS([LEEAlert getAlertWindow]).bottom;
         })
         .LeeOpenAnimationStyle(LEEAnimationStyleOrientationBottom)
         .LeeCloseAnimationStyle(LEEAnimationStyleOrientationBottom)

@@ -442,7 +442,7 @@
     .LeeHeaderInsets(UIEdgeInsetsMake(0, 0, 0, 0))
     .LeeActionSheetBottomMargin(0.0f)
     .LeeCornerRadius(0.0f)
-    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type) {
+    .LeeConfigMaxWidth(^CGFloat(LEEScreenOrientationType type, CGSize size) {
         
         // 这是最大宽度为屏幕宽度 (横屏和竖屏)
         

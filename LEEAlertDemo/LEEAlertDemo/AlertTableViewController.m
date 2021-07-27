@@ -273,7 +273,7 @@
             .LeeAction(@"确认", ^{
                 
             })
-            .LeeConfigMaxWidth(^CGFloat (LEEScreenOrientationType type) {
+            .LeeConfigMaxWidth(^CGFloat (LEEScreenOrientationType type, CGSize size) {
                 
                 switch (type) {
                         
@@ -281,7 +281,7 @@
                         
                         // 横屏时最大宽度
                         
-                        return CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.7f;
+                        return size.width * 0.7f;
                         
                         break;
                     
@@ -289,7 +289,7 @@
                         
                         // 竖屏时最大宽度
                         
-                        return CGRectGetWidth([[UIScreen mainScreen] bounds]) * 0.9f;
+                        return size.width * 0.9f;
                         
                         break;
                         
