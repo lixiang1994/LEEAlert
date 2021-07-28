@@ -355,4 +355,3 @@ LEEAlert 使用 MIT 许可证，详情见 [LICENSE](LICENSE) 文件。
 个人主页
 ==============
 [我的简书](http://www.jianshu.com/users/a6da0db100c8)
-[我的博客](http://www.lee1994.com)
