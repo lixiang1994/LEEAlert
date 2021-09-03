@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.4.3
+ *  @version    V1.5.1
  */
 
 #import "LEEAlert.h"
@@ -1014,8 +1014,13 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 }
 
 + (void)clearQueue{
+    if ([self isQueueEmpty]) return;
+    
+    LEEBaseConfig * _Nullable last = [LEEAlert shareManager].queueArray.lastObject;
     
     [[LEEAlert shareManager].queueArray removeAllObjects];
+    
+    if ([last respondsToSelector:@selector(close)]) [last performSelector:@selector(close)];
 }
 
 + (BOOL)isQueueEmpty{
@@ -3691,6 +3696,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @interface LEEBaseConfig ()<LEEAlertProtocol>
 
+@property (nonatomic, assign) BOOL isShowing;
+
 - (void)show;
 
 @end
@@ -3707,6 +3714,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self = [super init];
     
     if (self) {
+        
+        self.isShowing = NO;
         
         __weak typeof(self) weakSelf = self;
         
@@ -3778,6 +3787,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         }
         
         [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
+        
+        self.isShowing = YES;
     }
     
     if ([self.config.modelPresentation isKindOfClass:LEEPresentationViewController.class]) {
@@ -3799,6 +3810,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         [LEEAlert shareManager].viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         [[LEEAlert shareManager].viewController didMoveToParentViewController:presentation.viewController];
+        
+        self.isShowing = YES;
     }
     
     __weak typeof(self) weakSelf = self;
@@ -3832,6 +3845,8 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 }
 
 - (void)close{
+    
+    if (!self.isShowing) return;
     
     if ([self.config.modelPresentation isKindOfClass:LEEPresentationWindow.class]) {
         
