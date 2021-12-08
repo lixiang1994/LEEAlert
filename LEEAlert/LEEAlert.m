@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.5.1
+ *  @version    V1.5.2
  */
 
 #import "LEEAlert.h"
@@ -3729,13 +3729,20 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 LEEBaseConfig *last = [LEEAlert shareManager].queueArray.lastObject;
                 
-                if (!strongSelf.config.modelIsQueue && last.config.modelQueuePriority > strongSelf.config.modelQueuePriority) return;
-                
+                // 当前未加入队列 同时 已显示的优先级高于当前 跳过
+                if (!strongSelf.config.modelIsQueue && last.config.modelQueuePriority > strongSelf.config.modelQueuePriority) {
+                    return;
+                }
+                // 已显示的未加入队列 同时已显示的优先级小于等于当前 关闭已显示的并移除
                 if (!last.config.modelIsQueue && last.config.modelQueuePriority <= strongSelf.config.modelQueuePriority) {
                     
                     [last close];
                     
                     [[LEEAlert shareManager].queueArray removeObject:last];
+                }
+                // 已显示的已加入队列 同时已显示的优先级小于等于当前 关闭已显示的不移除
+                if (last.config.modelIsQueue && last.config.modelQueuePriority <= strongSelf.config.modelQueuePriority) {
+                    [last close];
                 }
                 
                 if (![[LEEAlert shareManager].queueArray containsObject:strongSelf]) {

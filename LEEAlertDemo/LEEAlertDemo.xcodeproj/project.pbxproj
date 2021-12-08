@@ -441,7 +441,7 @@
 				TargetAttributes = {
 					9B0BB2241E8E28760087D231 = {
 						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = B9D8DJR5J5;
+						DevelopmentTeam = 8G74YECJ4Z;
 						ProvisioningStyle = Automatic;
 					};
 					9B0BB23D1E8E28760087D231 = {
@@ -707,7 +707,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
-				DEVELOPMENT_TEAM = B9D8DJR5J5;
+				DEVELOPMENT_TEAM = 8G74YECJ4Z;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -722,7 +722,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
-				DEVELOPMENT_TEAM = B9D8DJR5J5;
+				DEVELOPMENT_TEAM = 8G74YECJ4Z;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

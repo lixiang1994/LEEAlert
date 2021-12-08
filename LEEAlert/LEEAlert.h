@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.5.1
+ *  @version    V1.5.2
  */
 
 #import <Foundation/Foundation.h>
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** 设置 标识 -> 格式: .LeeIdentifier(@@"ident") */
 @property (nonatomic, copy, readonly) LEEConfigToString LeeIdentifier;
 
-/** 设置 是否加入到队列 -> 格式: .LeeQueue(YES)  默认不加入*/
+/** 设置 是否加入到队列 -> 格式: .LeeQueue(YES)  默认不加入 (加入队列后 同一时间多个弹窗按优先级顺序依次显示, 即便被高优先级的挤掉也会在后续恢复, 除非队列被清空)*/
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeQueue;
 
 /** 设置 优先级 -> 格式: .LeePriority(1000) */
