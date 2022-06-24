@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.5.2
+ *  @version    V1.6.0
  */
 
 #import "LEEAlert.h"
@@ -62,6 +62,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic, assign) BOOL modelIsContinueQueueDisplay;
 @property (nonatomic, assign) BOOL modelIsAvoidKeyboard;
 @property (nonatomic, assign) BOOL modelIsScrollEnabled;
+
+@property (nonatomic, assign) BOOL modelIsActionFollowScrollEnabled;
 
 @property (nonatomic, assign) CGSize modelShadowOffset;
 @property (nonatomic, assign) CGPoint modelAlertCenterOffset;
@@ -146,6 +148,8 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsContinueQueueDisplay = YES; //默认继续队列显示
         _modelIsAvoidKeyboard = YES; //默认闪避键盘
         _modelIsScrollEnabled = YES; //默认可以滑动
+        
+        _modelIsActionFollowScrollEnabled = YES; //默认 Action 跟随 Item 滚动
         
         _modelBackgroundStyle = LEEBackgroundStyleTranslucent; //默认为半透明背景样式
         _modelBackgroundBlurEffectStyle = UIBlurEffectStyleDark; //默认模糊效果类型Dark
@@ -582,6 +586,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsScrollEnabled = is;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeIsActionFollowScrollEnabled{
+    
+    return ^(BOOL is){
+        
+        self.modelIsActionFollowScrollEnabled = is;
         
         return self;
     };
@@ -1289,7 +1304,6 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         CGPathRelease(path);
     }
-    
 }
 
 - (void)lee_alert_view_layoutSubviews{
@@ -2111,7 +2125,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @property (nonatomic, strong) UIView *containerView;
 
-@property (nonatomic, strong) UIScrollView *alertView;
+@property (nonatomic, strong) UIView *contentView;
+
+@property (nonatomic, strong) UIScrollView *itemsScrollView;
+
+@property (nonatomic, strong) UIScrollView *actionsScrollView;
 
 @property (nonatomic, strong) NSMutableArray <id>*alertItemArray;
 
@@ -2127,7 +2145,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (void)dealloc{
     
-    _alertView = nil;
+    _containerView = nil;
+    
+    _contentView = nil;
+    
+    _itemsScrollView = nil;
+    
+    _actionsScrollView = nil;
     
     _alertItemArray = nil;
     
@@ -2165,16 +2189,16 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         keyboardFrame = [[[notify userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
         
-        isShowingKeyboard = keyboardFrame.origin.y < SCREEN_HEIGHT;
-        
+        isShowingKeyboard = roundf(keyboardFrame.origin.y) < SCREEN_HEIGHT;
+
         [UIView beginAnimations:@"keyboardWillChangeFrame" context:NULL];
-        
+
         [UIView setAnimationDuration:duration];
-        
+
         [UIView setAnimationCurve:curve];
-        
+
         [self updateAlertLayout];
-        
+
         [UIView commitAnimations];
     }
     
@@ -2216,69 +2240,173 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (keyboardFrame.size.height) {
             
-            CGFloat alertViewHeight = [self updateAlertItemsLayoutWithMaxWidth:alertViewMaxWidth];
-            
             // 处理非全屏时当前视图在窗口中的位置 解决键盘遮挡范围计算问题
             CGRect current = [self.view convertRect:self.view.bounds toView:self.view.window];
             
             CGFloat keyboardY = keyboardFrame.origin.y - current.origin.y;
             
-            CGRect alertViewFrame = self.alertView.frame;
+            alertViewMaxHeight = keyboardY - 20;
             
-            CGFloat tempAlertViewHeight = keyboardY - alertViewHeight < 20 ? keyboardY - 20 : alertViewHeight;
+            if (@available(iOS 11.0, *)) {
+                alertViewMaxHeight -= self.view.safeAreaInsets.top;
+            }
             
-            tempAlertViewHeight = tempAlertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : tempAlertViewHeight;
+            CGRect contentViewFrame = self.contentView.frame;
             
-            CGFloat tempAlertViewY = keyboardY - tempAlertViewHeight - 10;
+            contentViewFrame.size.width = alertViewMaxWidth;
             
-            CGFloat originalAlertViewY = (viewHeight - alertViewFrame.size.height) * 0.5f + offset.y;
+            if (self.config.modelIsActionFollowScrollEnabled) {
+                
+                CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:alertViewMaxWidth];
+                
+                contentViewFrame.size.height = itemsHeight > alertViewMaxHeight ? alertViewMaxHeight : itemsHeight;
+                
+                self.itemsScrollView.frame = contentViewFrame;
+                
+                self.itemsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, itemsHeight);
+                
+                self.actionsScrollView.frame = CGRectMake(0, contentViewFrame.size.height, alertViewMaxWidth, 0);
+                
+                self.actionsScrollView.contentSize = CGSizeZero;
+                
+            } else {
+                
+                CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:alertViewMaxWidth];
+                
+                CGFloat actionsHeight = [self updateActionsLayoutWithInitialPosition:0 MaxWidth:alertViewMaxWidth];
+                
+                self.itemsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, itemsHeight);
+                
+                self.actionsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, actionsHeight);
+                
+                if ((itemsHeight + actionsHeight) > alertViewMaxHeight) {
+                    
+                    contentViewFrame.size.height = alertViewMaxHeight;
+                    
+                    CGFloat maxActionsHeight = alertViewMaxHeight * 0.5;
+                    
+                    actionsHeight = actionsHeight < maxActionsHeight ? actionsHeight : maxActionsHeight;
+                    
+                    CGFloat maxItemsHeight = alertViewMaxHeight - actionsHeight;
+                    
+                    itemsHeight = itemsHeight < maxItemsHeight ? itemsHeight : maxItemsHeight;
+                     
+                    actionsHeight = alertViewMaxHeight - itemsHeight;
+                    
+                    self.itemsScrollView.frame = CGRectMake(0, 0, alertViewMaxWidth, itemsHeight);
+                    
+                    self.actionsScrollView.frame = CGRectMake(0, itemsHeight, alertViewMaxWidth, actionsHeight);
+                    
+                } else {
+                    
+                    contentViewFrame.size.height = itemsHeight + actionsHeight;
+                    
+                    self.itemsScrollView.frame = CGRectMake(0, 0, alertViewMaxWidth, itemsHeight);
+                    
+                    self.actionsScrollView.frame = CGRectMake(0, itemsHeight, alertViewMaxWidth, actionsHeight);
+                }
+            }
             
-            alertViewFrame.size.height = tempAlertViewHeight;
+            [self.itemsScrollView layoutIfNeeded];
             
-            alertViewFrame.size.width = alertViewMaxWidth;
+            [self.actionsScrollView layoutIfNeeded];
             
-            self.alertView.frame = alertViewFrame;
+            self.contentView.frame = contentViewFrame;
             
-            [self.alertView layoutIfNeeded];
+            CGFloat tempAlertViewY = keyboardY - contentViewFrame.size.height - 10;
+            
+            CGFloat originalAlertViewY = (viewHeight - contentViewFrame.size.height) * 0.5f + offset.y;
             
             CGRect containerFrame = self.containerView.frame;
             
-            containerFrame.size.width = alertViewFrame.size.width;
+            containerFrame.size.width = contentViewFrame.size.width;
             
-            containerFrame.size.height = alertViewFrame.size.height;
+            containerFrame.size.height = contentViewFrame.size.height;
             
-            containerFrame.origin.x = (viewWidth - alertViewFrame.size.width) * 0.5f + offset.x;
+            containerFrame.origin.x = (viewWidth - contentViewFrame.size.width) * 0.5f + offset.x;
             
             containerFrame.origin.y = tempAlertViewY < originalAlertViewY ? tempAlertViewY : originalAlertViewY;
             
             self.containerView.frame = containerFrame;
             
-            [self.alertView scrollRectToVisible:[self findFirstResponder:self.alertView].frame animated:YES];
+            [self.itemsScrollView scrollRectToVisible:[self findFirstResponder:self.itemsScrollView].frame animated:YES];
         }
         
     } else {
         
-        CGFloat alertViewHeight = [self updateAlertItemsLayoutWithMaxWidth:alertViewMaxWidth];
-        
         alertViewMaxHeight -= ABS(offset.y);
         
-        CGRect alertViewFrame = self.alertView.frame;
+        CGRect contentViewFrame = self.contentView.frame;
         
-        alertViewFrame.size.width = alertViewMaxWidth;
+        contentViewFrame.size.width = alertViewMaxWidth;
         
-        alertViewFrame.size.height = alertViewHeight > alertViewMaxHeight ? alertViewMaxHeight : alertViewHeight;
+        if (self.config.modelIsActionFollowScrollEnabled) {
+            
+            CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:alertViewMaxWidth];
+            
+            contentViewFrame.size.height = itemsHeight > alertViewMaxHeight ? alertViewMaxHeight : itemsHeight;
+            
+            self.itemsScrollView.frame = contentViewFrame;
+            
+            self.itemsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, itemsHeight);
+            
+            self.actionsScrollView.frame = CGRectMake(0, contentViewFrame.size.height, alertViewMaxWidth, 0);
+            
+            self.actionsScrollView.contentSize = CGSizeZero;
+            
+        } else {
+            
+            CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:alertViewMaxWidth];
+            
+            CGFloat actionsHeight = [self updateActionsLayoutWithInitialPosition:0 MaxWidth:alertViewMaxWidth];
+            
+            self.itemsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, itemsHeight);
+            
+            self.actionsScrollView.contentSize = CGSizeMake(alertViewMaxWidth, actionsHeight);
+            
+            if ((itemsHeight + actionsHeight) > alertViewMaxHeight) {
+                
+                contentViewFrame.size.height = alertViewMaxHeight;
+                
+                CGFloat maxActionsHeight = alertViewMaxHeight * 0.5;
+                
+                actionsHeight = actionsHeight < maxActionsHeight ? actionsHeight : maxActionsHeight;
+                
+                CGFloat maxItemsHeight = alertViewMaxHeight - actionsHeight;
+                
+                itemsHeight = itemsHeight < maxItemsHeight ? itemsHeight : maxItemsHeight;
+                 
+                actionsHeight = alertViewMaxHeight - itemsHeight;
+                
+                self.itemsScrollView.frame = CGRectMake(0, 0, alertViewMaxWidth, itemsHeight);
+                
+                self.actionsScrollView.frame = CGRectMake(0, itemsHeight, alertViewMaxWidth, actionsHeight);
+                
+            } else {
+                
+                contentViewFrame.size.height = itemsHeight + actionsHeight;
+                
+                self.itemsScrollView.frame = CGRectMake(0, 0, alertViewMaxWidth, itemsHeight);
+                
+                self.actionsScrollView.frame = CGRectMake(0, itemsHeight, alertViewMaxWidth, actionsHeight);
+            }
+        }
         
-        self.alertView.frame = alertViewFrame;
+        [self.itemsScrollView layoutIfNeeded];
+        
+        [self.actionsScrollView layoutIfNeeded];
+        
+        self.contentView.frame = contentViewFrame;
         
         CGRect containerFrame = self.containerView.frame;
         
-        containerFrame.size.width = alertViewFrame.size.width;
+        containerFrame.size.width = contentViewFrame.size.width;
         
-        containerFrame.size.height = alertViewFrame.size.height;
+        containerFrame.size.height = contentViewFrame.size.height;
         
         containerFrame.origin.x = (viewWidth - alertViewMaxWidth) * 0.5f + offset.x;
         
-        containerFrame.origin.y = (viewHeight - alertViewFrame.size.height) * 0.5f + offset.y;
+        containerFrame.origin.y = (viewHeight - contentViewFrame.size.height) * 0.5f + offset.y;
         
         self.containerView.frame = containerFrame;
     }
@@ -2286,16 +2414,16 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self.containerView.transform = transform;
 }
 
-- (CGFloat)updateAlertItemsLayoutWithMaxWidth:(CGFloat)alertViewMaxWidth{
+- (CGFloat)updateItemsLayoutWithMaxWidth:(CGFloat)maxWidth{
     
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     
-    __block CGFloat alertViewHeight = 0.0f;
+    __block CGFloat finalHeight = 0.0f;
     
     [self.alertItemArray enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        if (idx == 0) alertViewHeight += self.config.modelHeaderInsets.top;
+        if (idx == 0) finalHeight += self.config.modelHeaderInsets.top;
         
         if ([item isKindOfClass:UIView.class]) {
             
@@ -2305,15 +2433,15 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
             
             viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left + VIEWSAFEAREAINSETS(view).left;
             
-            viewFrame.origin.y = alertViewHeight + view.item.insets.top;
+            viewFrame.origin.y = finalHeight + view.item.insets.top;
             
-            viewFrame.size.width = alertViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
+            viewFrame.size.width = maxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
             
             if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
             
             view.frame = viewFrame;
             
-            alertViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
+            finalHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
             
         } else if ([item isKindOfClass:LEECustomView.class]) {
             
@@ -2325,12 +2453,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 custom.positionType = LEECustomViewPositionTypeCenter;
                 
-                viewFrame.size.width = alertViewMaxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
+                viewFrame.size.width = maxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
             }
             
             switch (custom.positionType) {
                 case LEECustomViewPositionTypeCenter:
-                    viewFrame.origin.x = (alertViewMaxWidth - viewFrame.size.width) * 0.5f;
+                    viewFrame.origin.x = (maxWidth - viewFrame.size.width) * 0.5f;
                     break;
                     
                 case LEECustomViewPositionTypeLeft:
@@ -2338,22 +2466,39 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                     break;
                 
                 case LEECustomViewPositionTypeRight:
-                    viewFrame.origin.x = alertViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
+                    viewFrame.origin.x = maxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
                     break;
                     
                 default:
                     break;
             }
             
-            viewFrame.origin.y = alertViewHeight + custom.item.insets.top;
+            viewFrame.origin.y = finalHeight + custom.item.insets.top;
             
             custom.container.frame = viewFrame;
             
-            alertViewHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
+            finalHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
         }
         
-        if (item == self.alertItemArray.lastObject) alertViewHeight += self.config.modelHeaderInsets.bottom;
+        if (item == self.alertItemArray.lastObject) finalHeight += self.config.modelHeaderInsets.bottom;
     }];
+    
+    if (self.config.modelIsActionFollowScrollEnabled) {
+        
+        finalHeight += [self updateActionsLayoutWithInitialPosition:finalHeight MaxWidth:maxWidth];
+    }
+    
+    [CATransaction commit];
+    
+    return finalHeight;
+}
+
+- (CGFloat)updateActionsLayoutWithInitialPosition:(CGFloat)initialPosition MaxWidth:(CGFloat)maxWidth{
+    
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    
+    CGFloat finalHeight = initialPosition;
     
     for (LEEActionButton *button in self.alertActionArray) {
         
@@ -2361,13 +2506,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         buttonFrame.origin.x = button.action.insets.left;
         
-        buttonFrame.origin.y = alertViewHeight + button.action.insets.top;
+        buttonFrame.origin.y = finalHeight + button.action.insets.top;
         
-        buttonFrame.size.width = alertViewMaxWidth - button.action.insets.left - button.action.insets.right;
+        buttonFrame.size.width = maxWidth - button.action.insets.left - button.action.insets.right;
         
         button.frame = buttonFrame;
         
-        alertViewHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
+        finalHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
     }
     
     if (self.alertActionArray.count == 2) {
@@ -2390,18 +2535,16 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         CGFloat minY = (buttonA.frame.origin.y - buttonAInsets.top) > (buttonB.frame.origin.y - buttonBInsets.top) ? (buttonB.frame.origin.y - buttonBInsets.top) : (buttonA.frame.origin.y - buttonAInsets.top);
         
-        buttonA.frame = CGRectMake(buttonAInsets.left, minY + buttonAInsets.top, (alertViewMaxWidth / 2) - buttonAInsets.left - buttonAInsets.right, buttonA.frame.size.height);
+        buttonA.frame = CGRectMake(buttonAInsets.left, minY + buttonAInsets.top, (maxWidth / 2) - buttonAInsets.left - buttonAInsets.right, buttonA.frame.size.height);
         
-        buttonB.frame = CGRectMake((alertViewMaxWidth / 2) + buttonBInsets.left, minY + buttonBInsets.top, (alertViewMaxWidth / 2) - buttonBInsets.left - buttonBInsets.right, buttonB.frame.size.height);
+        buttonB.frame = CGRectMake((maxWidth / 2) + buttonBInsets.left, minY + buttonBInsets.top, (maxWidth / 2) - buttonBInsets.left - buttonBInsets.right, buttonB.frame.size.height);
         
-        alertViewHeight -= minHeight;
+        finalHeight -= minHeight;
     }
-    
-    self.alertView.contentSize = CGSizeMake(alertViewMaxWidth, alertViewHeight);
     
     [CATransaction commit];
     
-    return alertViewHeight;
+    return finalHeight - initialPosition;
 }
 
 - (void)configAlert{
@@ -2412,7 +2555,13 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     [self.view addSubview: _containerView];
     
-    [self.containerView addSubview: self.alertView];
+    _contentView = [UIView new];
+    
+    [self.contentView addSubview: self.itemsScrollView];
+    
+    [self.contentView addSubview: self.actionsScrollView];
+    
+    [self.containerView addSubview: self.contentView];
     
     self.containerView.layer.shadowOffset = self.config.modelShadowOffset;
     
@@ -2422,9 +2571,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.containerView.layer.shadowColor = self.config.modelShadowColor.CGColor;
     
-    self.alertView.scrollEnabled = self.config.modelIsScrollEnabled;
+    self.contentView.lee_alert_cornerRadii = self.config.modelCornerRadii;
     
-    self.alertView.lee_alert_cornerRadii = self.config.modelCornerRadii;
+    self.contentView.backgroundColor = self.config.modelHeaderColor;
+    
+    self.itemsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -2446,7 +2597,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.alertView addSubview:label];
+                [self.itemsScrollView addSubview:label];
                 
                 [self.alertItemArray addObject:label];
                 
@@ -2480,7 +2631,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.alertView addSubview:label];
+                [self.itemsScrollView addSubview:label];
                 
                 [self.alertItemArray addObject:label];
                 
@@ -2516,7 +2667,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 block(custom);
                 
-                [self.alertView addSubview:custom.container];
+                [self.itemsScrollView addSubview:custom.container];
                 
                 [self.alertItemArray addObject:custom];
                 
@@ -2535,7 +2686,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 textField.frame = CGRectMake(0, 0, 0, 40.0f);
                 
-                [self.alertView addSubview:textField];
+                [self.itemsScrollView addSubview:textField];
                 
                 [self.alertItemArray addObject:textField];
                 
@@ -2554,6 +2705,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         }
         
     }];
+    
+    // 根据 modelIsActionFollowScrollEnabled 属性控制Action添加到哪个父视图
+    UIView *actionContainerView = self.config.modelIsActionFollowScrollEnabled ? self.itemsScrollView : self.actionsScrollView;
     
     [self.config.modelActionArray enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -2608,7 +2762,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
         
-        [self.alertView addSubview:button];
+        [actionContainerView addSubview:button];
         
         [self.alertActionArray addObject:button];
         
@@ -2886,22 +3040,22 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
     
-    return (touch.view == self.alertView) ? YES : NO;
+    return (touch.view == self.itemsScrollView) ? YES : NO;
 }
 
 #pragma mark LazyLoading
 
-- (UIScrollView *)alertView{
+- (UIScrollView *)itemsScrollView{
     
-    if (!_alertView) {
+    if (!_itemsScrollView) {
         
-        _alertView = [[UIScrollView alloc] init];
+        _itemsScrollView = [[UIScrollView alloc] init];
         
-        _alertView.backgroundColor = self.config.modelHeaderColor;
+        _itemsScrollView.backgroundColor = [UIColor clearColor];
         
-        _alertView.directionalLockEnabled = YES;
+        _itemsScrollView.directionalLockEnabled = YES;
         
-        _alertView.bounces = NO;
+        _itemsScrollView.bounces = NO;
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerTapAction:)];
         
@@ -2911,10 +3065,26 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         tap.delegate = self;
         
-        [_alertView addGestureRecognizer:tap];
+        [_itemsScrollView addGestureRecognizer:tap];
     }
     
-    return _alertView;
+    return _itemsScrollView;
+}
+
+- (UIScrollView *)actionsScrollView{
+    
+    if (!_actionsScrollView) {
+        
+        _actionsScrollView = [[UIScrollView alloc] init];
+        
+        _actionsScrollView.backgroundColor = [UIColor clearColor];
+        
+        _actionsScrollView.directionalLockEnabled = YES;
+        
+        _actionsScrollView.bounces = NO;
+    }
+    
+    return _actionsScrollView;
 }
 
 - (NSMutableArray *)alertItemArray{
@@ -2939,7 +3109,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 @property (nonatomic, strong) UIView *containerView;
 
-@property (nonatomic, strong) UIScrollView *actionSheetView;
+@property (nonatomic, strong) UIView *contentView;
+
+@property (nonatomic, strong) UIScrollView *itemsScrollView;
+
+@property (nonatomic, strong) UIScrollView *actionsScrollView;
 
 @property (nonatomic, strong) NSMutableArray <id>*actionSheetItemArray;
 
@@ -2958,7 +3132,15 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (void)dealloc{
     
-    _actionSheetView = nil;
+    _containerView = nil;
+    
+    _itemsScrollView = nil;
+    
+    _actionsScrollView = nil;
+    
+    _actionSheetItemArray = nil;
+    
+    _actionSheetCancelActionSpaceView = nil;
     
     _actionSheetCancelAction = nil;
     
@@ -3000,115 +3182,79 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     
-    __block CGFloat actionSheetViewHeight = 0.0f;
-    
-    [self.actionSheetItemArray enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        if (idx == 0) actionSheetViewHeight += self.config.modelHeaderInsets.top;
-        
-        if ([item isKindOfClass:UIView.class]) {
-            
-            LEEItemView *view = (LEEItemView *)item;
-            
-            CGRect viewFrame = view.frame;
-            
-            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left + VIEWSAFEAREAINSETS(view).left;
-            
-            viewFrame.origin.y = actionSheetViewHeight + view.item.insets.top;
-            
-            viewFrame.size.width = actionSheetViewMaxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
-            
-            if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
-            
-            view.frame = viewFrame;
-            
-            actionSheetViewHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
-            
-        } else if ([item isKindOfClass:LEECustomView.class]) {
-            
-            LEECustomView *custom = (LEECustomView *)item;
-            
-            CGRect viewFrame = custom.container.frame;
-            
-            if (custom.isAutoWidth) {
-                
-                custom.positionType = LEECustomViewPositionTypeCenter;
-                
-                viewFrame.size.width = actionSheetViewMaxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
-            }
-            
-            switch (custom.positionType) {
-                    
-                case LEECustomViewPositionTypeCenter:
-                    
-                    viewFrame.origin.x = (actionSheetViewMaxWidth - viewFrame.size.width) * 0.5f;
-                    
-                    break;
-                    
-                case LEECustomViewPositionTypeLeft:
-                    
-                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
-                    
-                    break;
-                    
-                case LEECustomViewPositionTypeRight:
-                    
-                    viewFrame.origin.x = actionSheetViewMaxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
-                    
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            viewFrame.origin.y = actionSheetViewHeight + custom.item.insets.top;
-            
-            custom.container.frame = viewFrame;
-            
-            actionSheetViewHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
-        }
-        
-        if (item == self.actionSheetItemArray.lastObject) actionSheetViewHeight += self.config.modelHeaderInsets.bottom;
-    }];
-    
-    for (LEEActionButton *button in self.actionSheetActionArray) {
-        
-        CGRect buttonFrame = button.frame;
-        
-        buttonFrame.origin.x = button.action.insets.left;
-        
-        buttonFrame.origin.y = actionSheetViewHeight + button.action.insets.top;
-        
-        buttonFrame.size.width = actionSheetViewMaxWidth - button.action.insets.left - button.action.insets.right;
-        
-        button.frame = buttonFrame;
-        
-        actionSheetViewHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
-    }
-    
-    self.actionSheetView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionSheetViewHeight);
-    
-    [CATransaction commit];
-    
     CGFloat cancelActionTotalHeight = self.actionSheetCancelAction ? self.actionSheetCancelAction.actionHeight + self.config.modelActionSheetCancelActionSpaceWidth : 0.0f;
     
-    CGRect actionSheetViewFrame = self.actionSheetView.frame;
+    CGRect contentViewFrame = self.contentView.frame;
     
-    actionSheetViewFrame.size.width = actionSheetViewMaxWidth;
+    contentViewFrame.size.width = actionSheetViewMaxWidth;
     
-    actionSheetViewFrame.size.height = actionSheetViewHeight > actionSheetViewMaxHeight - cancelActionTotalHeight ? actionSheetViewMaxHeight - cancelActionTotalHeight : actionSheetViewHeight;
+    if (self.config.modelIsActionFollowScrollEnabled) {
+        
+        CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:actionSheetViewMaxWidth];
+        
+        contentViewFrame.size.height = itemsHeight > actionSheetViewMaxHeight - cancelActionTotalHeight ? actionSheetViewMaxHeight - cancelActionTotalHeight : itemsHeight;
+        
+        self.itemsScrollView.frame = contentViewFrame;
+        
+        self.itemsScrollView.contentSize = CGSizeMake(actionSheetViewMaxWidth, itemsHeight);
+        
+        self.actionsScrollView.frame = CGRectMake(0, contentViewFrame.size.height, actionSheetViewMaxWidth, 0);
+        
+        self.actionsScrollView.contentSize = CGSizeZero;
+        
+    } else {
+        
+        CGFloat itemsHeight = [self updateItemsLayoutWithMaxWidth:actionSheetViewMaxWidth];
+        
+        CGFloat actionsHeight = [self updateActionsLayoutWithInitialPosition:0 MaxWidth:actionSheetViewMaxWidth];
+        
+        self.itemsScrollView.contentSize = CGSizeMake(actionSheetViewMaxWidth, itemsHeight);
+        
+        self.actionsScrollView.contentSize = CGSizeMake(actionSheetViewMaxWidth, actionsHeight);
+        
+        CGFloat availableHeight = actionSheetViewMaxHeight - cancelActionTotalHeight;
+        
+        if ((itemsHeight + actionsHeight) > availableHeight) {
+            
+            contentViewFrame.size.height = availableHeight;
+            
+            CGFloat maxActionsHeight = availableHeight * 0.5;
+            
+            actionsHeight = actionsHeight < maxActionsHeight ? actionsHeight : maxActionsHeight;
+            
+            CGFloat maxItemsHeight = availableHeight - actionsHeight;
+            
+            itemsHeight = itemsHeight < maxItemsHeight ? itemsHeight : maxItemsHeight;
+             
+            actionsHeight = availableHeight - itemsHeight;
+            
+            self.itemsScrollView.frame = CGRectMake(0, 0, actionSheetViewMaxWidth, itemsHeight);
+            
+            self.actionsScrollView.frame = CGRectMake(0, itemsHeight, actionSheetViewMaxWidth, actionsHeight);
+            
+        } else {
+            
+            contentViewFrame.size.height = itemsHeight + actionsHeight;
+            
+            self.itemsScrollView.frame = CGRectMake(0, 0, actionSheetViewMaxWidth, itemsHeight);
+            
+            self.actionsScrollView.frame = CGRectMake(0, itemsHeight, actionSheetViewMaxWidth, actionsHeight);
+        }
+    }
     
-    self.actionSheetView.frame = actionSheetViewFrame;
+    [self.itemsScrollView layoutIfNeeded];
     
-    [self.actionSheetView layoutIfNeeded];
+    [self.actionsScrollView layoutIfNeeded];
+    
+    self.contentView.frame = contentViewFrame;
     
     if (self.actionSheetCancelAction) {
         
         CGRect spaceFrame = self.actionSheetCancelActionSpaceView.frame;
         
-        spaceFrame.origin.x = actionSheetViewFrame.origin.x;
+        spaceFrame.origin.x = contentViewFrame.origin.x;
         
-        spaceFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height;
+        spaceFrame.origin.y = contentViewFrame.origin.y + contentViewFrame.size.height;
         
         spaceFrame.size.width = actionSheetViewMaxWidth;
         
@@ -3118,20 +3264,22 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         CGRect buttonFrame = self.actionSheetCancelAction.frame;
         
-        buttonFrame.origin.x = actionSheetViewFrame.origin.x;
+        buttonFrame.origin.x = contentViewFrame.origin.x;
         
-        buttonFrame.origin.y = actionSheetViewFrame.origin.y + actionSheetViewFrame.size.height + spaceFrame.size.height;
+        buttonFrame.origin.y = contentViewFrame.origin.y + contentViewFrame.size.height + spaceFrame.size.height;
         
         buttonFrame.size.width = actionSheetViewMaxWidth;
         
         self.actionSheetCancelAction.frame = buttonFrame;
     }
     
+    [CATransaction commit];
+    
     CGRect containerFrame = self.containerView.frame;
     
     containerFrame.size.width = actionSheetViewMaxWidth;
     
-    containerFrame.size.height = actionSheetViewFrame.size.height + cancelActionTotalHeight + VIEWSAFEAREAINSETS(self.view).bottom + self.config.modelActionSheetBottomMargin;
+    containerFrame.size.height = contentViewFrame.size.height + cancelActionTotalHeight + VIEWSAFEAREAINSETS(self.view).bottom + self.config.modelActionSheetBottomMargin;
     
     containerFrame.origin.x = (viewWidth - actionSheetViewMaxWidth) * 0.5f;
     
@@ -3145,6 +3293,119 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     }
     
     self.containerView.frame = containerFrame;
+}
+
+- (CGFloat)updateItemsLayoutWithMaxWidth:(CGFloat)maxWidth{
+    
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    
+    __block CGFloat finalHeight = 0.0f;
+    
+    [self.actionSheetItemArray enumerateObjectsUsingBlock:^(id  _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        if (idx == 0) finalHeight += self.config.modelHeaderInsets.top;
+        
+        if ([item isKindOfClass:UIView.class]) {
+            
+            LEEItemView *view = (LEEItemView *)item;
+            
+            CGRect viewFrame = view.frame;
+            
+            viewFrame.origin.x = self.config.modelHeaderInsets.left + view.item.insets.left + VIEWSAFEAREAINSETS(view).left;
+            
+            viewFrame.origin.y = finalHeight + view.item.insets.top;
+            
+            viewFrame.size.width = maxWidth - viewFrame.origin.x - self.config.modelHeaderInsets.right - view.item.insets.right - VIEWSAFEAREAINSETS(view).left - VIEWSAFEAREAINSETS(view).right;
+            
+            if ([item isKindOfClass:UILabel.class]) viewFrame.size.height = [item sizeThatFits:CGSizeMake(viewFrame.size.width, MAXFLOAT)].height;
+            
+            view.frame = viewFrame;
+            
+            finalHeight += view.frame.size.height + view.item.insets.top + view.item.insets.bottom;
+            
+        } else if ([item isKindOfClass:LEECustomView.class]) {
+            
+            LEECustomView *custom = (LEECustomView *)item;
+            
+            CGRect viewFrame = custom.container.frame;
+            
+            if (custom.isAutoWidth) {
+                
+                custom.positionType = LEECustomViewPositionTypeCenter;
+                
+                viewFrame.size.width = maxWidth - self.config.modelHeaderInsets.left - custom.item.insets.left - self.config.modelHeaderInsets.right - custom.item.insets.right;
+            }
+            
+            switch (custom.positionType) {
+                    
+                case LEECustomViewPositionTypeCenter:
+                    
+                    viewFrame.origin.x = (maxWidth - viewFrame.size.width) * 0.5f;
+                    
+                    break;
+                    
+                case LEECustomViewPositionTypeLeft:
+                    
+                    viewFrame.origin.x = self.config.modelHeaderInsets.left + custom.item.insets.left;
+                    
+                    break;
+                    
+                case LEECustomViewPositionTypeRight:
+                    
+                    viewFrame.origin.x = maxWidth - self.config.modelHeaderInsets.right - custom.item.insets.right - viewFrame.size.width;
+                    
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            viewFrame.origin.y = finalHeight + custom.item.insets.top;
+            
+            custom.container.frame = viewFrame;
+            
+            finalHeight += viewFrame.size.height + custom.item.insets.top + custom.item.insets.bottom;
+        }
+        
+        if (item == self.actionSheetItemArray.lastObject) finalHeight += self.config.modelHeaderInsets.bottom;
+    }];
+    
+    if (self.config.modelIsActionFollowScrollEnabled) {
+        
+        finalHeight += [self updateActionsLayoutWithInitialPosition:finalHeight MaxWidth:maxWidth];
+    }
+    
+    [CATransaction commit];
+    
+    return finalHeight;
+}
+
+- (CGFloat)updateActionsLayoutWithInitialPosition:(CGFloat)initialPosition MaxWidth:(CGFloat)maxWidth{
+    
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    
+    CGFloat finalHeight = initialPosition;
+    
+    for (LEEActionButton *button in self.actionSheetActionArray) {
+        
+        CGRect buttonFrame = button.frame;
+        
+        buttonFrame.origin.x = button.action.insets.left;
+        
+        buttonFrame.origin.y = finalHeight + button.action.insets.top;
+        
+        buttonFrame.size.width = maxWidth - button.action.insets.left - button.action.insets.right;
+        
+        button.frame = buttonFrame;
+        
+        finalHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
+    }
+    
+    [CATransaction commit];
+    
+    return finalHeight - initialPosition;
 }
 
 - (void)configActionSheet{
@@ -3173,15 +3434,23 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     [shadowView addSubview: _containerView];
     
-    [self.containerView addSubview: self.actionSheetView];
+    _contentView = [UIView new];
+    
+    [self.contentView addSubview: self.itemsScrollView];
+    
+    [self.contentView addSubview: self.actionsScrollView];
+    
+    [self.containerView addSubview: self.contentView];
+    
+    self.contentView.backgroundColor = self.config.modelHeaderColor;
     
     self.containerView.backgroundColor = self.config.modelActionSheetBackgroundColor;
     
-    self.actionSheetView.scrollEnabled = self.config.modelIsScrollEnabled;
-    
     self.containerView.lee_alert_cornerRadii = self.config.modelCornerRadii;
     
-    self.actionSheetView.lee_alert_cornerRadii = self.config.modelActionSheetHeaderCornerRadii;
+    self.contentView.lee_alert_cornerRadii = self.config.modelActionSheetHeaderCornerRadii;
+    
+    self.itemsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -3202,7 +3471,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.actionSheetView addSubview:label];
+                [self.itemsScrollView addSubview:label];
                 
                 [self.actionSheetItemArray addObject:label];
                 
@@ -3236,7 +3505,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 LEEItemLabel *label = [LEEItemLabel label];
                 
-                [self.actionSheetView addSubview:label];
+                [self.itemsScrollView addSubview:label];
                 
                 [self.actionSheetItemArray addObject:label];
                 
@@ -3272,7 +3541,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 block(custom);
                 
-                [self.actionSheetView addSubview:custom.container];
+                [self.itemsScrollView addSubview:custom.container];
                 
                 [self.actionSheetItemArray addObject:custom];
                 
@@ -3289,6 +3558,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         }
         
     }];
+    
+    // 根据 modelIsActionFollowScrollEnabled 属性控制Action添加到哪个父视图
+    UIView *actionContainerView = self.config.modelIsActionFollowScrollEnabled ? self.itemsScrollView : self.actionsScrollView;
     
     for (id item in self.config.modelActionArray) {
         
@@ -3364,7 +3636,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 
                 [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
                 
-                [self.actionSheetView addSubview:button];
+                [actionContainerView addSubview:button];
                 
                 [self.actionSheetActionArray addObject:button];
             }
@@ -3647,22 +3919,22 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
     
-    return (touch.view == self.actionSheetView) ? YES : NO;
+    return (touch.view == self.itemsScrollView) ? YES : NO;
 }
 
 #pragma mark LazyLoading
 
-- (UIView *)actionSheetView{
+- (UIView *)itemsScrollView{
     
-    if (!_actionSheetView) {
+    if (!_itemsScrollView) {
         
-        _actionSheetView = [[UIScrollView alloc] init];
+        _itemsScrollView = [[UIScrollView alloc] init];
         
-        _actionSheetView.backgroundColor = self.config.modelHeaderColor;
+        _itemsScrollView.backgroundColor = [UIColor clearColor];
         
-        _actionSheetView.directionalLockEnabled = YES;
+        _itemsScrollView.directionalLockEnabled = YES;
         
-        _actionSheetView.bounces = NO;
+        _itemsScrollView.bounces = NO;
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerTapAction:)];
         
@@ -3672,10 +3944,26 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         tap.delegate = self;
         
-        [_actionSheetView addGestureRecognizer:tap];
+        [_itemsScrollView addGestureRecognizer:tap];
     }
     
-    return _actionSheetView;
+    return _itemsScrollView;
+}
+
+- (UIScrollView *)actionsScrollView{
+    
+    if (!_actionsScrollView) {
+        
+        _actionsScrollView = [[UIScrollView alloc] init];
+        
+        _actionsScrollView.backgroundColor = [UIColor clearColor];
+        
+        _actionsScrollView.directionalLockEnabled = YES;
+        
+        _actionsScrollView.bounces = NO;
+    }
+    
+    return _actionsScrollView;
 }
 
 - (NSMutableArray <id>*)actionSheetItemArray{

@@ -1,6 +1,13 @@
 
 # LEEAlert - 更新日志
 
+V1.6.0
+==============
+重构内部布局
+增加`.LeeIsActionFollowScrollEnabled(YES)` 设置 Action是否跟随Item滑动 
+具体效果请查看Demo
+
+
 V1.5.2
 ==============
 修复队列问题

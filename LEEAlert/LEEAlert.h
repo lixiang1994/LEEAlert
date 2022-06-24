@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.5.2
+ *  @version    V1.6.0
  */
 
 #import <Foundation/Foundation.h>
@@ -187,6 +187,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 是否可滑动 -> 格式: .LeeIsScrollEnabled(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeIsScrollEnabled;
+
+/** 设置 Action是否跟随Item滑动 -> 格式: .LeeIsActionFollowScrollEnabled(YES) */
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeIsActionFollowScrollEnabled;
 
 /** 设置 阴影偏移 -> 格式: .LeeShadowOffset(CGSizeMake(0.0f, 2.0f)) */
 @property (nonatomic, copy, readonly) LEEConfigToSize LeeShadowOffset;

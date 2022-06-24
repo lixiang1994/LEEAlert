@@ -99,6 +99,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个mask圆角的 actionSheet 菜单" , @"content" : @"通过CornerRadii指定各个圆角半径"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个Action不跟随Item滑动的 actionSheet 菜单" , @"content" : @"通过LeeIsActionFollowScrollEnabled属性设置是否跟随滑动"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 actionSheet 菜单" , @"content" : @"菜单背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个类似微信布局的 actionSheet 菜单" , @"content" : @"只需要调整最大宽度,取消action的间隔颜色和底部间距即可"}];
@@ -551,6 +553,26 @@
             .LeeShow(); // 设置完成后 别忘记调用Show来显示
         }
             break;
+            
+        case 15:
+        {
+            [LEEAlert actionsheet].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"竖屏内容高度不太够, 可以横屏观看, 也可以增加点item来查看效果\nღ( ´･ᴗ･` )比心")
+            .LeeCancelAction(@"取消", ^{ })
+            .LeeAction(@"确认1", ^{ })
+            .LeeAction(@"确认2", ^{ })
+            .LeeAction(@"确认3", ^{ })
+            .LeeAction(@"确认4", ^{ })
+            .LeeAction(@"确认5", ^{ })
+            .LeeAction(@"确认6", ^{ })
+            .LeeAction(@"确认7", ^{ })
+            .LeeAction(@"确认8", ^{ })
+            .LeeAction(@"确认9", ^{ })
+            .LeeIsActionFollowScrollEnabled(NO) // 不跟随滑动时 如果最大高度不够内容显示 那么 item和action会按照各自50%的高度来划分区域
+            .LeeShow(); // 设置完成后 别忘记调用Show来显示
+            
+        }
             
         default:
             break;

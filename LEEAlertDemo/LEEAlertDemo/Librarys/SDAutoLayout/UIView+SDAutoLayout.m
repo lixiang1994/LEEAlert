@@ -1035,7 +1035,7 @@
 
 - (void)sd_layoutSubviews
 {
-    // 如果程序崩溃在这行代码说明是你的view在执行“layoutSubvies”方法时出了问题而不是在此自动布局库内部出现了问题，请检查你的“layoutSubvies”方法
+    // 如果程序崩溃在这行代码说明是你的view在执行“layoutSubvies”方法时出了问题而不是在此自动布局库内部出现了问题，请检查你的“layoutSubviews”方法
     [self sd_layoutSubviews];
     
     [self sd_layoutSubviewsHandle];

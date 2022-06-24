@@ -110,6 +110,8 @@
     
     [baseArray addObject:@{@"title" : @"显示一个层级在视图控制器的 alert 弹框" , @"content" : @"通过LeePresentation属性设置弹窗所在层级"}];
     
+    [baseArray addObject:@{@"title" : @"显示一个Action不跟随Item滑动的 alert 弹框" , @"content" : @"通过LeeIsActionFollowScrollEnabled属性设置是否跟随滑动"}];
+    
     [demoArray addObject:@{@"title" : @"显示一个蓝色自定义风格的 alert 弹框" , @"content" : @"弹框背景等颜色均可以自定义"}];
     
     [demoArray addObject:@{@"title" : @"显示一个分享登录的 alert 弹框" , @"content" : @"类似某些复杂内容的弹框 可以通过封装成自定义视图来显示"}];
@@ -765,7 +767,28 @@
             .LeeShow(); // 设置完成后 别忘记调用Show来显示
             
         }
-            break;;
+            break;
+            
+        case 19:
+        {
+            [LEEAlert alert].config
+            .LeeTitle(@"标题")
+            .LeeContent(@"竖屏内容高度不太够, 可以横屏观看, 也可以增加点item来查看效果\nღ( ´･ᴗ･` )比心")
+            .LeeCancelAction(@"取消", ^{ })
+            .LeeAction(@"确认1", ^{ })
+            .LeeAction(@"确认2", ^{ })
+            .LeeAction(@"确认3", ^{ })
+            .LeeAction(@"确认4", ^{ })
+            .LeeAction(@"确认5", ^{ })
+            .LeeAction(@"确认6", ^{ })
+            .LeeAction(@"确认7", ^{ })
+            .LeeAction(@"确认8", ^{ })
+            .LeeAction(@"确认9", ^{ })
+            .LeeIsActionFollowScrollEnabled(NO) // 不跟随滑动时 如果最大高度不够内容显示 那么 item和action会按照各自50%的高度来划分区域
+            .LeeShow(); // 设置完成后 别忘记调用Show来显示
+            
+        }
+            break;
             
         default:
             break;
