@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.1
+ *  @version    V1.6.2
  */
 
 #import "LEEAlert.h"
@@ -2820,12 +2820,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (isClose) {
         
-        if (self.config.modelShouldActionClickClose && !self.config.modelShouldActionClickClose(index)) return;
-        
-        [self closeAnimationsWithCompletionBlock:^{
+        if (self.config.modelShouldActionClickClose && self.config.modelShouldActionClickClose(index)) {
+            
+            [self closeAnimationsWithCompletionBlock:^{
+                
+                if (clickBlock) clickBlock();
+            }];
+            
+        } else {
             
             if (clickBlock) clickBlock();
-        }];
+        }
         
     } else {
         
@@ -3701,12 +3706,17 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     if (isClose) {
         
-        if (self.config.modelShouldActionClickClose && !self.config.modelShouldActionClickClose(index)) return;
-        
-        [self closeAnimationsWithCompletionBlock:^{
+        if (self.config.modelShouldActionClickClose && self.config.modelShouldActionClickClose(index)) {
+            
+            [self closeAnimationsWithCompletionBlock:^{
+                
+                if (clickBlock) clickBlock();
+            }];
+            
+        } else {
             
             if (clickBlock) clickBlock();
-        }];
+        }
         
     } else {
         
@@ -4080,6 +4090,10 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         if (@available(iOS 13.0, *)) {
             [LEEAlert shareManager].leeWindow.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
             
+        }
+        
+        if (@available(iOS 16.0, *)) {
+            
         } else {
             [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
         }
@@ -4148,7 +4162,11 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         [LEEAlert shareManager].leeWindow.hidden = YES;
         
-        [[LEEAlert shareManager].leeWindow resignKeyWindow];
+        if (@available(iOS 16.0, *)) {
+            
+        } else {
+            [[LEEAlert shareManager].leeWindow resignKeyWindow];
+        }
         
         [LEEAlert shareManager].leeWindow.rootViewController = nil;
     }

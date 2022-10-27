@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.6.2
+==============
+`leeShouldActionClickClose` 返回False时 Action的点击事件回调也会被调用
+
 V1.6.1
 ==============
 尝试解决iOS16 Window旋转问题
