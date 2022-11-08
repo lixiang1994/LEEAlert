@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.6.3
+==============
+增加 `.LeeIsShowsScrollIndicator(YES)` 设置是否显示滑动指示器
+
 V1.6.2
 ==============
 `leeShouldActionClickClose` 返回False时 Action的点击事件回调也会被调用

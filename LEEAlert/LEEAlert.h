@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.2
+ *  @version    V1.6.3
  */
 
 #import <Foundation/Foundation.h>
@@ -187,6 +187,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 是否可滑动 -> 格式: .LeeIsScrollEnabled(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeIsScrollEnabled;
+
+/** 设置 是否显示滑动指示器 -> 格式: .LeeIsShowsScrollIndicator(YES) */
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeIsShowsScrollIndicator;
 
 /** 设置 Action是否跟随Item滑动 -> 格式: .LeeIsActionFollowScrollEnabled(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeIsActionFollowScrollEnabled;

@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.2
+ *  @version    V1.6.3
  */
 
 #import "LEEAlert.h"
@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic, assign) BOOL modelIsContinueQueueDisplay;
 @property (nonatomic, assign) BOOL modelIsAvoidKeyboard;
 @property (nonatomic, assign) BOOL modelIsScrollEnabled;
+@property (nonatomic, assign) BOOL modelIsShowsScrollIndicator;
 
 @property (nonatomic, assign) BOOL modelIsActionFollowScrollEnabled;
 
@@ -148,6 +149,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsContinueQueueDisplay = YES; //默认继续队列显示
         _modelIsAvoidKeyboard = YES; //默认闪避键盘
         _modelIsScrollEnabled = YES; //默认可以滑动
+        _modelIsShowsScrollIndicator = YES; //默认显示滑动指示器
         
         _modelIsActionFollowScrollEnabled = YES; //默认 Action 跟随 Item 滚动
         
@@ -586,6 +588,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsScrollEnabled = is;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeIsShowsScrollIndicator{
+    
+    return ^(BOOL is){
+        
+        self.modelIsShowsScrollIndicator = is;
         
         return self;
     };
@@ -2577,6 +2590,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     
     self.itemsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
     
+    self.itemsScrollView.showsVerticalScrollIndicator = self.config.modelIsShowsScrollIndicator;
+    
+    self.actionsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
+    
+    self.actionsScrollView.showsVerticalScrollIndicator = self.config.modelIsShowsScrollIndicator;
+    
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         void (^itemBlock)(LEEItem *) = obj;
@@ -3456,6 +3475,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self.contentView.lee_alert_cornerRadii = self.config.modelActionSheetHeaderCornerRadii;
     
     self.itemsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
+    
+    self.itemsScrollView.showsVerticalScrollIndicator = self.config.modelIsShowsScrollIndicator;
+    
+    self.actionsScrollView.scrollEnabled = self.config.modelIsScrollEnabled;
+    
+    self.actionsScrollView.showsVerticalScrollIndicator = self.config.modelIsShowsScrollIndicator;
     
     [self.config.modelItemArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
