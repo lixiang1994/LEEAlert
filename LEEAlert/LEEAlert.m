@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.3
+ *  @version    V1.6.4
  */
 
 #import "LEEAlert.h"
@@ -2320,10 +2320,6 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 }
             }
             
-            [self.itemsScrollView layoutIfNeeded];
-            
-            [self.actionsScrollView layoutIfNeeded];
-            
             self.contentView.frame = contentViewFrame;
             
             CGFloat tempAlertViewY = keyboardY - contentViewFrame.size.height - 10;
@@ -2404,10 +2400,6 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
                 self.actionsScrollView.frame = CGRectMake(0, itemsHeight, alertViewMaxWidth, actionsHeight);
             }
         }
-        
-        [self.itemsScrollView layoutIfNeeded];
-        
-        [self.actionsScrollView layoutIfNeeded];
         
         self.contentView.frame = contentViewFrame;
         
@@ -3265,10 +3257,6 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
             self.actionsScrollView.frame = CGRectMake(0, itemsHeight, actionSheetViewMaxWidth, actionsHeight);
         }
     }
-    
-    [self.itemsScrollView layoutIfNeeded];
-    
-    [self.actionsScrollView layoutIfNeeded];
     
     self.contentView.frame = contentViewFrame;
     
