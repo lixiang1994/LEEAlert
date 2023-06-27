@@ -1203,11 +1203,11 @@ CornerRadii CornerRadiiMake(CGFloat topLeft, CGFloat topRight, CGFloat bottomLef
     };
 }
 
-CornerRadii CornerRadiiZero() {
+CornerRadii CornerRadiiZero(void) {
     return (CornerRadii){0, 0, 0, 0};
 }
 
-CornerRadii CornerRadiiNull() {
+CornerRadii CornerRadiiNull(void) {
     return (CornerRadii){-1, -1, -1, -1};
 }
 
