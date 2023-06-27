@@ -11,8 +11,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.4
+ *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
+ *  @version    V1.6.5
  */
 
 #import "LEEAlert.h"
@@ -4102,14 +4102,9 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         if (@available(iOS 13.0, *)) {
             [LEEAlert shareManager].leeWindow.overrideUserInterfaceStyle = self.config.modelUserInterfaceStyle;
-            
         }
         
-        if (@available(iOS 16.0, *)) {
-            
-        } else {
-            [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
-        }
+        [[LEEAlert shareManager].leeWindow makeKeyAndVisible];
         
         self.isShowing = YES;
     }

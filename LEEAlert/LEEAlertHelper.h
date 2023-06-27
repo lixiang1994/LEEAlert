@@ -12,8 +12,8 @@
  *  @brief  LEEAlertHelper
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2020年 lee. All rights reserved.
- *  @version    V1.6.4
+ *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
+ *  @version    V1.6.5
  */
 
 #ifndef LEEAlertHelper_h
