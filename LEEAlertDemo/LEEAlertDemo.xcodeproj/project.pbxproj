@@ -709,7 +709,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				DEVELOPMENT_TEAM = 8G74YECJ4Z;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.alert;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -724,7 +724,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				DEVELOPMENT_TEAM = 8G74YECJ4Z;
 				INFOPLIST_FILE = LEEAlertDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.alert;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -738,6 +738,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -751,6 +752,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -763,6 +765,7 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -775,6 +778,7 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = B9D8DJR5J5;
 				INFOPLIST_FILE = LEEAlertDemoUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lee.LEEAlertDemoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

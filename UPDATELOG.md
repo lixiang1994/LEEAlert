@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.6.6
+==============
+`LEEAction`添加`contentEdgeInsets` `contentVerticalAlignment` `contentHorizontalAlignment`
+
 V1.6.5
 ==============
 恢复`makeKeyAndVisible`调用

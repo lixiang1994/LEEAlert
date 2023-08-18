@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
- *  @version    V1.6.5
+ *  @version    V1.6.6
  */
 
 #import "LEEAlert.h"
@@ -1583,6 +1583,12 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     [self.titleLabel setNumberOfLines:action.numberOfLines];
     
     [self.titleLabel setTextAlignment:action.textAlignment];
+    
+    [self setContentEdgeInsets: action.contentEdgeInsets];
+    
+    [self setContentVerticalAlignment:action.contentVerticalAlignment];
+    
+    [self setContentHorizontalAlignment:action.contentHorizontalAlignment];
     
     if (action.font) [self.titleLabel setFont:action.font];
     
