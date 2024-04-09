@@ -21,7 +21,7 @@ s.requires_arc = true
 
   s.subspec 'Privacy' do |ss|
       ss.resource_bundles = {
-        "Privacy" => 'Sources/PrivacyInfo.xcprivacy'
+        "Privacy" => 'LEEAlert/PrivacyInfo.xcprivacy'
       }
   end
 end
