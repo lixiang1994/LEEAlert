@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "LEEAlert"
-s.version      = "1.6.6"
+s.version      = "1.7.0"
 s.summary      = "优雅的Alert ActionSheet"
 
 s.homepage     = "https://github.com/lixiang1994/LEEAlert"
@@ -19,4 +19,9 @@ s.source_files  = "LEEAlert/**/*.{h,m}"
 
 s.requires_arc = true
 
+  s.subspec 'Privacy' do |ss|
+      ss.resource_bundles = {
+        "Privacy" => 'Sources/PrivacyInfo.xcprivacy'
+      }
+  end
 end

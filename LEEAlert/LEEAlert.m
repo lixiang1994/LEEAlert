@@ -12,7 +12,7 @@
  *
  *  @author LEE
  *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
- *  @version    V1.6.6
+ *  @version    V1.7.0
  */
 
 #import "LEEAlert.h"

@@ -1,6 +1,10 @@
 
 # LEEAlert - 更新日志
 
+V1.7.0
+==============
+添加隐私清单
+
 V1.6.6
 ==============
 `LEEAction`添加`contentEdgeInsets` `contentVerticalAlignment` `contentHorizontalAlignment`
