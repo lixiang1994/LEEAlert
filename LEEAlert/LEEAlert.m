@@ -2041,9 +2041,10 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.extendedLayoutIncludesOpaqueBars = NO;
-    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.automaticallyAdjustsScrollViewInsets = NO;
-    
+#pragma clang diagnostic push
     if (self.config.modelBackgroundStyle == LEEBackgroundStyleBlur) {
         
         self.backgroundVisualEffectView = [[UIVisualEffectView alloc] initWithEffect:nil];
