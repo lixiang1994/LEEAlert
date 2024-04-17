@@ -19,9 +19,9 @@ s.source_files  = "LEEAlert/**/*.{h,m}"
 
 s.requires_arc = true
 
-  s.subspec 'Privacy' do |ss|
-      ss.resource_bundles = {
+s.subspec 'Privacy' do |ss|
+    ss.resource_bundles = {
         "LEEAlert" => 'LEEAlert/PrivacyInfo.xcprivacy'
-      }
-  end
+    }
+end
 end
