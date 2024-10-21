@@ -11,8 +11,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
- *  @version    V1.7.1
+ *  @copyright    Copyright © 2016 - 2024年 lee. All rights reserved.
+ *  @version    V1.8.0
  */
 
 #import <Foundation/Foundation.h>
@@ -308,6 +308,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** 设置 是否闪避键盘 -> 格式: .LeeAvoidKeyboard(YES) */
 @property (nonatomic, copy, readonly) LEEConfigToBool LeeAvoidKeyboard;
+
+/** 设置 Action是否使用垂直布局 -> 格式: .LeeAlertActionVerticalLayout(YES) */
+@property (nonatomic, copy, readonly) LEEConfigToBool LeeAlertActionVerticalLayout;
 
 @end
 

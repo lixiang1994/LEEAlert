@@ -1,6 +1,11 @@
 
 # LEEAlert - 更新日志
 
+V1.8.0
+==============
+`[LEEAlert alert]`增加2个Action时 是否为垂直布局的设置
+`.LeeAlertActionVerticalLayout(YES)`
+
 V1.7.1
 ==============
 添加隐私清单

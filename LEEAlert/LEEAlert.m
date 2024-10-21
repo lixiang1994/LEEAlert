@@ -11,8 +11,8 @@
  *  @brief  LEEAlert
  *
  *  @author LEE
- *  @copyright    Copyright © 2016 - 2023年 lee. All rights reserved.
- *  @version    V1.7.1
+ *  @copyright    Copyright © 2016 - 2024年 lee. All rights reserved.
+ *  @version    V1.8.0
  */
 
 #import "LEEAlert.h"
@@ -61,6 +61,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
 @property (nonatomic, assign) BOOL modelIsQueue;
 @property (nonatomic, assign) BOOL modelIsContinueQueueDisplay;
 @property (nonatomic, assign) BOOL modelIsAvoidKeyboard;
+@property (nonatomic, assign) BOOL modelIsAlertActionVerticalLayout;
 @property (nonatomic, assign) BOOL modelIsScrollEnabled;
 @property (nonatomic, assign) BOOL modelIsShowsScrollIndicator;
 
@@ -906,6 +907,17 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
     return ^(BOOL is){
         
         self.modelIsAvoidKeyboard = is;
+        
+        return self;
+    };
+    
+}
+
+- (LEEConfigToBool)LeeAlertActionVerticalLayout{
+    
+    return ^(BOOL is){
+        
+        self.modelIsAlertActionVerticalLayout = is;
         
         return self;
     };
@@ -2527,7 +2539,7 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         finalHeight += buttonFrame.size.height + button.action.insets.top + button.action.insets.bottom;
     }
     
-    if (self.alertActionArray.count == 2) {
+    if (self.alertActionArray.count == 2 && !self.config.modelIsAlertActionVerticalLayout) {
         
         LEEActionButton *buttonA = self.alertActionArray.count == self.config.modelActionArray.count ? self.alertActionArray.firstObject : self.alertActionArray.lastObject;
         
