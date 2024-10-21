@@ -149,7 +149,7 @@ typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
         _modelIsQueue = NO; //默认不加入队列
         _modelIsContinueQueueDisplay = YES; //默认继续队列显示
         _modelIsAvoidKeyboard = YES; //默认闪避键盘
-        _modelIsAlertActionVerticalLayout = YES; //默认2个Action时水平布局
+        _modelIsAlertActionVerticalLayout = NO; //默认2个Action时水平布局
         _modelIsScrollEnabled = YES; //默认可以滑动
         _modelIsShowsScrollIndicator = YES; //默认显示滑动指示器
         
