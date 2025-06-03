@@ -17,14 +17,14 @@ class ViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
-        let alert = LEEAlert.alert()
-        .config
-        .leeTitle("标题")
-        .leeContent("内容")
-        .leeAction("确认", {
-            print("点击取消")
-        })
-        .leeShow()
+        let alert = LEEAlert.alert().config
+         _ = alert
+            .leeTitle("标题")
+            .leeContent("内容")
+            .leeAction("确认", {
+                print("点击取消")
+            })
+            .leeShow()
     }
 }
 
