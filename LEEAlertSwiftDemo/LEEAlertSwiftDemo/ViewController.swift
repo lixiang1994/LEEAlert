@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         super.touchesBegan(touches, with: event)
         
         let alert = LEEAlert.alert()
-        _ = alert.config
+        .config
         .leeTitle("标题")
         .leeContent("内容")
         .leeAction("确认", {

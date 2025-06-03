@@ -29,6 +29,10 @@
 #define DEFAULTBORDERWIDTH (1.0f / [[UIScreen mainScreen] scale] + 0.02f)
 #define VIEWSAFEAREAINSETS(view) ({UIEdgeInsets i; if(@available(iOS 11.0, *)) {i = view.safeAreaInsets;} else {i = UIEdgeInsetsZero;} i;})
 
+NS_INLINE void lee_cleanupFunc(__strong dispatch_block_t *block) {
+    (*block)();
+}
+
 #pragma mark - ===================配置模型===================
 
 typedef NS_ENUM(NSInteger, LEEBackgroundStyle) {
@@ -4048,13 +4052,18 @@ CGPathRef _Nullable LEECGPathCreateWithRoundedRect(CGRect bounds, CornerRadii co
         
         self.isShowing = NO;
         
-        __weak typeof(self) weakSelf = self;
+        __block typeof(self) strongSelf = self;
         
         self.config.modelFinishConfig = ^{
             
-            __strong typeof(weakSelf) strongSelf = weakSelf;
+            __attribute__((cleanup(lee_cleanupFunc), unused)) __auto_type x = ^{
+                // break circular reference after leaving the scope.
+                strongSelf = nil;
+            };
             
-            if (!strongSelf) return;
+            if (!strongSelf) {
+                return;
+            }
             
             if ([LEEAlert shareManager].queueArray.count) {
                 
